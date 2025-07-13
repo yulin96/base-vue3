@@ -1,0 +1,30 @@
+{
+  "extends": [
+    "config:base",
+    "schedule:before 10pm every day",
+    ":automergeMinor",
+    ":automergePatch",
+    "group:monorepos",
+    "group:allNonMajor",
+    "group:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["pnpm"],
+      "enabled": true
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "pnpm": {
+    "enabled": true
+  },
+  "dependencyDashboard": true,
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 5
+}
