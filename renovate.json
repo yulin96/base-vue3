@@ -1,13 +1,14 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base",
-    "schedule:before 10pm every day",
     ":automergeMinor",
     ":automergePatch",
     "group:monorepos",
     "group:allNonMajor",
     "group:recommended"
   ],
+  "schedule": ["before 10pm every day"],
   "packageRules": [
     {
       "matchManagers": ["npm"],
