@@ -10,7 +10,7 @@
   ],
   "packageRules": [
     {
-      "matchManagers": ["pnpm"],
+      "matchManagers": ["npm"],
       "enabled": true
     },
     {
@@ -20,9 +20,6 @@
   ],
   "lockFileMaintenance": {
     "enabled": false
-  },
-  "pnpm": {
-    "enabled": true
   },
   "dependencyDashboard": true,
   "prHourlyLimit": 2,
