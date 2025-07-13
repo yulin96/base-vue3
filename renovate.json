@@ -20,9 +20,9 @@
     }
   ],
   "lockFileMaintenance": {
-    "enabled": false
+    "enabled": true
   },
-  "dependencyDashboard": true,
+  "dependencyDashboard": false,
   "prHourlyLimit": 2,
   "prConcurrentLimit": 5
 }
