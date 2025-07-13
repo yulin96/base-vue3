@@ -12,17 +12,16 @@
   "packageRules": [
     {
       "matchManagers": ["npm"],
-      "enabled": true
-    },
-    {
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
+      "matchUpdateTypes": ["minor", "patch"]
     }
   ],
   "lockFileMaintenance": {
     "enabled": true
   },
+  "rangeStrategy": "bump",
   "dependencyDashboard": false,
   "prHourlyLimit": 2,
-  "prConcurrentLimit": 5
+  "prConcurrentLimit": 5,
+  "automerge": true,
+  "automergeType": "pr"
 }
