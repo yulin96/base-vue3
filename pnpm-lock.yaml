@@ -121,7 +121,7 @@ importers:
         version: 11.1.0
       vant:
         specifier: ^4.9.20
-        version: 4.9.20(vue@3.5.17(typescript@5.8.3))
+        version: 4.9.21(vue@3.5.17(typescript@5.8.3))
       vue:
         specifier: ^3.5.17
         version: 3.5.17(typescript@5.8.3)
@@ -4036,8 +4036,8 @@ packages:
     resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
     hasBin: true
 
-  vant@4.9.20:
-    resolution: {integrity: sha512-QOv8i6/qBXSYO1DsjaxM+U7Hlgc+pIaChF21t/N4zW4pR4DmVNbEri9vchlzWFMz3R7wnCDfV9usOeXCyjHgPQ==}
+  vant@4.9.21:
+    resolution: {integrity: sha512-hXUoZMrLLjykimFRLDlGNd+K2iYSRh9YwLMKnsVdVZ+9inUKxpqnjhOqlZwocbnYkvJlS+febf9u9aJpDol4Pw==}
     peerDependencies:
       vue: ^3.0.0
 
@@ -8037,7 +8037,7 @@ snapshots:
 
   uuid@11.1.0: {}
 
-  vant@4.9.20(vue@3.5.17(typescript@5.8.3)):
+  vant@4.9.21(vue@3.5.17(typescript@5.8.3)):
     dependencies:
       '@vant/popperjs': 1.3.0
       '@vant/use': 1.6.0(vue@3.5.17(typescript@5.8.3))
