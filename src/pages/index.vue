@@ -5,11 +5,9 @@ onMounted(() => {})
 </script>
 
 <template>
-  <section>
-    <main ref="indexRef" class="index" v-bind="$attrs">
-      <div class="content"></div>
-    </main>
-  </section>
+  <com-main ref="indexRef" class="index">
+    <div class="content"></div>
+  </com-main>
 </template>
 
 <route lang="json">

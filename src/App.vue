@@ -58,7 +58,7 @@ onUnmounted(() => {
       <template v-if="Component">
         <transition :name>
           <keep-alive :exclude="[]">
-            <component :is="Component" class="wrapper"></component>
+            <component :is="Component"></component>
           </keep-alive>
         </transition>
       </template>
