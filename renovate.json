@@ -23,5 +23,6 @@
   "prHourlyLimit": 2,
   "prConcurrentLimit": 5,
   "automerge": true,
-  "automergeType": "pr"
+  "automergeType": "pr",
+  "automergeSchedule": ["before 11pm every day"]
 }
