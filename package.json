@@ -5,7 +5,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://gitea.eventnet.cn/yulin/base-vue"
+    "url": "https://github.com/yulin96/base_vite_vue3.git"
   },
   "type": "module",
   "scripts": {
