@@ -79,19 +79,19 @@ export default defineConfig(({ command }) => ({
       directoryAsNamespace: true,
     }),
     vitePluginDeployOss({
-      open: env.VITE_OSS_ROOT_DIR === 'H5/zz/auto2/' ? false : true,
+      open: !!env.VITE_OSS_ROOT_DIR && env.VITE_OSS_ROOT_DIR !== 'H5/zz/auto2/',
       accessKeyId: process.env.zAccessKeyId || '',
       accessKeySecret: process.env.zAccessKeySecret || '',
       bucket: process.env.zBucket || '',
       region: 'oss-cn-beijing',
+      alias: process.env.zBucketAlias || '',
       uploadDir: `${env.VITE_OSS_ROOT_DIR}`,
       skip: ['**/index.html', '**/pluginWebUpdateNotice/**'],
       overwrite: true,
       autoDelete: true,
 
-      alias: `https://oss.eventnet.cn/`,
       // 修改打包后的资源路径
-      configBase: `https://oss.eventnet.cn/${env.VITE_OSS_ROOT_DIR}`,
+      configBase: `${process.env.zBucketAlias || ''}${env.VITE_OSS_ROOT_DIR}`,
     }),
     vitePluginOrganize({
       config: {
