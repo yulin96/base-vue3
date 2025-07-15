@@ -31,14 +31,25 @@ window.addEventListener('load', () => {
 
         ctx.globalCompositeOperation = 'source-over'
 
-        const badgeSize = 60
-        const margin = 12
+        const badgeSize = 80 * dpr
+        const margin = 12 * dpr
         const x = img.width - badgeSize - margin
         const y = img.height - badgeSize - margin
 
-        ctx.fillStyle = 'white'
+        ctx.save()
+        ctx.shadowColor = 'rgba(0,0,0,0.18)'
+        ctx.shadowBlur = badgeSize * 0.18
+        ctx.shadowOffsetX = 0
+        ctx.shadowOffsetY = badgeSize * 0.08
         ctx.beginPath()
         ctx.arc(x + badgeSize / 2, y + badgeSize / 2, badgeSize / 2, 0, 2 * Math.PI)
+        ctx.fillStyle = 'white'
+        ctx.fill()
+        ctx.restore()
+
+        ctx.beginPath()
+        ctx.arc(x + badgeSize / 2, y + badgeSize / 2, badgeSize / 2, 0, 2 * Math.PI)
+        ctx.fillStyle = 'white'
         ctx.fill()
 
         ctx.font = `${badgeSize * 0.6}px Arial`
