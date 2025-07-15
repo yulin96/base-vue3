@@ -8,7 +8,6 @@
     "group:allNonMajor",
     "group:recommended"
   ],
-  "schedule": ["before 10pm every day"],
   "packageRules": [
     {
       "matchManagers": ["npm"],
@@ -23,6 +22,5 @@
   "prHourlyLimit": 2,
   "prConcurrentLimit": 5,
   "automerge": true,
-  "automergeType": "pr",
-  "automergeSchedule": ["before 11pm every day"]
+  "automergeType": "pr"
 }
