@@ -5,13 +5,13 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const scrollEle = useTemplateRef('scrollEle')
-defineExpose({ scrollEle })
+const scrollElement = useTemplateRef('scrollElement')
+defineExpose({ scrollElement })
 </script>
 
 <template>
   <section class="wrapper">
-    <main ref="scrollEle" class="wrapper" v-bind="$attrs">
+    <main ref="scrollElement" class="wrapper" v-bind="$attrs">
       <slot></slot>
     </main>
   </section>
