@@ -9,10 +9,16 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITEA_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H gitea.eventnet.cn >> ~/.ssh/known_hosts
 
       - name: Push to Gitea
         run: |
-          git remote add gitea "${{ secrets.GITEA_TOKEN_URL }}"
+          git remote add gitea git@gitea.eventnet.cn:yulin/base-vue.git
           git push -f gitea main
