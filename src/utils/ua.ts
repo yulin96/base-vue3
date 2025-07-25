@@ -29,3 +29,12 @@ export function isIE() {
 export function isMobile() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent())
 }
+
+export function isIOS() {
+  return /iPhone|iPad|iPod/i.test(userAgent())
+}
+
+export function getIOSVersion() {
+  const match = userAgent().match(/OS (\d+)_/)
+  return match ? parseInt(match[1], 10) : null
+}
