@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useActive } from '@/hooks/useActive'
 import { sleep } from '@/shared/common'
+import { agsap } from '@/shared/gsap'
 import { random, randomInt, range, sample } from 'es-toolkit'
 import { onMounted, useTemplateRef } from 'vue'
 
@@ -44,7 +45,7 @@ const createBubbles = async () => {
 
     const duration = random(1.6, 2.6)
 
-    gsap
+    agsap
       .timeline()
       .to(bubble, { y: -buttonRef.value.offsetHeight / 1.2, duration: duration, ease: 'easeInOut' })
       .to(bubble, { opacity: 0, duration: duration, ease: 'easeInOut' }, '<')
