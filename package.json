@@ -83,7 +83,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cross-env": "^7.0.3",
-    "eslint": "^9.31.0",
+    "eslint": "^9.32.0",
     "eslint-plugin-vue": "^10.3.0",
     "jsdom": "^26.1.0",
     "npm-run-all2": "^8.0.4",
