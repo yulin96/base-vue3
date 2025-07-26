@@ -14,8 +14,8 @@ jobs:
 
       - name: Push to GitLab
         run: |
-          git config --global user.email "bot@example.com"
-          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "${{ secrets.GITLAB_GIT_EMAIL }}"
+          git config --global user.name "${{ secrets.GITLAB_GIT_NAME }}"
 
           git remote add gitlab https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/yulin96-group/base_vite_vue3.git
           git push gitlab main --force
