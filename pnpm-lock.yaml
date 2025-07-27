@@ -36,8 +36,8 @@ importers:
         specifier: ^2.1.3
         version: 2.1.3(vue@3.5.18(typescript@5.8.3))
       '@zumer/snapdom':
-        specifier: ^1.9.6
-        version: 1.9.6
+        specifier: ^1.9.7
+        version: 1.9.7
       animate.css:
         specifier: ^4.1.1
         version: 4.1.1
@@ -1719,8 +1719,8 @@ packages:
       '@vue/composition-api':
         optional: true
 
-  '@zumer/snapdom@1.9.6':
-    resolution: {integrity: sha512-JxEJKoGCZpUfai/Nboii6a0vJWoYACO7ohGjnPSGRjhv0V0Mglq8acPaZcAGy4K+Mh4at+D05NAjBKqzQNTOHA==}
+  '@zumer/snapdom@1.9.7':
+    resolution: {integrity: sha512-tZvEq0e0NYn1gEyPCPZPOVQ5ihSFEGi2ppvpzi0dRL9vruPh8JrpPkcoG4IdqJHnF4y68wU0GZvlsQqEoeMCsg==}
 
   abbrev@2.0.0:
     resolution: {integrity: sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==}
@@ -5762,7 +5762,7 @@ snapshots:
       vue: 3.5.18(typescript@5.8.3)
       vue-demi: 0.14.10(vue@3.5.18(typescript@5.8.3))
 
-  '@zumer/snapdom@1.9.6': {}
+  '@zumer/snapdom@1.9.7': {}
 
   abbrev@2.0.0: {}
 
