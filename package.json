@@ -107,6 +107,6 @@
     "vite-plugin-image-optimizer": "^2.0.2",
     "vite-plugin-meta-share": "^0.0.1",
     "vite-plugin-organize-resource": "^0.0.12",
-    "vue-tsc": "3.0.4"
+    "vue-tsc": "3.0.5"
   }
 }
