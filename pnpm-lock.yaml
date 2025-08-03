@@ -15,8 +15,8 @@ importers:
         specifier: ^0.4.8
         version: 0.4.8(vue@3.5.18(typescript@5.8.3))
       '@tsparticles/engine':
-        specifier: ^3.9.0
-        version: 3.9.0
+        specifier: ^3.9.1
+        version: 3.9.1
       '@types/canvas-confetti':
         specifier: ^1.9.0
         version: 1.9.0
@@ -1421,8 +1421,8 @@ packages:
   '@tsconfig/node22@22.0.2':
     resolution: {integrity: sha512-Kmwj4u8sDRDrMYRoN9FDEcXD8UpBSaPQQ24Gz+Gamqfm7xxn+GBR7ge/Z7pK8OXNGyUzbSwJj+TH6B+DS/epyA==}
 
-  '@tsparticles/engine@3.9.0':
-    resolution: {integrity: sha512-/LgIE67s18ROFEG/s0WX/M1qtjYuDYThUCeTQ2aOhb9hmJJo8PFCODP9pA3jEqZwMyk/8j5eiEtOneJ/9VDyMA==}
+  '@tsparticles/engine@3.9.1':
+    resolution: {integrity: sha512-DpdgAhWMZ3Eh2gyxik8FXS6BKZ8vyea+Eu5BC4epsahqTGY9V3JGGJcXC6lRJx6cPMAx1A0FaQAojPF3v6rkmQ==}
 
   '@types/ali-oss@6.16.11':
     resolution: {integrity: sha512-/AyemPZy93ZXGzEokMsoPFgjH37snpzH4X/fwans/n63HLaCleriCG3PyrkHCPkgHEc9vj9Uo6paqsBN3vJ3OA==}
@@ -5346,7 +5346,7 @@ snapshots:
 
   '@tsconfig/node22@22.0.2': {}
 
-  '@tsparticles/engine@3.9.0': {}
+  '@tsparticles/engine@3.9.1': {}
 
   '@types/ali-oss@6.16.11': {}
 
