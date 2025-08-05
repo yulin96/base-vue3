@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useLoading } from '@/hooks/useLoading'
 import { useRouteTransition } from '@/hooks/useRouterTransition'
+import { sleep } from '@/shared/common'
 import { getWechatConfig } from '@/shared/third/wx'
 import { registerButtonEffect } from '@/shared/user/registerButtonEffect'
 import { registerWechatShare } from '@/shared/user/share'
@@ -35,12 +36,11 @@ const themeVars = {
 } satisfies ConfigProviderThemeVars
 
 const { start, cleanup } = useLoading(window.IMG_RESOURCES ?? [])
-onMounted(() => {
-  nextTick(() => {
-    setTimeout(() => {
-      start()
-    }, 500)
-  })
+
+onMounted(async () => {
+  await nextTick()
+  await sleep(500)
+  start()
 })
 
 onUnmounted(() => {
