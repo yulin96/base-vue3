@@ -1,4 +1,5 @@
 import { gsap } from 'gsap'
+import { SplitText } from 'gsap/SplitText'
 
 gsap.config({ force3D: true })
 gsap.defaults({
@@ -7,8 +8,7 @@ gsap.defaults({
   overwrite: 'auto',
 })
 
-// import { SplitText } from 'gsap/SplitText'
-// gsap.registerPlugin(SplitText)
+gsap.registerPlugin(SplitText)
 
 // import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin'
 // gsap.registerPlugin(DrawSVGPlugin)
