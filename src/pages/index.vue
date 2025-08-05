@@ -5,9 +5,9 @@ onMounted(() => {})
 </script>
 
 <template>
-  <com-main ref="indexRef" class="index">
-    <div class="content"></div>
-  </com-main>
+  <section class="scroll-box">
+    <main class="content"></main>
+  </section>
 </template>
 
 <route lang="json">

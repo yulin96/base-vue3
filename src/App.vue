@@ -54,11 +54,13 @@ onUnmounted(() => {
   </teleport>
 
   <van-config-provider :theme-vars="themeVars" theme-vars-scope="global">
-    <router-view v-slot="{ Component }">
+    <router-view v-slot="{ Component, route }">
       <template v-if="Component">
         <transition :name>
           <keep-alive :exclude="[]">
-            <component :is="Component"></component>
+            <div :key="route.name" class="scroll-box">
+              <component :is="Component"></component>
+            </div>
           </keep-alive>
         </transition>
       </template>
@@ -69,7 +71,7 @@ onUnmounted(() => {
 <style>
 html,
 body,
-.wrapper {
+.scroll-box {
   background-color: var(--main-color);
 }
 </style>
