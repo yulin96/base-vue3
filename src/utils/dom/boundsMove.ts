@@ -1,5 +1,3 @@
-import { agsap } from '@/shared/gsap'
-
 export function boundsMove(element: HTMLDivElement, to: DOMRect, from?: DOMRect) {
   return new Promise<HTMLDivElement>(() => {
     const fromElement = element.cloneNode(true) as HTMLDivElement
@@ -24,6 +22,6 @@ export function boundsMove(element: HTMLDivElement, to: DOMRect, from?: DOMRect)
     const y = -(fromTop - toTop + (fromHeight - toHeight) / 2)
     const scale = toWidth / fromWidth
 
-    agsap.to(fromElement, { scale, x, y, duration: 1.2, ease: 'back.in' })
+    gsap.to(fromElement, { scale, x, y, duration: 1.2, ease: 'back.in' })
   })
 }

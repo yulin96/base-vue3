@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { agsap } from '@/shared/gsap'
 import { ref, toValue, useTemplateRef, watchPostEffect, type MaybeRefOrGetter } from 'vue'
 
 const qrCodeRef = useTemplateRef('qrCodeRef')
@@ -26,7 +25,7 @@ const target: [number, number, number] = [2, 0, 0]
 
 const toggleCode = (close?: boolean) => {
   if (close) isBig.value = true
-  agsap.to(qrCodeRef.value, {
+  gsap.to(qrCodeRef.value, {
     scale: isBig.value ? 1 : target[0],
     y: isBig.value ? 0 : target[1],
     x: isBig.value ? 0 : target[2],

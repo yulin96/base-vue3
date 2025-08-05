@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import pinSvg from '@/assets/imgs/pin.svg'
-import { agsap } from '@/shared/gsap'
 import { randomString } from '@/utils/random'
 import { random, sample } from 'es-toolkit'
 import { onMounted, useTemplateRef } from 'vue'
@@ -92,7 +91,7 @@ async function createBarrage({
 
   const offset = Math.floor(clientWidth + barrage.clientWidth + gap)
 
-  agsap.to(barrage, {
+  gsap.to(barrage, {
     x: -offset,
     duration: offset / speed,
     ease: 'none',

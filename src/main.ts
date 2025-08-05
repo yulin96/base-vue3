@@ -1,3 +1,5 @@
+import '@/shared/setup/gsap'
+
 import { registerDirective } from '@/shared/directive'
 import '@vant/touch-emulator'
 import { createPinia } from 'pinia'

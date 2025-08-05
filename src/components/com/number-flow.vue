@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { agsap } from '@/shared/gsap'
 import { continuous } from '@number-flow/vue'
 import { v4 } from 'uuid'
 import { onMounted } from 'vue'
@@ -11,11 +10,11 @@ let dom: HTMLElement | null = null
 let color = 'null'
 
 const handleAnimationsStart = () => {
-  if (dom && props.animate) agsap.to(dom, { color: '#f00' })
+  if (dom && props.animate) gsap.to(dom, { color: '#f00' })
 }
 
 const handleAnimationsFinish = () => {
-  if (dom && props.animate) agsap.to(dom, { color: color })
+  if (dom && props.animate) gsap.to(dom, { color: color })
 }
 
 onMounted(() => {
