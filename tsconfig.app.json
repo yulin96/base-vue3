@@ -8,6 +8,7 @@
     "allowJs": true,
     "noImplicitAny": false,
     "baseUrl": ".",
+    "erasableSyntaxOnly": true,
     "paths": {
       "@/*": ["./src/*"]
     }
