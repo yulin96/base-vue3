@@ -2,9 +2,6 @@ import { isWeChat } from '@/utils/ua'
 import axios, { toFormData } from 'axios'
 import wx from 'weixin-js-sdk'
 
-const wxConfigReady = Symbol('wxConfigReady')
-window[wxConfigReady] = false
-
 const JS_API_LIST: wx.jsApiList = [
   'scanQRCode',
   'updateAppMessageShareData',
@@ -15,10 +12,11 @@ const JS_API_LIST: wx.jsApiList = [
   'closeWindow',
   'hideMenuItems',
   'hideOptionMenu',
-]
+] satisfies wx.jsApiList
 
-const OPEN_TAG_LIST: wx.openTagList = ['wx-open-launch-app', 'wx-open-launch-weapp']
+const OPEN_TAG_LIST: wx.openTagList = ['wx-open-launch-app', 'wx-open-launch-weapp'] satisfies wx.openTagList
 
+let wxConfigIsReady = false
 function setupWxConfig(data: any, debug = false): Promise<void> {
   return new Promise((resolve, reject) => {
     wx.config({
@@ -33,7 +31,7 @@ function setupWxConfig(data: any, debug = false): Promise<void> {
 
     wx.ready(() => {
       resolve()
-      window[wxConfigReady] = true
+      wxConfigIsReady = true
     })
 
     wx.error((res) => {
@@ -42,32 +40,31 @@ function setupWxConfig(data: any, debug = false): Promise<void> {
   })
 }
 
-export function getWechatConfig() {
-  if (window[wxConfigReady]) return Promise.resolve()
-
-  if (!isWeChat()) return Promise.reject('not in wechat')
+export async function getWechatConfig() {
+  if (wxConfigIsReady) return Promise.resolve()
 
   const url = location.href.split('#')[0]
 
   const urls = ['events.net.cn', 'eventnet.cn', 'event1.cn', 'myevent.com.cn', '1ycloud.com']
   const isInclude = urls.some((item) => url.includes(item))
-
-  if (isInclude) {
-    return axios
-      .post(
+  try {
+    if (isInclude) {
+      const {
+        data: { data: data },
+      } = await axios.post(
         'https://wechat.event1.cn/api/getJsSdk',
         toFormData({
           url: url,
           name: 'hudongweipingtai',
         }),
       )
-      .then(({ data: { data } }) => setupWxConfig(data))
-      .catch((error) => Promise.reject(error))
-  } else {
-    return axios
-      .get('https://wx.yul.ink/config?url=' + encodeURIComponent(url))
-      .then(({ data }) => setupWxConfig(data))
-      .catch((error) => Promise.reject(error))
+      return await setupWxConfig(data)
+    } else {
+      const { data: data } = await axios.get('https://wx.yul.ink/config?url=' + encodeURIComponent(url))
+      return await setupWxConfig(data)
+    }
+  } catch (error_1) {
+    return await Promise.reject(error_1)
   }
 }
 

@@ -11,14 +11,16 @@ import { nextTick, onMounted, onUnmounted } from 'vue'
 import { Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
 
-if (isWeChat()) {
-  registerWechatShare() ?? getWechatConfig()
-}
-
 registerButtonEffect()
 
-/* 路由动画 */
 const { name } = useRouteTransition()
+const { start, cleanup } = useLoading(window.IMG_RESOURCES ?? [])
+
+if (isWeChat()) {
+  getWechatConfig().then(() => {
+    registerWechatShare()
+  })
+}
 
 // const { locale } = useI18n()
 // const { VITE_APP_LOCALSTORAGE_NAME: localName } = import.meta.env
@@ -34,8 +36,6 @@ const themeVars = {
   toastPositionBottomDistance: '9%',
   toastLoadingIconColor: '#111',
 } satisfies ConfigProviderThemeVars
-
-const { start, cleanup } = useLoading(window.IMG_RESOURCES ?? [])
 
 onMounted(async () => {
   await nextTick()

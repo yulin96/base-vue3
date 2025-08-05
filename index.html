@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN" data-localStorage="%VITE_APP_LOCALSTORAGE_NAME%" data-link="%VITE_APP_SHARE_LINK%" class="cover">
+<html lang="zh-CN" class="cover">
   <head>
     <meta charset="UTF-8" />
 
@@ -20,17 +20,8 @@
     />
 
     <link rel="dns-prefetch" href="%VITE_APP_API_URL%" />
-    <script>
-      const currentUrl = new URL(window.location.href)
-      const params = currentUrl.searchParams
 
-      if (params.has('t')) {
-        params.delete('t')
-        const newSearch = params.toString()
-        const newUrl = `${currentUrl.pathname}${newSearch ? '?' + newSearch : ''}${currentUrl.hash}`
-        history.replaceState(history.state, '', newUrl)
-      }
-    </script>
+    <script type="module" src="/src/shared/setup/clearParams.ts"></script>
 
     <%- baiduTongji %>
 

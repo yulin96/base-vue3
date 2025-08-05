@@ -5,7 +5,7 @@ import { biz } from 'dingtalk-jsapi'
 import { showDialog } from 'vant'
 
 let isScanning = false
-export function showScanQRCode() {
+export function openScanQR() {
   return new Promise<string>((resolve, reject) => {
     if (isScanning) return reject('扫码功能正在运行中')
     isScanning = true
