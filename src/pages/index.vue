@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 
 onMounted(() => {
   gsap.context(() => {
-    gsap.timeline({ delay: 0.3 })
+    gsap.timeline({ delay: 0.5 })
   }, '.index')
 })
 </script>
