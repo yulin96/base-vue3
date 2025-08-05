@@ -3,10 +3,15 @@ import { sleep } from '@/shared/common'
 import { randomInt } from 'es-toolkit'
 import { nextTick, onMounted, ref, useTemplateRef } from 'vue'
 
-const props = defineProps<{
-  texts: string[]
-  speed: number | [number, number]
-}>()
+const props = withDefaults(
+  defineProps<{
+    texts: string[]
+    speed?: number | [number, number]
+  }>(),
+  {
+    speed: 90,
+  },
+)
 
 const lineRef = useTemplateRef('lineRef')
 const lineWidth: number[] = []
@@ -59,8 +64,23 @@ onMounted(async () => {
 <template>
   <div ref="lineRef" class="flex w-full flex-col items-center">
     <div v-for="(_, index) in texts" :key="index" :style="{ width: lineWidth[index] + 'px' }" class="whitespace-nowrap">
-      {{ lines[index] }}
+      <span v-for="text in lines[index]" :key="text" class="fadeIn">{{ text }}</span>
+
       <span v-show="currentIndex === index" class="animate-[caret-blink_0.8s_infinite] ease-out">_</span>
     </div>
   </div>
 </template>
+
+<style scoped>
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.fadeIn {
+  animation: fadeIn 0.2s ease-in-out;
+}
+</style>
