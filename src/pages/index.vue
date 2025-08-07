@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { useLoading } from '@/hooks/useLoading'
+import { onMounted, onUnmounted } from 'vue'
+
+const { start, cleanup } = useLoading(window.IMG_RESOURCES ?? [])
 
 onMounted(() => {
   gsap.context(() => {
-    gsap.timeline({ delay: 0.5 })
+    gsap.timeline({ delay: 0.5 }).then(() => {
+      start()
+    })
   }, '.index')
+})
+
+onUnmounted(() => {
+  cleanup()
 })
 </script>
 

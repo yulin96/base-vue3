@@ -1,20 +1,16 @@
 <script setup lang="ts">
-import { useLoading } from '@/hooks/useLoading'
 import { useRouteTransition } from '@/hooks/useRouterTransition'
-import { sleep } from '@/shared/common'
 import { getWechatConfig } from '@/shared/third/wx'
 import { registerButtonEffect } from '@/shared/user/registerButtonEffect'
 import { registerWechatShare } from '@/shared/user/share'
 import { isWeChat } from '@/utils/ua'
 import type { ConfigProviderThemeVars } from 'vant'
-import { nextTick, onMounted, onUnmounted } from 'vue'
 import { Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
 
 registerButtonEffect()
 
 const { name } = useRouteTransition()
-const { start, cleanup } = useLoading(window.IMG_RESOURCES ?? [])
 
 if (isWeChat()) {
   getWechatConfig().then(() => {
@@ -36,16 +32,6 @@ const themeVars = {
   toastPositionBottomDistance: '9%',
   toastLoadingIconColor: '#111',
 } satisfies ConfigProviderThemeVars
-
-onMounted(async () => {
-  await nextTick()
-  await sleep(500)
-  start()
-})
-
-onUnmounted(() => {
-  cleanup()
-})
 </script>
 
 <template>
