@@ -15,7 +15,8 @@
     }
   ],
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": true,
+    "commitMessage": "chore: 更新锁文件"
   },
   "rangeStrategy": "bump",
   "dependencyDashboard": false,
