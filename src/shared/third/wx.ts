@@ -94,7 +94,7 @@ export function wechatShare(data: IWxShare) {
         })
         wx.updateTimelineShareData({
           title,
-          link: `${link}${~link.indexOf('?') ? '&' : '?'}t=${+new Date()}`,
+          link: url.toString(),
           imgUrl,
           success() {
             resolve(true)
