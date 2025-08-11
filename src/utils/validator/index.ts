@@ -153,3 +153,15 @@ export function supportsWebp(): Promise<boolean> {
 export function isFormData(formData: unknown): formData is FormData {
   return Object.prototype.toString.call(formData) === '[object FormData]'
 }
+
+/**
+ * 判断字符串是否为有效的 URL
+ */
+export function isUrl(str: string): boolean {
+  try {
+    new URL(str)
+    return true
+  } catch {
+    return false
+  }
+}

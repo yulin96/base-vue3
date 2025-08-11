@@ -1,4 +1,5 @@
 import { isWeChat } from '@/utils/ua'
+import { isUrl } from '@/utils/validator'
 import axios, { toFormData } from 'axios'
 import wx from 'weixin-js-sdk'
 
@@ -73,12 +74,16 @@ export type IWxShare = Pick<wx.IupdateAppMessageShareData, 'title' | 'desc' | 'l
 export function wechatShare(data: IWxShare) {
   return new Promise<boolean>((resolve, reject) => {
     const { title, desc, link, imgUrl } = data
+
+    const url = new URL(isUrl(link) ? link : location.href)
+    url.searchParams.set('t', Date.now().toString())
+
     getWechatConfig()
       .then(() => {
         wx.updateAppMessageShareData({
           title,
           desc,
-          link: `${link}${~link.indexOf('?') ? '&' : '?'}t=${+new Date()}`,
+          link: url.toString(),
           imgUrl,
           success() {
             resolve(true)
