@@ -29,6 +29,5 @@
   "commitMessageAction": "更新依赖项",
   "commitMessageTopic": "{{depName}}",
   "commitMessageExtra": "至 {{newValue}}",
-  "semanticCommitType": "chore",
-  "semanticCommitScope": ""
+  "semanticCommitType": "chore"
 }
