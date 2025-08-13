@@ -31,8 +31,15 @@ window.addEventListener('load', () => {
 
         ctx.globalCompositeOperation = 'source-over'
 
-        const badgeSize = 80 * dpr
-        const margin = 12 * dpr
+        const boxPadding = 100
+        const boxSize = boxPadding * 2
+        const scaleToBox = boxSize / Math.max(img.width, img.height)
+
+        const desiredBadgePx = 50
+        const desiredMarginPx = 6
+
+        const badgeSize = desiredBadgePx / scaleToBox
+        const margin = desiredMarginPx / scaleToBox
         const x = img.width - badgeSize - margin
         const y = img.height - badgeSize - margin
 
@@ -52,13 +59,16 @@ window.addEventListener('load', () => {
         ctx.fillStyle = 'white'
         ctx.fill()
 
-        ctx.font = `${badgeSize * 0.6}px Arial`
+        ctx.font = `${badgeSize * 0.5}px Arial`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText('🤖', x + badgeSize / 2, y + badgeSize / 2)
 
         const dataUrl = canvas.toDataURL('image/png', 1.0)
-        console.log('%c ', `padding: 100px; background: url(${dataUrl}) no-repeat; background-size: contain;`)
+        console.log(
+          '%c ',
+          `padding: ${boxPadding}px; background: url(${dataUrl}) no-repeat; background-size: contain; background-position: center;`,
+        )
       }
     }
     img.src = shareUrl
