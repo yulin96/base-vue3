@@ -44,3 +44,11 @@ window.addEventListener(
     setRem()
   }, 100),
 )
+
+if (isMobile()) {
+  const style = document.createElement('style')
+  style.textContent = `*:not(input, textarea) {
+  user-select: none;
+}`
+  document.head.appendChild(style)
+}

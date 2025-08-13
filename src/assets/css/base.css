@@ -9,7 +9,6 @@
 
 *:not(input, textarea) {
   -webkit-touch-callout: none;
-  user-select: none;
 }
 
 html,
