@@ -11,9 +11,9 @@ export function detectionElements(num = 10): Set<Element> {
   const doms = new Set<Element>()
 
   for (let i = 0; i < num; i++) {
-    const x = calcWidth[0] + calcWidth[1] * i
-    const y = calcHeight[0] + calcHeight[1] * i
-    const reciprocalY = calcHeight[0] + calcHeight[1] * (num - i - 1)
+    const x = (calcWidth[0] ?? 0) + (calcWidth[1] ?? 0) * i
+    const y = (calcHeight[0] ?? 0) + (calcHeight[1] ?? 0) * i
+    const reciprocalY = (calcHeight[0] ?? 0) + (calcHeight[1] ?? 0) * (num - i - 1)
 
     // 获取直线上和对角线上的元素
     const element1 = document.elementFromPoint(x, y)

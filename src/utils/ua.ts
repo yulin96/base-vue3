@@ -36,5 +36,5 @@ export function isIOS() {
 
 export function getIOSVersion() {
   const match = userAgent().match(/OS (\d+)_/)
-  return match ? parseInt(match[1], 10) : null
+  return match?.[1] ? parseInt(match[1], 10) : null
 }

@@ -90,7 +90,9 @@ export function generateCaptcha(option: GenerateCaptchaOptions) {
     ctx.rotate(skewAngle)
 
     // 绘制字符
-    ctx.fillText(char, 0, 0)
+    if (char) {
+      ctx.fillText(char, 0, 0)
+    }
 
     // 恢复上下文状态
     ctx.restore()

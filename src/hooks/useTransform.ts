@@ -190,20 +190,27 @@ export function useTransform(options: TransformOptions) {
 
     if (touches.length === 1) {
       // 单指操作 - 准备拖动
+      const touch = getSafeTouch(touches, 0)
+      if (!touch) return
+
       isDragging.value = true
       isScaling.value = false
-      startX = touches[0].clientX - positionMark.x
-      startY = touches[0].clientY - positionMark.y
+      startX = touch.clientX - positionMark.x
+      startY = touch.clientY - positionMark.y
     } else if (touches.length === 2) {
       // 双指操作 - 准备缩放
+      const touch1 = getSafeTouch(touches, 0)
+      const touch2 = getSafeTouch(touches, 1)
+      if (!touch1 || !touch2) return
+
       isDragging.value = false
       isScaling.value = true
-      startDistance = getDistance(touches[0], touches[1])
+      startDistance = getDistance(touch1, touch2)
       startScale = scaleMark
 
       // 计算双指中心点在视口中的位置
-      const pinchX = (touches[0].clientX + touches[1].clientX) / 2
-      const pinchY = (touches[0].clientY + touches[1].clientY) / 2
+      const pinchX = (touch1.clientX + touch2.clientX) / 2
+      const pinchY = (touch1.clientY + touch2.clientY) / 2
 
       // 计算双指中心点在元素自身坐标系（未缩放）下的位置
       pinchStartCompositionX = (pinchX - positionMark.x) / scaleMark
@@ -220,8 +227,11 @@ export function useTransform(options: TransformOptions) {
 
     if (isDragging.value && touches.length === 1) {
       // 单指拖动
-      const newX = touches[0].clientX - startX
-      const newY = touches[0].clientY - startY
+      const touch = getSafeTouch(touches, 0)
+      if (!touch) return
+
+      const newX = touch.clientX - startX
+      const newY = touch.clientY - startY
 
       // 计算移动距离用于判断是否真的是拖动
       const dx = newX - positionMark.x
@@ -243,13 +253,17 @@ export function useTransform(options: TransformOptions) {
       hasMoved = true
 
       // 双指缩放
-      const currentDistance = getDistance(touches[0], touches[1])
+      const touch1 = getSafeTouch(touches, 0)
+      const touch2 = getSafeTouch(touches, 1)
+      if (!touch1 || !touch2) return
+
+      const currentDistance = getDistance(touch1, touch2)
       let newScale = startScale * (currentDistance / startDistance)
       newScale = Math.min(Math.max(newScale, minScale), maxScale) // 使用配置的最小最大缩放值
 
       // 当前双指中心点在视口中的位置
-      const currentPinchX = (touches[0].clientX + touches[1].clientX) / 2
-      const currentPinchY = (touches[0].clientY + touches[1].clientY) / 2
+      const currentPinchX = (touch1.clientX + touch2.clientX) / 2
+      const currentPinchY = (touch1.clientY + touch2.clientY) / 2
 
       // 我们希望 pinchStartCompositionX 这个点在缩放后的新视口位置仍然是 currentPinchX
       const newX = currentPinchX - pinchStartCompositionX * newScale
@@ -299,6 +313,11 @@ export function useTransform(options: TransformOptions) {
       positionMark = boundedPosition
       updateItemPosition()
     }
+  }
+
+  // 安全获取触摸点
+  const getSafeTouch = (touches: TouchList, index: number): Touch | null => {
+    return touches[index] ? touches[index] : null
   }
 
   // 计算两个触摸点之间的距离

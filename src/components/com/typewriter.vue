@@ -27,6 +27,7 @@ const writeText = async () => {
 
   const line = props.texts[idx]
   const shown = lines.value[idx].length
+  if (!line) return
   if (shown < line.length) {
     lines.value[idx] += line[shown]
   } else if (idx < props.texts.length - 1) {

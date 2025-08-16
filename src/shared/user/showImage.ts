@@ -7,7 +7,7 @@ import 'vant/es/image-preview/style'
 export function showImage(url: string[] | string, index: number = 0) {
   const imageUrls = Array.isArray(url) ? url : [url]
 
-  if (isWeChat() && isHttps()) {
+  if (isWeChat() && isHttps() && imageUrls[index]) {
     wechatPreviewImage(imageUrls[index], imageUrls)
   } else {
     showImagePreview({ images: imageUrls, startPosition: index, teleport: '#app' })

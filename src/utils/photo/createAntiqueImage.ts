@@ -50,9 +50,9 @@ export async function createAntiqueImage(
   // 应用做旧效果
   for (let i = 0; i < data.length; i += 4) {
     // 获取RGB值
-    const r = data[i]
-    const g = data[i + 1]
-    const b = data[i + 2]
+    const r = data[i] ?? 0
+    const g = data[i + 1] ?? 0
+    const b = data[i + 2] ?? 0
 
     // 计算加权灰度值，但不完全转换为灰度
     const gray = 0.299 * r + 0.587 * g + 0.114 * b
