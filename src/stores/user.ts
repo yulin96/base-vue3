@@ -37,7 +37,6 @@ export const useStore = defineStore(
   {
     persist: {
       key: import.meta.env.VITE_APP_LOCALSTORAGE_NAME || 'test',
-      pick: undefined,
       omit: ['user.ignore'],
     },
   },

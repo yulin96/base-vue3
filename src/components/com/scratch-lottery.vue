@@ -32,7 +32,7 @@ useEventListener(lotteryCanvas, 'touchmove', (e) => {
 
   const rect = lotteryCanvas.value.getBoundingClientRect()
   const touch = e.touches[0]
-
+  if (!touch) return
   ctx.globalCompositeOperation = 'destination-out'
   ctx.beginPath()
   ctx.arc(touch.clientX - rect.left, touch.clientY - rect.top, strokeSize, 0, Math.PI * 2, false)

@@ -87,6 +87,7 @@ async function createBarrage({
   params.pin = false
 
   const parent = parents[index]
+  if (!parent) return
   parent.appendChild(barrage)
 
   const offset = Math.floor(clientWidth + barrage.clientWidth + gap)

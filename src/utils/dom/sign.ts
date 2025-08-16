@@ -49,15 +49,21 @@ export default class LineCanvas {
   // 绘制开始
   private touchstart = (e: TouchEvent) => {
     e.preventDefault()
-    this.cxt.beginPath()
-    this.cxt.moveTo(e.changedTouches[0].pageX, e.changedTouches[0].pageY)
+    const touch = e.changedTouches[0]
+    if (touch) {
+      this.cxt.beginPath()
+      this.cxt.moveTo(touch.pageX, touch.pageY)
+    }
   }
 
   // 绘制中
   private touchmove = (e: TouchEvent) => {
-    this.signing = true
-    this.cxt.lineTo(e.changedTouches[0].pageX, e.changedTouches[0].pageY)
-    this.cxt.stroke()
+    const touch = e.changedTouches[0]
+    if (touch) {
+      this.signing = true
+      this.cxt.lineTo(touch.pageX, touch.pageY)
+      this.cxt.stroke()
+    }
   }
 
   // 绘制结束

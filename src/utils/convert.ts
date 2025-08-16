@@ -149,12 +149,13 @@ export function base64ToBlob(urlData: string): Blob {
 
   // 分割头部信息和数据部分
   const parts = urlData.split(';base64,')
-  if (parts.length !== 2) {
+  if (parts.length !== 2 || !parts[0] || !parts[1]) {
     throw new Error('输入格式无效')
   }
 
   // 提取 MIME 类型
-  const mime = parts[0].split(':')[1] || 'application/octet-stream'
+  const headerParts = parts[0].split(':')
+  const mime = headerParts[1] || 'application/octet-stream'
 
   // 解码 base64 数据
   const base64 = parts[1]
@@ -215,6 +216,7 @@ export function convertObjectName<T = Record<string, any>>(
     if (value === undefined || value === null) continue
 
     const newKey = keys.includes(key) ? nameKey[key] : key
+    if (newKey === undefined || newKey === null) continue
 
     // 递归处理嵌套对象
     if (value !== null && typeof value === 'object') {
@@ -413,7 +415,7 @@ export function extractNumbers(str: string, returnAsArray = false): number[] | n
   }
 
   const numbers = matches.map(Number)
-  return returnAsArray ? numbers : numbers[0]
+  return returnAsArray ? numbers : (numbers[0] ?? null)
 }
 
 /**

@@ -45,6 +45,7 @@ export async function getWechatConfig() {
   if (wxConfigIsReady) return Promise.resolve()
 
   const url = location.href.split('#')[0]
+  if (!url) return Promise.reject(new Error('无法获取页面URL'))
 
   const urls = ['events.net.cn', 'eventnet.cn', 'event1.cn', 'myevent.com.cn', '1ycloud.com']
   const isInclude = urls.some((item) => url.includes(item))

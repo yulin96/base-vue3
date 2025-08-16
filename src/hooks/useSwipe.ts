@@ -9,11 +9,12 @@ export function useSwipe(onSwipe?: (dir: 'left' | 'right') => void, originKey?: 
   let startX = 0
 
   const handleTouchStart = (e: TouchEvent) => {
-    startX = e.touches[0].clientX
+    startX = e.touches[0]?.clientX ?? 0
   }
 
   const handleTouchEnd = (e: TouchEvent) => {
-    const deltaX = e.changedTouches[0].clientX - startX
+    const clientX = e.changedTouches[0]?.clientX ?? 0
+    const deltaX = clientX - startX
     if (Math.abs(deltaX) > 50) {
       onSwipe?.(deltaX > 0 ? 'right' : 'left')
     }

@@ -115,7 +115,10 @@ export default class FrameAnimation {
         this.cycles === 0 ? _fps : (_fps / (this.fromTo![1] + 1 - this.fromTo![0])) * this.option.maxLength
       if (time - lastTime >= interval) {
         this.animationCtx.clearRect(...this.path)
-        this.animationCtx.drawImage(this.imgList[this.currentIndex], ...this.path)
+        const currentImage = this.imgList[this.currentIndex]
+        if (currentImage) {
+          this.animationCtx.drawImage(currentImage, ...this.path)
+        }
         if (this.currentIndex < to) {
           this.currentIndex++
         } else {

@@ -5,7 +5,7 @@ export function createQRCode(app: HTMLDivElement) {
   if (document.querySelector('.code-tips.pc')) document.body.removeChild(document.querySelector('.code-tips.pc')!)
 
   const pageURL = location.href.replace('pc.html', 'index.html')
-  const clearedUrl = removeUrlParams(pageURL, 't').split('#')[0]
+  const clearedUrl = removeUrlParams(pageURL, 't')?.split('#')[0] || pageURL
 
   QRCode.toDataURL(clearedUrl, { margin: 2, errorCorrectionLevel: 'H', width: 900 }).then((res) => {
     const left = Math.round(app.getBoundingClientRect().right + innerWidth / 100)

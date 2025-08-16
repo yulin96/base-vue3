@@ -43,7 +43,10 @@ export function isIdCard(idCard: string): boolean {
       let idCardWiSum = 0 // 用来保存前17位各自乖以加权因子后的总和
 
       for (let i = 0; i < 17; i++) {
-        idCardWiSum += parseInt(idCard.substring(i, i + 1)) * idCardWi[i]
+        const weight = idCardWi[i]
+        if (weight) {
+          idCardWiSum += parseInt(idCard.substring(i, i + 1)) * weight
+        }
       }
 
       const idCardMod = idCardWiSum % 11 // 计算出校验码所在数组的位置
