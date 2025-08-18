@@ -47,24 +47,17 @@ export async function getWechatConfig() {
   const url = location.href.split('#')[0]
   if (!url) return Promise.reject(new Error('无法获取页面URL'))
 
-  const urls = ['events.net.cn', 'eventnet.cn', 'event1.cn', 'myevent.com.cn', '1ycloud.com']
-  const isInclude = urls.some((item) => url.includes(item))
   try {
-    if (isInclude) {
-      const {
-        data: { data: data },
-      } = await axios.post(
-        'https://wechat.event1.cn/api/getJsSdk',
-        toFormData({
-          url: url,
-          name: 'hudongweipingtai',
-        }),
-      )
-      return await setupWxConfig(data)
-    } else {
-      const { data: data } = await axios.get('https://wx.yul.ink/config?url=' + encodeURIComponent(url))
-      return await setupWxConfig(data)
-    }
+    const {
+      data: { data: data },
+    } = await axios.post(
+      'https://wechat.event1.cn/api/getJsSdk',
+      toFormData({
+        url: url,
+        name: 'hudongweipingtai',
+      }),
+    )
+    return await setupWxConfig(data)
   } catch (error_1) {
     return await Promise.reject(error_1)
   }
