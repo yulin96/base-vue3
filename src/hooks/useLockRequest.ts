@@ -32,7 +32,7 @@ export function useLockRequest(disableLock = false, showProgress = false, delay 
         .then(resolve)
         .catch((err) => {
           reject(err)
-          if (err.name !== 'CanceledError') {
+          if (err.name !== 'CanceledError' || err.message === 'Request aborted') {
             toast.error('正在加载中...', { duration: 3000 })
           }
         })

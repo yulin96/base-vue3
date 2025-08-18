@@ -4,6 +4,7 @@ import { getWechatConfig } from '@/shared/third/wx'
 import { registerButtonEffect } from '@/shared/user/registerButtonEffect'
 import { registerWechatShare } from '@/shared/user/share'
 import { isWeChat } from '@/utils/ua'
+import { isHttps } from '@/utils/validator'
 import type { ConfigProviderThemeVars } from 'vant'
 import { Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
@@ -12,7 +13,7 @@ registerButtonEffect()
 
 const { name } = useRouteTransition()
 
-if (isWeChat()) {
+if (isWeChat() && isHttps()) {
   getWechatConfig().then(() => {
     registerWechatShare()
   })
