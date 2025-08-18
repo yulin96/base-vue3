@@ -1,7 +1,9 @@
+import { devModel } from '@/shared/env'
+
 const shareUrl = import.meta.env.VITE_APP_SHARE_IMGURL
 
 window.addEventListener('load', () => {
-  if (shareUrl) {
+  if (shareUrl && !devModel) {
     const img = new Image()
     img.crossOrigin = 'anonymous'
     img.onload = () => {
