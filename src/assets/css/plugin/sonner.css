@@ -17,31 +17,35 @@
 } */
 
 :root [data-sonner-toaster][data-theme='light'] {
-  --normal-bg: #fffe;
-  --normal-border: var(--gray4);
-  --normal-text: var(--gray12);
-  --success-bg: #fffe;
-  --success-border: #d3fde5;
-  --success-text: #008a2e;
-  --info-bg: #fffe;
-  --info-border: #d3e0fd;
-  --info-text: #0973dc;
-  --warning-bg: #fffe;
-  --warning-border: #fdf5d3;
-  --warning-text: #dc7609;
-  --error-bg: #fffe;
-  --error-border: #ffe0e1;
-  --error-text: #e60000;
+  --normal-bg: #ffffffee;
+  --normal-border: #edededee;
+  --normal-text: #171717ee;
+  --success-bg: #ffffffee;
+  --success-border: #d3fde5ee;
+  --success-text: #008a2cee;
+  --info-bg: #ffffffee;
+  --info-border: #d3e0fdee;
+  --info-text: #0973dcee;
+  --warning-bg: #ffffffee;
+  --warning-border: #fdf5d3ee;
+  --warning-text: #dc7609ee;
+  --error-bg: #ffffffee;
+  --error-border: #ffe0e1ee;
+  --error-text: #e60000ee;
 }
 
 @media screen and (max-width: 768px) {
   body [data-sonner-toaster][data-theme='light'] li {
-    border-radius: 8px;
     backdrop-filter: blur(8px);
     font-size: 30px;
   }
 
+  body [data-sonner-toast][data-styled='true'] [data-icon] {
+    width: 36px;
+    height: 36px;
+  }
+
   body [data-sonner-toast][data-styled='true'] {
-    padding: 34px 32px;
+    padding: 40px 32px;
   }
 }

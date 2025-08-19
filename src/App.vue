@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useRouteTransition } from '@/hooks/useRouterTransition'
+import { themeVars } from '@/shared/config/vant'
 import { getWechatConfig } from '@/shared/third/wx'
 import { registerButtonEffect } from '@/shared/user/registerButtonEffect'
 import { registerWechatShare } from '@/shared/user/share'
 import { isWeChat } from '@/utils/ua'
 import { isHttps } from '@/utils/validator'
-import type { ConfigProviderThemeVars } from 'vant'
 import { Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
 
@@ -24,20 +24,11 @@ if (isWeChat() && isHttps()) {
 // watch(locale, (newVal) => {
 //   localStorage.setItem(`${(localName || 'test')}-local`, newVal)
 // })
-
-const themeVars = {
-  black: '#1d1d1f',
-  primaryColor: '#344bb6',
-  floatingBubbleBackground: 'transparent',
-
-  toastPositionBottomDistance: '9%',
-  toastLoadingIconColor: '#111',
-} satisfies ConfigProviderThemeVars
 </script>
 
 <template>
   <teleport to="body">
-    <toaster :rich-colors="true" :expand="false" position="top-center" :visible-toasts="1" :duration="2000" />
+    <toaster :rich-colors="false" :expand="false" position="top-center" :visible-toasts="2" :duration="2000" />
   </teleport>
 
   <van-config-provider :theme-vars="themeVars" theme-vars-scope="global">
