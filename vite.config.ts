@@ -7,7 +7,6 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import { visualizer } from 'rollup-plugin-visualizer'
 import vitePluginDeployFtp from 'vite-plugin-deploy-ftp'
 import vitePluginDeployOss from 'vite-plugin-deploy-oss'
-import { createHtmlPlugin } from 'vite-plugin-html'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import vitePluginMetaShare from 'vite-plugin-meta-share'
 import vitePluginOrganize from 'vite-plugin-organize-resource'
@@ -130,12 +129,11 @@ export default defineConfig(({ command }) => ({
         },
       ],
     }),
-    createHtmlPlugin({
-      minify: false,
-      inject: {
-        data: {
-          baiduTongji: env?.VITE_APP_HM_BAIDU
-            ? `<script>
+    {
+      name: 'transformHtml',
+      transformIndexHtml(html) {
+        const baiduScript = `
+    <script>
       var _hmt = _hmt || [];
       (function() {
         var hm = document.createElement("script");
@@ -143,12 +141,12 @@ export default defineConfig(({ command }) => ({
         var s = document.getElementsByTagName("script")[0];
         s.parentNode.insertBefore(hm, s);
       })();
-    </script>
-`
-            : '',
-        },
+    </script>`
+
+        if (env.VITE_APP_HM_BAIDU) html = html.replace('<!-- baiduTongji -->', baiduScript)
+        return html
       },
-    }),
+    },
     visualizer(),
   ],
   resolve: {
