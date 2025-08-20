@@ -3,22 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title></title>
-    <script>
-      localStorage.clear()
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>缓存已清除</title>
     <style>
       body {
         background-image:
           linear-gradient(to right, #ddd3 1px, transparent 1px), linear-gradient(to bottom, #ddd3 1px, transparent 1px);
         background-size: 36px 36px;
         background-position: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      footer {
+        text-align: center;
+        color: #999;
+        position: fixed;
+        bottom: 26px;
+        opacity: 0.6;
+      }
+
+      img.icon {
+        width: 60%;
+        position: fixed;
+        bottom: 50%;
+        transform: translateY(50%);
+        opacity: 0.6;
       }
     </style>
   </head>
   <body>
-    <h3 style="text-align: center">缓存已清除，请使用原地址重新打开</h3>
-    <h4 style="text-align: center">此链接只清除本地缓存，不清除注册数据</h4>
+    <h3>缓存已清除，请使用原地址重新打开</h3>
+    <h4>此链接只清除本地缓存，不清除注册数据</h4>
+
+    <img class="icon" src="https://oss.eventnet.cn/H5/zz/public/staus/empty_state_money.svg" alt="" draggable="false" />
+
+    <footer></footer>
+    <script>
+      localStorage.clear()
+      document.querySelector('footer').innerText = location.host
+    </script>
   </body>
 </html>
