@@ -85,7 +85,7 @@ export default defineConfig(({ command }) => ({
       region: 'oss-cn-beijing',
       alias: process.env.zBucketAlias || '',
       uploadDir: `${env.VITE_OSS_ROOT_DIR}`,
-      skip: ['**/index.html', '**/pluginWebUpdateNotice/**'],
+      skip: ['**/*.html', '**/pluginWebUpdateNotice/**'],
       overwrite: true,
       autoDelete: true,
 
