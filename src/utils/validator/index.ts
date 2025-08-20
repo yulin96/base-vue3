@@ -1,3 +1,5 @@
+import { isMobile } from '@/utils/ua'
+
 /**
  * 检查用户名是否仅包含字母和数字
  * @param str 字符串
@@ -167,4 +169,11 @@ export function isUrl(str: string): boolean {
   } catch {
     return false
   }
+}
+
+/**
+ * 判断是否展示PC模式
+ */
+export function isPcMode() {
+  return !isMobile() && innerWidth > 500
 }
