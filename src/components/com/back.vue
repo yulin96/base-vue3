@@ -13,7 +13,7 @@ if (user.backXY.x == 0) user.backXY = { x: innerWidth - size - 12, y: innerHeigh
 
 const pcMode = ref(isPcMode())
 
-const { width } = useWindowSize()
+const { width, height } = useWindowSize()
 watch(width, () => (pcMode.value = isPcMode()))
 
 const clickBack = async () => {
@@ -39,7 +39,7 @@ const clickBack = async () => {
   <div
     v-else
     class="center fixed right-20 bottom-300"
-    :style="{ width: `${size * (width / 720)}px`, height: `${size * (width / 720)}px` }"
+    :style="{ width: `${size * (height / 720)}px`, height: `${size * (height / 720)}px` }"
     @click="clickBack"
   >
     <img btn class="size-full" src="../../assets/imgs/back.svg" alt="" draggable="false" />
