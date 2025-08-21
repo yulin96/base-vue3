@@ -145,7 +145,7 @@ let openLocationLock = false
 export function wechatOpenLocation(data: IWxOpenLocation): void {
   if (openLocationLock) return
   openLocationLock = true
-  const { latitude, longitude, name, address, scale = 10, infoUrl = '' } = data
+  const { latitude, longitude, name, address, scale = 20, infoUrl = '' } = data
   getWechatConfig()
     .then(() => {
       wx.openLocation({
