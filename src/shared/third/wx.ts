@@ -77,7 +77,7 @@ export function wechatShare(data: IWxShare) {
         wx.updateAppMessageShareData({
           title,
           desc,
-          link: url.toString(),
+          link: url.toString().split('#')[0] ?? import.meta.env.VITE_APP_SHARE_LINK,
           imgUrl,
           success() {
             resolve(true)
@@ -88,7 +88,7 @@ export function wechatShare(data: IWxShare) {
         })
         wx.updateTimelineShareData({
           title,
-          link: url.toString(),
+          link: url.toString().split('#')[0] ?? import.meta.env.VITE_APP_SHARE_LINK,
           imgUrl,
           success() {
             resolve(true)
