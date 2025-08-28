@@ -175,5 +175,5 @@ export function isUrl(str: string): boolean {
  * 判断是否展示PC模式
  */
 export function isPcMode() {
-  return !isMobile() && innerWidth > 500
+  return !isMobile() || innerWidth > 700
 }
