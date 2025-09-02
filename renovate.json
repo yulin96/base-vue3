@@ -12,6 +12,7 @@
   "automergeType": "pr",
   "semanticCommits": "enabled",
   "semanticCommitType": "chore",
+  "commitMessagePrefix": "chore: ",
   "commitMessageAction": "更新依赖项",
   "commitMessageExtra": "至 {{newValue}}"
 }
