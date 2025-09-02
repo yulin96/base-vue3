@@ -1,19 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base",
-    ":automergeMinor",
-    ":automergePatch",
-    "group:monorepos",
-    "group:allNonMajor",
-    "group:recommended"
-  ],
-  "packageRules": [
-    {
-      "matchManagers": ["npm"],
-      "matchUpdateTypes": ["minor", "patch"]
-    }
-  ],
+  "extends": ["config:base", ":automergeMinor", ":automergePatch", "group:monorepos", "group:allNonMajor"],
   "lockFileMaintenance": {
     "enabled": true,
     "commitMessage": "chore: 更新锁文件"
@@ -22,12 +9,9 @@
   "dependencyDashboard": false,
   "prHourlyLimit": 2,
   "prConcurrentLimit": 5,
-  "automerge": true,
   "automergeType": "pr",
   "semanticCommits": "enabled",
-  "commitMessagePrefix": "chore: ",
+  "semanticCommitType": "chore",
   "commitMessageAction": "更新依赖项",
-  "commitMessageTopic": "{{depName}}",
-  "commitMessageExtra": "至 {{newValue}}",
-  "semanticCommitType": "chore"
+  "commitMessageExtra": "至 {{newValue}}"
 }
