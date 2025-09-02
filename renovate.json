@@ -3,7 +3,7 @@
   "extends": ["config:recommended", "group:monorepos", "group:allNonMajor", ":semanticCommits"],
   "lockFileMaintenance": {
     "enabled": true,
-    "commitMessage": "chore: 更新锁文件"
+    "commitMessageAction": "更新锁文件"
   },
   "rangeStrategy": "bump",
   "dependencyDashboard": false,
