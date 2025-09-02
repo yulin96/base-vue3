@@ -212,7 +212,7 @@ export default defineConfig(({ command }) => ({
         //   viewportUnit: 'vw',
         //   fontViewportUnit: 'vw',
         //   selectorBlackList: ['ignore-'],
-        //   minPixelValue: 1,
+        //   minPixelValue: 0,
         //   mediaQuery: true,
         //   replace: true,
         //   exclude: [],
