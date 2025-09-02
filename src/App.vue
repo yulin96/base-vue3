@@ -35,11 +35,11 @@ if (isWeChat() && isHttps()) {
     <router-view v-slot="{ Component, route }">
       <template v-if="Component">
         <transition :name>
-          <keep-alive :exclude="[]">
-            <div :key="route.name" class="scroll-box">
+          <div :key="route.name" class="scroll-box">
+            <keep-alive :exclude="[]">
               <component :is="Component"></component>
-            </div>
-          </keep-alive>
+            </keep-alive>
+          </div>
         </transition>
       </template>
     </router-view>
