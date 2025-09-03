@@ -10,6 +10,7 @@
   "prHourlyLimit": 2,
   "prConcurrentLimit": 5,
   "automergeType": "pr",
+  "automerge": true,
   "commitMessagePrefix": "chore: ",
   "commitMessageAction": "更新依赖项",
   "commitMessageExtra": "至 {{newValue}}"
