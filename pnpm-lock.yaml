@@ -117,8 +117,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
+        specifier: ^12.0.0
+        version: 12.0.0
       vant:
         specifier: ^4.9.21
         version: 4.9.21(vue@3.5.21(typescript@5.9.2))
@@ -6112,6 +6112,10 @@ packages:
 
   uuid@11.1.0:
     resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
+
+  uuid@12.0.0:
+    resolution: {integrity: sha512-USe1zesMYh4fjCA8ZH5+X5WIVD0J4V1Jksm1bFTVBX2F/cwSXt0RO5w/3UXbdLKmZX65MiWV+hwhSS8p6oBTGA==}
     hasBin: true
 
   validate-npm-package-license@3.0.4:
@@ -12596,6 +12600,8 @@ snapshots:
       base64-arraybuffer: 1.0.2
 
   uuid@11.1.0: {}
+
+  uuid@12.0.0: {}
 
   validate-npm-package-license@3.0.4:
     dependencies:
