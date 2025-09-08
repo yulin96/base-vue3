@@ -6,6 +6,7 @@ import { registerButtonEffect } from '@/shared/user/registerButtonEffect'
 import { registerWechatShare } from '@/shared/user/share'
 import { isWeChat } from '@/utils/ua'
 import { isHttps } from '@/utils/validator'
+import { onMounted } from 'vue'
 import { Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
 
@@ -24,6 +25,11 @@ if (isWeChat() && isHttps()) {
 // watch(locale, (newVal) => {
 //   localStorage.setItem(`${(localName || 'test')}-local`, newVal)
 // })
+
+onMounted(async () => {
+  const title = import.meta.env.VITE_APP_TITLE
+  while (!document.title) document.title = title
+})
 </script>
 
 <template>
