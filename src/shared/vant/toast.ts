@@ -15,6 +15,7 @@ setToastDefaultOptions({
   position: 'middle',
   className: 'center_toast',
   teleport: '#app',
+  closeOnClickOverlay: true,
 })
 setToastDefaultOptions('loading', { duration: 0, loadingType: 'spinner' })
 
