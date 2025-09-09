@@ -28,7 +28,7 @@ if (isWeChat() && isHttps()) {
 
 onMounted(async () => {
   const title = import.meta.env.VITE_APP_TITLE
-  while (!document.title) document.title = title
+  if (title) while (!document.title) document.title = title
 })
 </script>
 
