@@ -38,14 +38,12 @@ onMounted(async () => {
   </teleport>
 
   <van-config-provider :theme-vars="themeVars" theme-vars-scope="global">
-    <router-view v-slot="{ Component, route }">
+    <router-view v-slot="{ Component }">
       <template v-if="Component">
         <transition :name>
-          <div :key="route.name" class="scroll-box">
-            <keep-alive :exclude="[]">
-              <component :is="Component"></component>
-            </keep-alive>
-          </div>
+          <keep-alive :exclude="[]">
+            <component :is="Component"></component>
+          </keep-alive>
         </transition>
       </template>
     </router-view>

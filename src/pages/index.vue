@@ -18,9 +18,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="scroll-box index">
-    <main class="content"></main>
-  </section>
+  <com-main>
+    <section class="scroll-box index">
+      <main class="content"></main>
+    </section>
+  </com-main>
 </template>
 
 <route lang="json">
