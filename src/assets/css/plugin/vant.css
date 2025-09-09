@@ -39,7 +39,6 @@ body .van-toast--html .van-toast__text img {
 
 body .center_toast_overlay {
   background: #0000;
-  pointer-events: auto !important;
 }
 
 body .center_fromTop_toast-enter-active,
