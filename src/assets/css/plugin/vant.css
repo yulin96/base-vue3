@@ -9,23 +9,23 @@ body .van-config-provider {
 }
 
 body .van-swipe__indicators .van-swipe__indicator {
-  border-radius: 12px;
+  border-radius: 1.2rem;
   transition: all 0.5s ease;
 }
 
 body .van-swipe__indicators .van-swipe__indicator--active {
-  width: 40px;
+  width: 4rem;
 }
 
 body .van-toast.center_toast {
-  padding: 16px 30px;
+  padding: 1.6rem 3rem;
   color: #fff;
   letter-spacing: 0.2px;
   background: #000a;
   backdrop-filter: saturate(180%) blur(12px);
   border: none;
-  border-radius: 20px;
-  box-shadow: #0000001f 0 3px 8px;
+  border-radius: 2rem;
+  box-shadow: #0000001f 0 3px 0.8rem;
 }
 
 body .van-toast--html .van-toast__text {
@@ -69,7 +69,7 @@ body .van-popup--center {
 }
 
 body .van-popup--center .van-loading__line:before {
-  border-radius: 12px;
+  border-radius: 1.2rem;
 }
 
 body .van-popup__close-icon::after {
@@ -94,7 +94,7 @@ body .van-dialog__message--has-title {
 }
 
 body .van-dialog--round-button .van-dialog__footer {
-  padding: 20px 60px 60px;
+  padding: 2rem 6rem 6rem;
   background: transparent;
 }
 
@@ -114,7 +114,7 @@ body .van-dialog--round-button .van-dialog__footer .van-dialog__confirm {
 body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel {
   border-radius: 9999px;
   background: transparent;
-  margin-right: 50px;
+  margin-right: 5rem;
   flex: 1;
 }
 
