@@ -1,4 +1,4 @@
-import { setDialogDefaultOptions, showDialog } from 'vant'
+import { setDialogDefaultOptions, showDialog as vantShowDialog } from 'vant'
 import 'vant/es/dialog/style'
 
 setDialogDefaultOptions({
@@ -8,4 +8,4 @@ setDialogDefaultOptions({
   teleport: '#app',
 })
 
-export const showMyDialog = showDialog
+export const showMyDialog = vantShowDialog

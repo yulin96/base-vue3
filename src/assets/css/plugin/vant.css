@@ -51,7 +51,7 @@ body .center_fromTop_toast-leave-active {
 body .center_fromTop_toast-enter-from,
 body .center_fromTop_toast-leave-to {
   opacity: 0;
-  transform: translateY(calc(-50% + 120px)) scale(0.8);
+  transform: translateY(calc(-50% - 120px)) scale(0.6);
 }
 
 body .van-overlay,
@@ -124,7 +124,6 @@ body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel .van-butt
   color: #555;
   font-weight: normal;
 }
-
 
 body .van-button:active:before {
   opacity: 0;
