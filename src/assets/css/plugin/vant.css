@@ -1,5 +1,5 @@
 :root:root {
-  --van-action-bar-button-danger-color: linear-gradient(to right, #607ffa, #3051db, #607ffa);
+  --van-action-bar-button-danger-color: #344bb6;
   --z-toast-background: #f5f5f7c2;
   --z-toast-color: #1d1d1f;
 }
@@ -65,7 +65,7 @@ body .van-popup {
 body .van-popup--center {
   max-width: 100%;
   background: unset;
-  margin-top: -6vh;
+  margin-top: -2vh;
 }
 
 body .van-popup--center .van-loading__line:before {
@@ -89,38 +89,12 @@ body .van-dialog {
   background: white;
 }
 
-body .van-dialog--round-button::after {
-  content: '';
-  position: absolute;
-  background-color: #84b0f9aa;
-  width: 300px;
-  height: 300px;
-  right: -90px;
-  top: -100px;
-  border-radius: 50%;
-  filter: blur(100px);
-  z-index: -1;
-}
-
-body .van-dialog--round-button::before {
-  content: '';
-  position: absolute;
-  background-color: #edf9bfaa;
-  width: 200px;
-  height: 200px;
-  left: -30px;
-  bottom: -60px;
-  border-radius: 50%;
-  filter: blur(100px);
-  z-index: -1;
-}
-
 body .van-dialog__message--has-title {
   padding: 36px 20px 60px !important;
 }
 
 body .van-dialog--round-button .van-dialog__footer {
-  padding: 12px 50px 60px;
+  padding: 20px 60px 60px;
   background: transparent;
 }
 
@@ -130,9 +104,11 @@ body .van-dialog--round-button .van-dialog__footer .van-button {
 
 body .van-dialog--round-button .van-dialog__footer .van-dialog__confirm {
   border-radius: 9999px;
-  background: linear-gradient(to right, #5769b6, #344bb6, #5769b6);
-  box-shadow: #5769b666 2px 6px 12px;
-  flex: 1.6;
+  background: var(--van-action-bar-button-danger-color);
+  box-shadow:
+    #0000002a 0px 4px 6px -1px,
+    #0000000f 0px 2px 4px -1px;
+  flex: 1.5;
 }
 
 body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel {
