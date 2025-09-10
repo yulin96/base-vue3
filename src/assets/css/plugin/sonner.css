@@ -37,15 +37,15 @@
 @media screen and (max-width: 768px) {
   body [data-sonner-toaster][data-theme='light'] li {
     backdrop-filter: blur(8px);
-    font-size: 3rem;
+    font-size: calc(var(--base-scale) * 30 * 1px);
   }
 
   body [data-sonner-toast][data-styled='true'] [data-icon] {
-    width: 3.6rem;
-    height: 3.6rem;
+    width: calc(var(--base-scale) * 36 * 1px);
+    height: calc(var(--base-scale) * 36 * 1px);
   }
 
   body [data-sonner-toast][data-styled='true'] {
-    padding: 4rem 3.2rem;
+    padding: calc(var(--base-scale) * 40 * 1px) calc(var(--base-scale) * 32 * 1px);
   }
 }

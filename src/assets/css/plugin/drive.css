@@ -4,7 +4,7 @@
 }
 
 .driver-popover.driverjs-theme .driver-popover-title {
-  font-size: 3rem;
+  font-size: calc(var(--base-scale) * 30 * 1px);
 }
 
 .driver-popover.driverjs-theme .driver-popover-title,
@@ -20,9 +20,9 @@
   color: #ffffff;
   border: 2px solid #018efe;
   text-shadow: none;
-  font-size: 2.8rem;
-  padding: 1rem;
-  border-radius: 0.6rem;
+  font-size: calc(var(--base-scale) * 28 * 1px);
+  padding: calc(var(--base-scale) * 10 * 1px);
+  border-radius: calc(var(--base-scale) * 6 * 1px);
 }
 
 .driver-popover.driverjs-theme button:hover {
