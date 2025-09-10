@@ -124,3 +124,8 @@ body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel .van-butt
   color: #555;
   font-weight: normal;
 }
+
+
+body .van-button:active:before {
+  opacity: 0;
+}

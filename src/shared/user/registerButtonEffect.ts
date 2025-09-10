@@ -3,7 +3,8 @@ export function registerButtonEffect() {
     const target = e.target as HTMLDivElement
     const parent = target.parentElement as HTMLDivElement | null
 
-    const ele = target?.hasAttribute('btn') ? target : parent?.hasAttribute('btn') ? parent : null
+    let ele = target?.hasAttribute('btn') ? target : parent?.hasAttribute('btn') ? parent : null
+    if (!ele) ele = target?.getAttribute('type') === 'button' ? target : null
 
     if (ele) {
       ele.animate(
