@@ -6,6 +6,7 @@ setDialogDefaultOptions({
   theme: 'round-button',
   allowHtml: true,
   teleport: '#app',
+  transition: 'popup',
 })
 
-export const showMyDialog = vantShowDialog
+export const showDialog = vantShowDialog

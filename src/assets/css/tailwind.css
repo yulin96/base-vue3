@@ -8,6 +8,8 @@
 @import './tailwind/keyframes.css';
 
 @theme {
+  --base-scale: 1;
+
   --spacing: 1px;
 
   --radius-full: 9999px;

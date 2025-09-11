@@ -13,7 +13,6 @@
 
 html,
 body {
-  --base-scale: 1;
   /* width: 750px;
   height: 100%; */
   /* overflow-x: hidden;
@@ -23,7 +22,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
-  font-size: calc(var(--base-scale) * 28 * 1px);
 }
 
 html.cover,
