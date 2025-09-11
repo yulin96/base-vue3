@@ -26,6 +26,7 @@ body .van-toast.center_toast {
   border: none;
   border-radius: calc(var(--base-scale) * 20 * 1px);
   box-shadow: #0000001f 0 3px calc(var(--base-scale) * 8 * 1px);
+  max-width: 80%;
 }
 
 body .van-toast--html .van-toast__text {
