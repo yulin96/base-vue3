@@ -26,7 +26,7 @@ export function useLockRequest(disableLock = false, showProgress = false, delay 
       let toastId: string | number | null = null
       const requestTimer = setTimeout(() => {
         toastId = toast.loading('加载中...')
-      }, 3000)
+      }, 6000)
 
       requestFn()
         .then(resolve)
