@@ -52,7 +52,7 @@ body .center_fromTop_toast-leave-active {
 body .center_fromTop_toast-enter-from,
 body .center_fromTop_toast-leave-to {
   opacity: 0;
-  transform: translateY(calc(-50% + 120px)) scale(0.6);
+  transform: translateY(calc(-50% - 120px)) scale(0.6);
 }
 
 body .van-overlay,
