@@ -72,18 +72,6 @@ body .popup-right-leave-to {
   transform: translateX(120px) translateY(-50%) !important;
 }
 
-body .van-action-bar-button--first.van-dialog__confirm {
-  width: 400px !important;
-  flex: unset !important;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-body .van-dialog--round-button .van-dialog__confirm,
-.van-dialog--round-button .van-dialog__cancel {
-  height: 120px;
-}
-
 body .popup-top-bottom-enter-active,
 body .popup-top-bottom-leave-active {
   transition:

@@ -91,7 +91,8 @@ body .van-dialog {
 }
 
 body .van-dialog__message--has-title {
-  padding: 36px 20px 60px !important;
+  padding: calc(var(--base-scale, 1) * 36 * 1px) calc(var(--base-scale, 1) * 20 * 1px)
+    calc(var(--base-scale, 1) * 60 * 1px) !important;
 }
 
 body .van-dialog--round-button .van-dialog__footer {
@@ -125,6 +126,18 @@ body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel .van-butt
   border-radius: 9999px;
   color: #555;
   font-weight: normal;
+}
+
+body .van-action-bar-button--first.van-dialog__confirm {
+  width: 300px !important;
+  flex: unset !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body .van-dialog--round-button .van-dialog__confirm,
+.van-dialog--round-button .van-dialog__cancel {
+  height: calc(var(--base-scale, 1) * 90 * 1px);
 }
 
 body .van-button:active:before {
