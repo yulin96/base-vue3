@@ -8,10 +8,11 @@ function getClickableButton(e: TouchEvent | PointerEvent) {
 }
 
 export function registerButtonEffect() {
-  document.addEventListener('touchstart', (e) => {
+  document.addEventListener('click', (e) => {
     const ele = getClickableButton(e)
 
     if (ele) {
+      // createClickEffect(e.pageX, e.pageY)
       ele.animate(
         [
           { transform: 'scale(1)', opacity: 1 },
@@ -25,12 +26,4 @@ export function registerButtonEffect() {
       )
     }
   })
-
-  // document.addEventListener('click', (e) => {
-  //   const ele = getClickableButton(e)
-
-  //   if (ele) {
-  //     createClickEffect(e.pageX, e.pageY)
-  //   }
-  // })
 }
