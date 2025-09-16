@@ -25,8 +25,8 @@
     #0000003d 0px 0.02vw 0.3vw;
   border-radius: 0.6vw;
   padding: max(0.8vw, 12px);
-  width: 16vw;
-  width: max(16vw, 160px);
+  width: 12vw;
+  width: max(12vw, 160px);
   background-color: #fff;
   cursor: pointer;
 }
@@ -40,6 +40,6 @@
 .pc.code-tips p {
   margin: 0.6vw 0;
   font-weight: 600;
-  font-size: 1vw;
-  font-size: max(16px, 1vw);
+  font-size: 1rem;
+  font-size: max(16px, 1rem);
 }
