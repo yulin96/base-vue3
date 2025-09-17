@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { showInfoToast } from '@/shared/vant/toast'
 import { ref } from 'vue'
-import { toast } from 'vue-sonner'
 
 const { maxLength = 4 } = defineProps<{ maxLength?: number }>()
 const emits = defineEmits<{
@@ -14,8 +14,8 @@ const passwordKeyboardIns = ref({
     this.show = true
   },
   next() {
-    if (!this.password) return toast.warning('请输入密码')
-    if (this.password.length < maxLength) return toast.warning('请输入完整的密码')
+    if (!this.password) return showInfoToast('请输入密码')
+    if (this.password.length < maxLength) return showInfoToast('请输入完整的密码')
     emits('next', 'password', this.password)
     this.show = false
   },

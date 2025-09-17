@@ -1,5 +1,6 @@
 import { useLock } from '@/hooks/useLock'
 import { type IFormDataOrJSON, axiosGet, axiosPost } from '@/shared/request'
+import { showFailToast } from '@/shared/vant/toast'
 import type { AxiosRequestConfig } from 'axios'
 import nprogress from 'nprogress'
 import { readonly } from 'vue'
@@ -26,14 +27,14 @@ export function useLockRequest(disableLock = false, showProgress = false, delay 
       let toastId: string | number | null = null
       const requestTimer = setTimeout(() => {
         toastId = toast.loading('加载中...')
-      }, 6000)
+      }, 12000)
 
       requestFn()
         .then(resolve)
         .catch((err) => {
           reject(err)
           if (err.name !== 'CanceledError' || err.message === 'Request aborted') {
-            toast.error('正在加载中...', { duration: 3000 })
+            showFailToast('正在加载中...')
           }
         })
         .finally(() => {
