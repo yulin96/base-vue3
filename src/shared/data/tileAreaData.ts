@@ -15,10 +15,11 @@ export const tileAreaData = Array.from(useCascaderAreaData(), (area) => {
   }
 
   area.value = area.text
-  area.children = area.children?.map((item) => {
-    const { children, ...itemWithoutChildren } = item
-    return { ...itemWithoutChildren, value: item.text }
-  }) || []
+  area.children =
+    area.children?.map((item) => {
+      const { children, ...itemWithoutChildren } = item
+      return { ...itemWithoutChildren, value: item.text }
+    }) || []
 
   return area
 }) as Array<IAreaData & { children: Array<IAreaData> }>

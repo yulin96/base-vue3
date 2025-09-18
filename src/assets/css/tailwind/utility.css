@@ -56,7 +56,7 @@
 
 @utility shark-text-* {
   color: transparent;
-  background: linear-gradient(45deg, #ffffff00 30%, #ffffffe6, #ffffff00 70%) -100% / 50% no-repeat --value([ *]);
+  background: linear-gradient(45deg, #ffffff00 30%, #ffffffe6, #ffffff00 70%) -100% / 50% no-repeat --value([*]);
   background-clip: text;
   animation: shark-text var(--time, 2s) infinite paused;
 }
@@ -70,7 +70,7 @@
 }
 
 @utility time-* {
-  --time: --value([ *]);
+  --time: --value([*]);
 }
 
 @utility time {
@@ -78,8 +78,8 @@
 }
 
 @utility mask-* {
-  -webkit-mask: --value([ *]) 0 0/100%;
-  mask: --value([ *]) 0 0/100%;
+  -webkit-mask: --value([*]) 0 0/100%;
+  mask: --value([*]) 0 0/100%;
 }
 
 @utility mask {
@@ -105,7 +105,7 @@
 }
 
 @utility border-image-* {
-  border-image: --value([ *]);
+  border-image: --value([*]);
 }
 
 @utility border-image {
