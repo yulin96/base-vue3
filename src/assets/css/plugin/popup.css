@@ -1,7 +1,7 @@
 body .popup-enter-active {
-  transition-property: opacity, transform;
-  transition-duration: 0.3s;
-  transition-timing-function: cubic-bezier(0.18, 0.9, 0.3, 1.2);
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.18, 0.9, 0.3, 1.2) !important;
 }
 
 body .popup-leave-active {
@@ -12,12 +12,12 @@ body .popup-leave-active {
 
 body .popup-enter-from {
   opacity: 0 !important;
-  transform: translateY(-50%) scale(0.3) !important;
+  transform: translateY(-50%) scale(0.5) !important;
 }
 
 body .popup-leave-to {
   opacity: 0 !important;
-  transform: translateY(-50%) scale(0.6) !important;
+  transform: translateY(-50%) scale(0.5) !important;
 }
 
 body .popup-bottom-enter-active,
