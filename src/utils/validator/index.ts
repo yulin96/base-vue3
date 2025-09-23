@@ -177,3 +177,12 @@ export function isUrl(str: string): boolean {
 export function isPcMode() {
   return !isMobile() || innerWidth > 700
 }
+
+/**
+ * 判断文本是否包含中文字符
+ * @param str 输入字符串
+ * @returns {boolean} - 如果包含中文则返回 true，否则返回 false
+ */
+export function hasChinese(str: string): boolean {
+  return /[\u4e00-\u9fa5]/.test(str)
+}
