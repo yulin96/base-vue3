@@ -145,3 +145,16 @@ export function observeElementVisibility(
 export function getComputedStyle(element: Element, property: string): string {
   return window.getComputedStyle(element).getPropertyValue(property)
 }
+
+/**
+ * 判断两个元素是否重叠，可设置间距
+ * @param el1 - 第一个元素
+ * @param el2 - 第二个元素
+ * @param gap - 允许的间距（像素），默认为 0，gap > 0 时即使间隔 gap 以内也算重叠
+ * @returns 如果重叠或间距小于等于 gap 返回 true，否则返回 false
+ */
+export function isElementsOverlap(el1: Element, el2: Element, gap = 0): boolean {
+  const r1 = el1.getBoundingClientRect()
+  const r2 = el2.getBoundingClientRect()
+  return !(r1.right + gap < r2.left || r1.left - gap > r2.right || r1.bottom + gap < r2.top || r1.top - gap > r2.bottom)
+}
