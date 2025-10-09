@@ -137,7 +137,7 @@ body .van-action-bar-button--first.van-dialog__confirm {
 
 body .van-dialog--round-button .van-dialog__confirm,
 body .van-dialog--round-button .van-dialog__cancel {
-  height: calc(var(--base-scale, 1) * 90 * 1px);
+  height: calc(var(--base-scale, 1) * 80 * 1px);
 }
 
 body .van-button:active:before {
