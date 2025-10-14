@@ -38,7 +38,14 @@ const test = (type: 'password' | 'stamp', content: string) => {
       <main class="content relative flex flex-col items-center bg-[#fafafa] p-20">
         <div class="text-36 pointer-events-none font-semibold">盖章测试</div>
         <div class="pointer-events-none h-1200 w-full overflow-scroll outline">
-          <div v-for="item in list" :key="item" class="border-b py-12">{{ item }}</div>
+          <div
+            v-for="item in list"
+            :key="item"
+            class="border-b py-12"
+            :style="{ color: item.split('{').length - 1 === 5 ? 'green' : 'black' }"
+          >
+            {{ item }}
+          </div>
         </div>
 
         <com-seal-touch v-model:list="list" @next="test"></com-seal-touch>
