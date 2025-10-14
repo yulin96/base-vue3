@@ -40,7 +40,7 @@ const test = (type: 'password' | 'stamp', content: string) => {
         <div class="pointer-events-none h-1200 w-full overflow-scroll outline">
           <div v-for="item in list" :key="item" class="border-b py-12">{{ item }}</div>
         </div>
-        <div @click="list = []">清空</div>
+
         <com-seal-touch v-model:list="list" @next="test"></com-seal-touch>
       </main>
     </section>
