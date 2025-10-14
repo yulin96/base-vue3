@@ -7,6 +7,8 @@ const emits = defineEmits<{
   next: [type: 'password' | 'stamp', content: string]
 }>()
 
+const list = defineModel<string[]>('list')
+
 const passwordKeyboardIns = ref({
   show: false,
   password: '',
@@ -28,6 +30,7 @@ const touchstart = (e: TouchEvent) => {
     sealTouches.add({ x: touch.clientX, y: touch.clientY })
   }
 
+  list.value?.unshift(JSON.stringify([...sealTouches]))
   if (sealTouches.size >= 5) {
     emits('next', 'stamp', JSON.stringify([...sealTouches].slice(0, 5)))
     sealTouches.clear()

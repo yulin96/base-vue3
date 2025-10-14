@@ -2,7 +2,7 @@
 import { useLoading } from '@/hooks/useLoading'
 import { showInfoToast, showSuccessToast } from '@/shared/vant/toast'
 import axios, { toFormData } from 'axios'
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 const { start, cleanup } = useLoading(window.IMG_RESOURCES ?? [])
 
@@ -13,6 +13,8 @@ onMounted(() => {
     })
   }, '.index')
 })
+
+const list = ref<string[]>([])
 
 onUnmounted(() => {
   cleanup()
@@ -33,8 +35,13 @@ const test = (type: 'password' | 'stamp', content: string) => {
 <template>
   <com-main>
     <section class="scroll-box index">
-      <main class="content relative p-20">
-        <com-seal-touch @next="test"></com-seal-touch>
+      <main class="content relative flex flex-col items-center bg-[#fafafa] p-20">
+        <div class="text-36 pointer-events-none font-semibold">盖章测试</div>
+        <div class="pointer-events-none h-1200 w-full overflow-scroll outline">
+          <div v-for="item in list" :key="item" class="border-b py-12">{{ item }}</div>
+        </div>
+        <div @click="list = []">清空</div>
+        <com-seal-touch v-model:list="list" @next="test"></com-seal-touch>
       </main>
     </section>
   </com-main>
