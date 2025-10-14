@@ -14,7 +14,7 @@
   right: 0;
   bottom: 0;
   overflow: hidden;
-  background-color: #f4f4f4;
+  /* background-color: #f4f4f4; */
 }
 .zoomist-image {
   position: absolute;
