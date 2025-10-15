@@ -1,4 +1,5 @@
-type RouteTransitionName =
+type RouteTransitionNames =
+  | 'none'
   | 'fade'
   | 'blur'
   | 'zoom'

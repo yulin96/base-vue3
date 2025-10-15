@@ -1,10 +1,8 @@
 @import './tailwind.css';
 @import './base.css';
-@import './plugin/progress.css';
-@import './plugin/piece.css';
-@import './plugin/vant.css';
-@import './plugin/sonner.css';
-@import './plugin/popup.css';
+@import './plugins/vant.css';
+@import './plugins/sonner.css';
+@import './plugins/popup.css';
 @import './transition.css';
 
 #app {

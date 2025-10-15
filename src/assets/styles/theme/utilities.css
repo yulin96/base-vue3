@@ -4,14 +4,6 @@
   align-items: center;
 }
 
-@utility state-paused {
-  animation-play-state: paused;
-}
-
-@utility state-running {
-  animation-play-state: running;
-}
-
 @utility text-last-center {
   text-align-last: center;
 }
@@ -48,12 +40,6 @@
   }
 }
 
-@utility occlusion {
-  mask-image: linear-gradient(to right, black 0% 40%, transparent 50% 100%);
-  mask-size: 250% 100%;
-  mask-position: 90%;
-}
-
 @utility shark-text-* {
   color: transparent;
   background: linear-gradient(45deg, #ffffff00 30%, #ffffffe6, #ffffff00 70%) -100% / 50% no-repeat --value([*]);
@@ -77,15 +63,6 @@
   --time: 2s;
 }
 
-@utility mask-* {
-  -webkit-mask: --value([*]) 0 0/100%;
-  mask: --value([*]) 0 0/100%;
-}
-
-@utility mask {
-  mask: unset;
-}
-
 @utility back-top {
   background-size: 100% auto;
   background-repeat: no-repeat;
@@ -102,14 +79,6 @@
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: bottom;
-}
-
-@utility border-image-* {
-  border-image: --value([*]);
-}
-
-@utility border-image {
-  border-image: unset;
 }
 
 @utility loquat {

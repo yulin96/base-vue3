@@ -1,0 +1,9 @@
+.none-enter-active,
+.none-leave-active {
+  transition: opacity 0s ease;
+}
+
+.none-enter-from,
+.none-leave-to {
+  opacity: 0;
+}

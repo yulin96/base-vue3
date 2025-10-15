@@ -3,9 +3,9 @@
 @import 'tailwindcss/utilities.css';
 @import 'tw-animate-css';
 
-@import './tailwind/size.css';
-@import './tailwind/utility.css';
-@import './tailwind/keyframes.css';
+@import './theme/size.css';
+@import './theme/utilities.css';
+@import './theme/keyframes.css';
 
 @theme {
   --base-scale: 1;
@@ -15,7 +15,7 @@
   --radius-full: 9999px;
 
   --animate-spin-slow: spin 4s linear infinite;
-  --animate-heart-beat: heartBeat_k 1.5s 0.3s ease-in-out infinite;
+  --animate-heart-beat: heart-beat 1.5s 0.3s ease-in-out infinite;
   --animate-handle: handle 1s ease infinite;
   --animate-next-page: next-page 0.9s ease infinite alternate;
   --animate-rotate-cube: rotate-cube 5s infinite linear;

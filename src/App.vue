@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRouteTransition } from '@/hooks/useRouterTransition'
-import { themeVars } from '@/shared/config/vant'
 import { getWechatConfig } from '@/shared/third/wx'
 import { registerButtonEffect } from '@/shared/user/registerButtonEffect'
 import { registerWechatShare } from '@/shared/user/share'
@@ -37,17 +36,15 @@ onMounted(async () => {
     <toaster :rich-colors="false" :expand="false" position="top-center" :visible-toasts="2" :duration="2000" />
   </teleport>
 
-  <van-config-provider :theme-vars="themeVars" theme-vars-scope="global">
-    <router-view v-slot="{ Component }">
-      <template v-if="Component">
-        <transition :name="name">
-          <keep-alive :exclude="[]">
-            <component :is="Component"></component>
-          </keep-alive>
-        </transition>
-      </template>
-    </router-view>
-  </van-config-provider>
+  <router-view v-slot="{ Component }">
+    <template v-if="Component">
+      <transition :name="name">
+        <keep-alive :exclude="[]">
+          <component :is="Component"></component>
+        </keep-alive>
+      </transition>
+    </template>
+  </router-view>
 </template>
 
 <style>

@@ -1,6 +1,5 @@
-import { useLoading } from '@/hooks/useLoading'
 import type { ToastOptions } from 'vant'
-import { setToastDefaultOptions, showToast as toast } from 'vant'
+import { showLoadingToast as loadingToast, setToastDefaultOptions, showToast as toast } from 'vant'
 import 'vant/es/toast/style'
 import fail from './icon/op_close.svg'
 import success from './icon/op_success.svg'
@@ -11,16 +10,13 @@ setToastDefaultOptions({
   overlay: true,
   duration: 1200,
   overlayClass: 'center_toast_overlay',
-  transition: 'center_fromTop_toast',
+  transition: 'center-toast',
   position: 'middle',
   className: 'center_toast',
   teleport: '#app',
   closeOnClickOverlay: true,
 })
 setToastDefaultOptions('loading', { duration: 0, loadingType: 'spinner' })
-
-const { start } = useLoading([success, info, fail])
-start()
 
 const statusMap = { success, info, fail }
 
@@ -47,3 +43,5 @@ export function showInfoToast(option: string | ToastOptions) {
 export function showFailToast(option: string | ToastOptions) {
   return showToast(typeof option === 'string' ? { message: option, status: 'fail' } : { ...option, status: 'fail' })
 }
+
+export const showLoadingToast = loadingToast
