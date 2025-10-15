@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useLoading } from '@/hooks/useLoading'
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted } from 'vue'
 
 definePage({
   meta: { index: 10 },
 })
 
-const { start, cleanup } = useLoading(window.IMG_RESOURCES ?? [])
+const { start } = useLoading(window.IMG_RESOURCES ?? [])
 
 onMounted(() => {
   gsap.context(() => {
@@ -14,10 +14,6 @@ onMounted(() => {
       start()
     })
   }, '.index')
-})
-
-onUnmounted(() => {
-  cleanup()
 })
 </script>
 

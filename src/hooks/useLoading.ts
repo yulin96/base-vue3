@@ -1,4 +1,4 @@
-import { computed, onDeactivated, onUnmounted, readonly, shallowRef } from 'vue'
+import { computed, onBeforeUnmount, onDeactivated, onUnmounted, readonly, shallowRef } from 'vue'
 
 export function useLoading(imgList: string[], next?: () => void, delay: number = 300) {
   let timer: number | undefined
@@ -58,6 +58,10 @@ export function useLoading(imgList: string[], next?: () => void, delay: number =
       image.src = imgSrc
     }
   }
+
+  onBeforeUnmount(() => {
+    cleanup()
+  })
 
   return { count, start, cleanup }
 }
