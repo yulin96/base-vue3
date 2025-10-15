@@ -2,6 +2,10 @@
 import { useLoading } from '@/hooks/useLoading'
 import { onMounted, onUnmounted } from 'vue'
 
+definePage({
+  meta: { index: 10 },
+})
+
 const { start, cleanup } = useLoading(window.IMG_RESOURCES ?? [])
 
 onMounted(() => {
@@ -18,13 +22,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <com-main>
+  <div class="size-full">
     <section class="scroll-box index">
       <main class="content"></main>
     </section>
-  </com-main>
+  </div>
 </template>
-
-<route lang="json">
-{ "meta": { "index": 10 } }
-</route>
