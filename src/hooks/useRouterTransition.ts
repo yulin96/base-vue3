@@ -6,7 +6,7 @@ export function useRouteTransition(transitionName: RouteTransitionName = 'slide'
     console.error('Error loading transition CSS:', err)
   })
 
-  const name = ref('fade')
+  const name = ref('none')
   const route = useRoute()
   watch(
     () => route.meta,
@@ -17,7 +17,7 @@ export function useRouteTransition(transitionName: RouteTransitionName = 'slide'
       const fromMetaIndex = from.index || 0
 
       if (!toMetaIndex || !fromMetaIndex || toMetaIndex === fromMetaIndex) {
-        name.value = 'fade'
+        name.value = 'none'
       } else {
         name.value = transitionName + (toMetaIndex > fromMetaIndex ? '-right' : '-left')
       }

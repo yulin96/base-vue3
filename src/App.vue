@@ -40,7 +40,7 @@ onMounted(async () => {
   <van-config-provider :theme-vars="themeVars" theme-vars-scope="global">
     <router-view v-slot="{ Component }">
       <template v-if="Component">
-        <transition :name>
+        <transition :name="name">
           <keep-alive :exclude="[]">
             <component :is="Component"></component>
           </keep-alive>
