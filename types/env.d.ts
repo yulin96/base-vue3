@@ -2,12 +2,6 @@
 /// <reference types="@plugin-web-update-notification/vite" />
 /// <reference types="unplugin-vue-router/client" />
 
-declare const WeixinJSBridge: any
-
-declare module 'https://oss.eventnet.cn/H5/zz/public/js/sentry-ignore.js' {
-  export default [] as string[]
-}
-
 interface ImportMetaEnv {
   readonly VITE_APP_API_URL: string
   readonly VITE_APP_LOCALSTORAGE_NAME: string
@@ -25,6 +19,8 @@ interface ImportMetaEnv {
   readonly VITE_APP_COMPANY: string
   readonly VITE_APP_COMPANY_LINK: string
 }
+
+declare const WeixinJSBridge: any
 
 interface Window {
   IMG_RESOURCES?: string[]
