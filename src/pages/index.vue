@@ -40,6 +40,8 @@ const data = ref([
   { id: 10, content: '这是第十条弹幕' },
 ])
 const currentId = ref(0)
+
+const list = ref([])
 </script>
 
 <template>
@@ -48,11 +50,11 @@ const currentId = ref(0)
       <main class="content center flex-col">
         <div class="p-60 outline" @click="test">测试</div>
         <div class="h-500 w-700">
-          <base-barrage v-model="currentId" class="mt-100" :barrage-list="data">
-            <div class="flex h-100 w-full items-center"></div>
+          <base-barrage v-model:list="list" :row="3">
+            <!-- <div class="flex h-100 w-full items-center"></div>
             <div class="mt-60 flex h-100 w-full items-center"></div>
             <div class="mt-60 flex h-100 w-full items-center"></div>
-            <div class="mt-60 flex h-100 w-full items-center"></div>
+            <div class="mt-60 flex h-100 w-full items-center"></div> -->
           </base-barrage>
         </div>
       </main>
