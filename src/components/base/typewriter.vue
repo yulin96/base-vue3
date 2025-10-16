@@ -19,6 +19,20 @@ const lineWidth: number[] = []
 const lines = ref<string[]>([])
 const currentIndex = ref(0)
 
+// 使用 canvas measureText 优化文本宽度计算
+const measureTextWidth = (text: string): number => {
+  if (!lineRef.value) return 0
+
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return 0
+
+  const computedStyle = getComputedStyle(lineRef.value)
+  ctx.font = computedStyle.font || '16px sans-serif'
+
+  return ctx.measureText(text).width
+}
+
 const writeText = async () => {
   const idx = currentIndex.value
   if (idx >= props.texts.length) return
@@ -43,16 +57,11 @@ const writeText = async () => {
 }
 
 onMounted(async () => {
-  props.texts.forEach((item) => {
-    const div = document.createElement('div')
-    div.innerHTML = item
-    div.style.position = 'absolute'
-    div.style.whiteSpace = 'nowrap'
-    div.style.visibility = 'hidden'
-    lineRef.value!.appendChild(div)
-    lineWidth.push(div.clientWidth)
-    lineRef.value!.removeChild(div)
+  // 使用 canvas 测量文本宽度,避免创建临时 DOM 元素
+  props.texts.forEach((text) => {
+    lineWidth.push(measureTextWidth(text))
   })
+
   await nextTick()
   writeText()
 })

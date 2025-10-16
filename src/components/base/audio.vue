@@ -70,10 +70,24 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  // 清理微信 JSBridge 事件监听器
   if (weixinJSBridgeListener) {
     document.removeEventListener('WeixinJSBridgeReady', weixinJSBridgeListener)
+    weixinJSBridgeListener = null
   }
+
+  // 确保清理 click 和 touchend 事件监听器
+  cleanupClick()
+  cleanupTouchend()
+
+  // 清理 MediaSession
   unregisterMediaSession()
+
+  // 停止音频播放
+  if (audioRef.value) {
+    audioRef.value.pause()
+    audioRef.value.src = ''
+  }
 })
 
 function registerMediaSession(dom: HTMLAudioElement) {

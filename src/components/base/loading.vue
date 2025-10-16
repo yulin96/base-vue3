@@ -1,18 +1,7 @@
 <template>
   <div v-bind="$attrs" class="center fixed top-0 left-0 z-[20] h-[100vh] w-[100vw] text-[#999]">
     <div class="lds-spinner open">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
+      <div v-for="i in 12" :key="i"></div>
     </div>
   </div>
 </template>

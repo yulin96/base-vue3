@@ -93,9 +93,15 @@ function checkScratchCompletion(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
   return scratchPercent > percentage
 }
 
+const reset = () => {
+  initLottery()
+}
+
 onMounted(() => {
   initLottery()
 })
+
+defineExpose({ reset })
 </script>
 
 <template>

@@ -2,16 +2,55 @@
 import pinSvg from '@/assets/imgs/pin.svg'
 import { randomString } from '@/utils/random'
 import { random, sample } from 'es-toolkit'
-import { onMounted, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 
 const uuid = randomString()
 const uuid2 = randomString()
 
-const { gap = 20, speed = 90, barrageList } = defineProps<{ barrageList: Array<any>; gap?: number; speed?: number }>()
+interface BarrageColor {
+  background: string
+  foreground: string
+}
+
+const defaultColors: BarrageColor[] = [
+  { background: '#FC6760', foreground: '#fff' },
+  { background: '#5DEC6D', foreground: '#fff' },
+  { background: '#57A8EA', foreground: '#fff' },
+  { background: '#4C94FD', foreground: '#fff' },
+  { background: '#E88823', foreground: '#fff' },
+  { background: '#FFFF48', foreground: '#333' },
+]
+
+const {
+  gap = 20,
+  speed = 90,
+  barrageList,
+  colors = defaultColors,
+  pinColor = { background: '#493D9E', foreground: '#fff' },
+} = defineProps<{
+  barrageList: Array<any>
+  gap?: number
+  speed?: number
+  colors?: BarrageColor[]
+  pinColor?: BarrageColor
+}>()
 
 const currentId = defineModel<number>({ required: true })
 
 const barrageBox = useTemplateRef('barrageBox')
+const isPaused = ref(false)
+const animations = new Set<gsap.core.Tween>()
+let rafId: number | null = null
+let clientWidth = innerWidth
+
+const pause = () => {
+  isPaused.value = true
+}
+
+const resume = () => {
+  isPaused.value = false
+}
+
 onMounted(() => {
   const box = document.querySelector(`[uuid="${uuid}"]`) as HTMLDivElement | null
   if (!box) return console.error('box is null')
@@ -23,13 +62,28 @@ onMounted(() => {
   const parents = document.querySelectorAll(`.${uuid2}`) as NodeListOf<HTMLDivElement>
 
   const autoCreateBarrage = () => {
-    createBarrage({ params: barrageList[currentId.value], gap, speed, parents })
-    requestAnimationFrame(autoCreateBarrage)
+    if (!isPaused.value) {
+      createBarrage({ params: barrageList[currentId.value], gap, speed, parents })
+    }
+    rafId = requestAnimationFrame(autoCreateBarrage)
   }
   autoCreateBarrage()
 })
 
-let clientWidth = innerWidth
+onUnmounted(() => {
+  // 清理 requestAnimationFrame
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId)
+    rafId = null
+  }
+
+  // 清理所有 GSAP 动画
+  animations.forEach((anim) => {
+    anim.kill()
+  })
+  animations.clear()
+})
+
 async function createBarrage({
   params,
   gap,
@@ -68,15 +122,7 @@ async function createBarrage({
     ${params.pin ? `<img class="pin_my" src="${pinSvg}" />` : ''}
   `
 
-  const colors = [
-    { background: '#FC6760', foreground: '#fff' },
-    { background: '#5DEC6D', foreground: '#fff' },
-    { background: '#57A8EA', foreground: '#fff' },
-    { background: '#4C94FD', foreground: '#fff' },
-    { background: '#E88823', foreground: '#fff' },
-    { background: '#FFFF48', foreground: '#333' },
-  ]
-  const { background, foreground } = params.pin ? { background: '#493D9E', foreground: '#fff' } : sample(colors)
+  const { background, foreground } = params.pin ? pinColor : sample(colors)
   barrage.style.backgroundColor = background
   barrage.style.color = foreground
   if (params.pin) {
@@ -92,15 +138,22 @@ async function createBarrage({
 
   const offset = Math.floor(clientWidth + barrage.clientWidth + gap)
 
-  gsap.to(barrage, {
+  const tween = gsap.to(barrage, {
     x: -offset,
     duration: offset / speed,
     ease: 'none',
     onComplete: () => {
-      parent.removeChild(barrage)
+      if (parent && barrage.parentNode === parent) {
+        parent.removeChild(barrage)
+      }
+      animations.delete(tween)
     },
   })
+
+  animations.add(tween)
 }
+
+defineExpose({ pause, resume })
 
 /**
   <com-barrage v-model="currentId" class="mt-100" :barrage-list="data">

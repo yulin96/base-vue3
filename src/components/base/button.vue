@@ -2,7 +2,7 @@
 import { useActive } from '@/hooks/useActive'
 import { sleep } from '@/shared/common'
 import { random, randomInt, range, sample } from 'es-toolkit'
-import { onMounted, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, useTemplateRef } from 'vue'
 
 const active = useActive()
 
@@ -19,6 +19,9 @@ const {
 const buttonRef = useTemplateRef('buttonRef')
 
 const bubbles = new Map()
+const animations = new Set<gsap.core.Timeline>()
+let rafId: number | null = null
+
 const createBubbles = async () => {
   if (bubbles.size < count && active.value) {
     if (!buttonRef.value) return
@@ -33,7 +36,7 @@ const createBubbles = async () => {
     let position: number | undefined
     while (!position || bubbles.has(position)) {
       position = sample(
-        range(12, buttonRef.value!.clientWidth! - 12, Math.floor(buttonRef.value!.clientWidth / count / 2)),
+        range(12, buttonRef.value.clientWidth - 12, Math.floor(buttonRef.value.clientWidth / count / 2)),
       )
     }
 
@@ -44,22 +47,44 @@ const createBubbles = async () => {
 
     const duration = random(1.6, 2.6)
 
-    gsap
-      .timeline()
+    const timeline = gsap
+      .timeline({
+        onComplete: () => {
+          if (buttonRef.value && bubble.parentNode === buttonRef.value) {
+            buttonRef.value.removeChild(bubble)
+          }
+          bubbles.delete(position)
+        },
+      })
       .to(bubble, { y: -buttonRef.value.offsetHeight / 1.2, duration: duration, ease: 'easeInOut' })
       .to(bubble, { opacity: 0, duration: duration, ease: 'easeInOut' }, '<')
-      .then(() => {
-        buttonRef.value!.removeChild(bubble)
-        bubbles.delete(position)
-      })
+
+    animations.add(timeline)
   }
 
   await sleep(120)
-  requestAnimationFrame(createBubbles)
+  rafId = requestAnimationFrame(createBubbles)
 }
 
 onMounted(() => {
   createBubbles()
+})
+
+onUnmounted(() => {
+  // 清理 requestAnimationFrame
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId)
+    rafId = null
+  }
+
+  // 清理所有 GSAP 动画
+  animations.forEach((anim) => {
+    anim.kill()
+  })
+  animations.clear()
+
+  // 清理 DOM 元素
+  bubbles.clear()
 })
 </script>
 
