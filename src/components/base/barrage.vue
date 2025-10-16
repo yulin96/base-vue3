@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import pinSvg from '@/assets/imgs/pin.svg'
 import { randomString } from '@/utils/random'
 import { random, sample } from 'es-toolkit'
 import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
@@ -12,20 +11,18 @@ interface BarrageColor {
   foreground: string
 }
 
-const defaultColors: BarrageColor[] = [
-  { background: '#FC6760', foreground: '#fff' },
-  { background: '#5DEC6D', foreground: '#fff' },
-  { background: '#57A8EA', foreground: '#fff' },
-  { background: '#4C94FD', foreground: '#fff' },
-  { background: '#E88823', foreground: '#fff' },
-  { background: '#FFFF48', foreground: '#333' },
-]
-
 const {
   gap = 20,
   speed = 90,
   barrageList,
-  colors = defaultColors,
+  colors = [
+    { background: '#FC6760', foreground: '#fff' },
+    { background: '#5DEC6D', foreground: '#fff' },
+    { background: '#57A8EA', foreground: '#fff' },
+    { background: '#4C94FD', foreground: '#fff' },
+    { background: '#E88823', foreground: '#fff' },
+    { background: '#FFFF48', foreground: '#333' },
+  ],
   pinColor = { background: '#493D9E', foreground: '#fff' },
 } = defineProps<{
   barrageList: Array<any>
@@ -119,7 +116,6 @@ async function createBarrage({
   barrage.style.left = `${clientWidth + gap}px`
   barrage.innerHTML = `
     <span>${params.content}</span>
-    ${params.pin ? `<img class="pin_my" src="${pinSvg}" />` : ''}
   `
 
   const { background, foreground } = params.pin ? pinColor : sample(colors)
