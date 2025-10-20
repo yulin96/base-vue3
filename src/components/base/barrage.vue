@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { sleep } from '@/shared/common'
 import { randomInt } from 'es-toolkit'
-import { createApp, nextTick, toRaw } from 'vue'
+import { createApp, nextTick, toRaw, type CSSProperties } from 'vue'
 import BarrageCard from './barrage-card.vue'
 
 const {
   row = 6,
   space = 3,
-  speed = 90,
+  speed = [120, 80, 100, 90, 110],
+  // [120, 80, 100, 90, 110],
 } = defineProps<{ row?: number; space?: number | [number, number]; speed?: number | number[] }>()
 
 const barrageList = defineModel<TBarrage[]>('barrageList', { required: true })
@@ -45,15 +46,21 @@ const createCard = async (id: number, gap: number) => {
   }
 
   const div = document.createElement('div')
-  div.classList.add('card-item')
   div.classList.add(`card-item-${card.id}`)
   const marginGap = vw1 * gap
+
+  const height = 60
+
   Object.assign(div.style, {
-    height: '40%',
+    height: `${height}%`,
     left: el.clientWidth + marginGap + 'px',
     willChange: 'transform, opacity',
-    top: randomInt(5, 56) + '%',
-  })
+    top: randomInt(5, 100 - height - 5) + '%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+  } satisfies CSSProperties)
 
   const div2 = document.createElement('div')
   div2.style.height = '100%'

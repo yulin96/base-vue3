@@ -52,7 +52,7 @@ const color = sample(colorList)!
 
 <template>
   <div
-    class="relative flex h-full items-center rounded-full border-10 px-60 py-30 shadow-2xl"
+    class="relative flex h-full items-center rounded-full border-2 px-30 shadow-2xl"
     :style="{
       background: `${color[0]}`,
       color: color[1],
@@ -61,6 +61,6 @@ const color = sample(colorList)!
     }"
   >
     <img class="h-full rounded-full" :src="props.barrage.avatar" alt="" draggable="false" />
-    <div class="text-80 ml-20 font-semibold whitespace-nowrap">{{ props.barrage.name }} : {{ props.barrage.text }}</div>
+    <div class="ml-20 font-semibold whitespace-nowrap">{{ props.barrage.name }} : {{ props.barrage.text }}</div>
   </div>
 </template>

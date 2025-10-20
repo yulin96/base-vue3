@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useLoading } from '@/hooks/useLoading'
 import { showLoadingToast } from '@/shared/vant/toast'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, useTemplateRef } from 'vue'
 
 definePage({
   meta: { index: 10 },
@@ -27,21 +27,26 @@ const test = () => {
   // showInfoToast({ message: '测试', duration: 0 })
 }
 
-const data = ref([
-  { id: 1, content: '这是第一条弹幕' },
-  { id: 2, content: '这是第二条弹幕' },
-  { id: 3, content: '这是第三条弹幕' },
-  { id: 4, content: '这是第四条弹幕' },
-  { id: 5, content: '这是第五条弹幕' },
-  { id: 6, content: '这是第六条弹幕' },
-  { id: 7, content: '这是第七条弹幕' },
-  { id: 8, content: '这是第八条弹幕' },
-  { id: 9, content: '这是第九条弹幕' },
-  { id: 10, content: '这是第十条弹幕' },
+const barrageRef = useTemplateRef('barrageRef')
+const data = ref<TBarrage[]>([
+  { id: 1, text: '这是第一条弹幕' },
+  { id: 2, text: '这是第二条弹幕' },
+  { id: 3, text: '这是第三条弹幕' },
+  { id: 4, text: '这是第四条弹幕' },
+  { id: 5, text: '这是第五条弹幕' },
+  { id: 6, text: '这是第六条弹幕' },
+  { id: 7, text: '这是第七条弹幕' },
+  { id: 8, text: '这是第八条弹幕' },
+  { id: 9, text: '这是第九条弹幕' },
+  { id: 10, text: '这是第十条弹幕' },
 ])
 const currentId = ref(0)
 
 const list = ref([])
+
+onMounted(() => {
+  barrageRef.value?.start()
+})
 </script>
 
 <template>
@@ -50,12 +55,7 @@ const list = ref([])
       <main class="content center flex-col">
         <div class="p-60 outline" @click="test">测试</div>
         <div class="h-500 w-700">
-          <base-barrage v-model:list="list" :row="3">
-            <!-- <div class="flex h-100 w-full items-center"></div>
-            <div class="mt-60 flex h-100 w-full items-center"></div>
-            <div class="mt-60 flex h-100 w-full items-center"></div>
-            <div class="mt-60 flex h-100 w-full items-center"></div> -->
-          </base-barrage>
+          <base-barrage ref="barrageRef" v-model:barrage-list="data"> </base-barrage>
         </div>
       </main>
     </section>
