@@ -100,7 +100,7 @@
     "unplugin-auto-import": "^20.2.0",
     "unplugin-vue-components": "^30.0.0",
     "unplugin-vue-router": "^0.16.0",
-    "vite": "^7.1.10",
+    "vite": "^7.1.11",
     "vite-plugin-deploy-ftp": "^1.0.1",
     "vite-plugin-deploy-oss": "^1.0.0",
     "vite-plugin-image-optimizer": "^2.0.2",
