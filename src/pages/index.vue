@@ -20,9 +20,7 @@ onMounted(() => {
 <template>
   <div class="size-full">
     <section class="scroll-box index">
-      <main class="content center bg-blue flex-col">
-        <base-stars></base-stars>
-      </main>
+      <main class="content center flex-col"></main>
     </section>
   </div>
 </template>
