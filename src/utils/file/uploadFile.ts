@@ -1,5 +1,5 @@
 import { sleep } from '@/shared/common'
-import { showFailToast, showLoadingToast, showSuccessToast } from '@/shared/plugins/vant/toast'
+import { failToast, loadingToast, successToast } from '@/shared/plugins/vant/toast'
 import axios, { toFormData } from 'axios'
 import COS from 'cos-js-sdk-v5'
 import { v4 } from 'uuid'
@@ -18,7 +18,7 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
   return new Promise<[null, string] | [unknown, null]>(async (resolve) => {
     const { id, file, type = 'jpg', start = 'zh', showLoading = false, test = true } = option
 
-    showLoading && showLoadingToast('上传中...')
+    showLoading && loadingToast('上传中...')
 
     try {
       const {
@@ -64,7 +64,7 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
 
           resolve([null, url])
           closeToast()
-          showSuccessToast('上传成功')
+          successToast('上传成功')
         },
       )
     } catch (error) {
@@ -73,7 +73,7 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
 
     function showError(message: string) {
       closeToast()
-      showFailToast(message)
+      failToast(message)
     }
   })
 }

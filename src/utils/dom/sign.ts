@@ -1,4 +1,4 @@
-import { showInfoToast } from '@/shared/plugins/vant/toast'
+import { infoToast } from '@/shared/plugins/vant/toast'
 
 export default class LineCanvas {
   private el: HTMLElement
@@ -88,7 +88,7 @@ export default class LineCanvas {
   // 保存为图片
   public save = () => {
     if (!this.signing) {
-      showInfoToast('请先签名')
+      infoToast('请先签名')
       return ''
     } else {
       return this.canvas.toDataURL('image/png', 0.8)

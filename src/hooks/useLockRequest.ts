@@ -1,5 +1,5 @@
 import { useLock } from '@/hooks/useLock'
-import { showFailToast, showLoadingToast } from '@/shared/plugins/vant/toast'
+import { failToast, loadingToast } from '@/shared/plugins/vant/toast'
 import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/shared/request'
 import type { AxiosRequestConfig } from 'axios'
 import nprogress from 'nprogress'
@@ -27,7 +27,7 @@ export function useLockRequest(disableLock = false, showProgress = false, delay 
       let isShowLoading = false
       const requestTimer = setTimeout(() => {
         isShowLoading = true
-        showLoadingToast('加载中...')
+        loadingToast('加载中...')
       }, 12000)
 
       requestFn()
@@ -35,7 +35,7 @@ export function useLockRequest(disableLock = false, showProgress = false, delay 
         .catch((err) => {
           reject(err)
           if (err.name !== 'CanceledError' || err.message === 'Request aborted') {
-            showFailToast('正在加载中...')
+            failToast('正在加载中...')
           }
         })
         .finally(() => {
