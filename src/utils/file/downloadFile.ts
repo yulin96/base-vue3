@@ -1,8 +1,9 @@
 import { useLock } from '@/hooks/useLock'
-import { createToaster } from '@/shared/user/createToaster'
+import { failToast, loadingToast } from '@/shared/plugins/vant/toast'
 import { toUrl } from '@/shared/user/location'
 import { isWeChat } from '@/utils/browser/ua'
 import { isIOS } from '@vueuse/core'
+import { closeToast } from 'vant'
 
 const [status, lock, unLock] = useLock()
 
@@ -10,11 +11,12 @@ export function downloadFile(url: string, filename?: string) {
   if (typeof fetch === 'function' && isWeChat() && isIOS) {
     if (status.value) return
     lock()
-    const { resolve, reject } = createToaster('下载中...')
+    loadingToast('下载中...')
     fetch(url)
       .then((response) => response.blob())
       .then((blob) => {
-        resolve('下载完成')
+        closeToast()
+
         const tempUrl = URL.createObjectURL(new Blob([blob]))
         const a = document.createElement('a')
         a.href = tempUrl
@@ -23,7 +25,8 @@ export function downloadFile(url: string, filename?: string) {
         URL.revokeObjectURL(tempUrl)
       })
       .catch(() => {
-        reject('下载失败')
+        closeToast()
+        failToast('下载失败')
       })
       .finally(() => {
         setTimeout(() => {
