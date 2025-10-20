@@ -1,10 +1,10 @@
 import { useLock } from '@/hooks/useLock'
-import { showFailToast } from '@/shared/plugins/vant/toast'
-import { type IFormDataOrJSON, axiosGet, axiosPost } from '@/shared/request'
+import { showFailToast, showLoadingToast } from '@/shared/plugins/vant/toast'
+import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/shared/request'
 import type { AxiosRequestConfig } from 'axios'
 import nprogress from 'nprogress'
+import { closeToast } from 'vant'
 import { readonly } from 'vue'
-import { toast } from 'vue-sonner'
 
 nprogress.configure({
   showSpinner: false,
@@ -24,9 +24,10 @@ export function useLockRequest(disableLock = false, showProgress = false, delay 
     lock()
 
     return new Promise((resolve, reject) => {
-      let toastId: string | number | null = null
+      let isShowLoading = false
       const requestTimer = setTimeout(() => {
-        toastId = toast.loading('加载中...')
+        isShowLoading = true
+        showLoadingToast('加载中...')
       }, 12000)
 
       requestFn()
@@ -39,7 +40,7 @@ export function useLockRequest(disableLock = false, showProgress = false, delay 
         })
         .finally(() => {
           clearTimeout(requestTimer)
-          if (toastId !== null) toast.dismiss(toastId)
+          if (isShowLoading) closeToast()
 
           showProgress && nprogress?.done()
 

@@ -1,24 +1,24 @@
 import { sleep } from '@/shared/common'
+import { showFailToast, showLoadingToast, showSuccessToast } from '@/shared/plugins/vant/toast'
 import axios, { toFormData } from 'axios'
 import COS from 'cos-js-sdk-v5'
 import { v4 } from 'uuid'
-import { toast } from 'vue-sonner'
+import { closeToast } from 'vant/lib/toast'
 
 type IUploadOption = {
   id: string
   file: File
   type?: string
   start?: string
-  loading?: boolean
+  showLoading?: boolean
   test?: boolean
 }
 
 export async function uploadFile(option: IUploadOption): Promise<[null, string] | [unknown, null]> {
   return new Promise<[null, string] | [unknown, null]>(async (resolve) => {
-    const { id, file, type = 'jpg', start = 'zh', loading = false, test = true } = option
+    const { id, file, type = 'jpg', start = 'zh', showLoading = false, test = true } = option
 
-    let toastId: number | string | null = null
-    loading && (toastId = toast.loading('上传中...'))
+    showLoading && showLoadingToast('上传中...')
 
     try {
       const {
@@ -51,32 +51,31 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
           SliceSize: 1024 * 1024,
         },
         async (err, data) => {
-          if (err) return (uploadToast(toastId, '上传失败'), resolve([err, null]))
+          if (err) return (showError('上传失败'), resolve([err, null]))
 
           await sleep(3000)
           const url = `https://oss.1ycloud.com/${Key}`
           if (test) {
             const available = await isResourceAvailable(url)
             if (!available) {
-              return (uploadToast(toastId, '上传文件不符合规范，请更换文件重试'), resolve([err, null]))
+              return (showError('上传文件不符合规范，请更换文件重试'), resolve([err, null]))
             }
           }
-          uploadToast(toastId, '上传成功', true)
+
           resolve([null, url])
+          closeToast()
+          showSuccessToast('上传成功')
         },
       )
     } catch (error) {
-      ;(uploadToast(toastId, '上传失败'), resolve([error, null]))
+      ;(showError('上传失败'), resolve([error, null]))
+    }
+
+    function showError(message: string) {
+      closeToast()
+      showFailToast(message)
     }
   })
-}
-
-function uploadToast(toastId: number | string | null, message: string, success?: boolean) {
-  if (toastId !== null) {
-    toast.dismiss(toastId)
-    toastId = null
-    success ? toast.success(message) : toast.error(message)
-  }
 }
 
 export async function isResourceAvailable(url: string): Promise<boolean> {
