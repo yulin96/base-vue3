@@ -21,7 +21,7 @@ setToastDefaultOptions('loading', { duration: 0, loadingType: 'spinner' })
 const statusMap = { success, info, fail }
 
 export function toast(option: (ToastOptions & { status?: 'success' | 'info' | 'fail' }) | string) {
-  if (typeof option === 'string') return toast(option)
+  if (typeof option === 'string') return _showToast({ message: option, type: 'text' })
 
   const _message = option?.status
     ? `<img style="height: 26px;margin-right:6px;" src="${statusMap[option.status]}" /><p>${option?.message || ''}</p>`
