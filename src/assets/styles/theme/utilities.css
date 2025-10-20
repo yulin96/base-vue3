@@ -1,0 +1,88 @@
+@utility center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@utility text-last-center {
+  text-align-last: center;
+}
+
+@utility text-last-justify {
+  text-align-last: justify;
+}
+
+@utility callout-default {
+  -webkit-touch-callout: default;
+}
+
+@utility callout-none {
+  -webkit-touch-callout: none;
+}
+
+@utility shark-wrap {
+  overflow: hidden;
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -20%;
+    background: linear-gradient(45deg, #ffffff00 40%, #ffffffb3, #ffffff00 60%);
+    animation: shark-wrap var(--time, 2s) infinite paused;
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+}
+
+@utility shark-wrap-play {
+  &::after {
+    animation-play-state: running !important;
+  }
+}
+
+@utility shark-text-* {
+  color: transparent;
+  background: linear-gradient(45deg, #ffffff00 30%, #ffffffe6, #ffffff00 70%) -100% / 50% no-repeat --value([*]);
+  background-clip: text;
+  animation: shark-text var(--time, 2s) infinite paused;
+}
+
+@utility shark-text-play {
+  animation-play-state: running !important;
+}
+
+@utility shark-text {
+  background-clip: unset;
+}
+
+@utility time-* {
+  --time: --value([*]);
+}
+
+@utility time {
+  --time: 2s;
+}
+
+@utility back-top {
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: top;
+}
+
+@utility back-bottom {
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: bottom;
+}
+
+@utility back-full {
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: bottom;
+}
+
+@utility loquat {
+  mask-image: linear-gradient(to right, black 0% 40%, transparent 50% 100%);
+  mask-size: 250% 100%;
+  mask-position: 90%;
+}

@@ -63,7 +63,7 @@ export default defineConfig(({ command }) => ({
       cacheLocation: 'node_modules/.cache-image/',
     }),
     VueRouter({
-      dts: 'typings/typed-router.d.ts',
+      dts: './types/typed-router.d.ts',
       importMode: command == 'build' ? 'sync' : 'async',
     }),
     vue({}),
@@ -74,7 +74,7 @@ export default defineConfig(({ command }) => ({
       extensions: ['vue'],
       include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
       resolvers: [VantResolver()],
-      dts: './typings/components.d.ts',
+      dts: './types/components.d.ts',
       directoryAsNamespace: true,
     }),
     vitePluginDeployOss({

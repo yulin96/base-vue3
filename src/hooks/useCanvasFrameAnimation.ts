@@ -95,11 +95,19 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   // 预加载图片
   const preloadImages = async (): Promise<HTMLImageElement[]> => {
-    const imagePromises = frames.map((frame, index) => {
+    // 优先加载封面帧
+    const loadImage = (frame: string | HTMLImageElement, index: number): Promise<HTMLImageElement> => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         if (frame instanceof HTMLImageElement) {
           loadedCount++
           state.loadProgress = loadedCount / frames.length
+
+          // 如果这是封面帧，立即存储并绘制
+          if (index === coverFrame) {
+            images[index] = frame
+            nextTick(() => drawFrame(coverFrame))
+          }
+
           resolve(frame)
           return
         }
@@ -108,6 +116,13 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
         img.onload = () => {
           loadedCount++
           state.loadProgress = loadedCount / frames.length
+
+          // 如果这是封面帧，立即存储并绘制
+          if (index === coverFrame) {
+            images[index] = img
+            nextTick(() => drawFrame(coverFrame))
+          }
+
           resolve(img)
         }
 
@@ -118,11 +133,34 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
         img.src = frame as string
       })
-    })
+    }
 
     try {
+      // 创建所有加载任务
+      const imagePromises = frames.map((frame, index) => loadImage(frame, index))
+
+      // 如果封面帧不是第一个，先加载封面帧
+      if (coverFrame !== 0 && coverFrame < frames.length) {
+        try {
+          // 优先等待封面帧加载完成
+          await imagePromises[coverFrame]
+        } catch (error) {
+          console.warn(`Failed to prioritize cover frame ${coverFrame}:`, error)
+        }
+      }
+
+      // 等待所有图片加载完成
       const loadedImages = await Promise.all(imagePromises)
       state.isLoaded = true
+
+      // 确保所有图片都正确存储到images数组中
+      images = loadedImages
+
+      // 如果启用了自动播放且当前没在播放，开始播放
+      if (autoplay && !state.isPlaying) {
+        play(startFrame)
+      }
+
       return loadedImages
     } catch (error) {
       console.error('Failed to preload all images:', error)
@@ -132,12 +170,16 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   // 绘制当前帧
   const drawFrame = (frameIndex: number) => {
-    if (!ctx || !images.length || frameIndex < 0 || frameIndex >= images.length) {
+    if (!ctx || frameIndex < 0 || frameIndex >= frames.length) {
       return
     }
 
+    // 检查图片是否已加载
     const img = images[frameIndex]
-    if (!img || !canvas.value) return
+    if (!img || !canvas.value) {
+      // 图片未加载时，可以选择显示加载状态或保持当前画面
+      return
+    }
 
     const canvasWidth = canvas.value.width
     const canvasHeight = canvas.value.height
@@ -232,6 +274,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     // 绘制图像
     try {
       ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
+      state.currentFrame = frameIndex
     } catch (error) {
       console.error('Error drawing frame:', error, {
         frameIndex,
@@ -242,8 +285,6 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
         objectFit,
       })
     }
-
-    state.currentFrame = frameIndex
   }
 
   // 动画循环
@@ -434,7 +475,6 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   const init = async () => {
     try {
       // 获取Canvas元素
-
       if (!canvas.value) {
         throw new Error('Canvas element not found')
       }
@@ -444,15 +484,21 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
         throw new Error('Failed to get 2D context')
       }
 
-      // 预加载图片
-      images = await preloadImages()
+      // 初始化图片数组，为封面帧预留位置
+      images = new Array(frames.length)
 
-      // 绘制封面帧
-      await nextTick()
-      drawFrame(coverFrame)
+      // 开始预加载图片（异步进行，封面帧会在加载完成后立即显示）
+      preloadImages().catch(console.error)
 
-      // 自动播放
-      if (autoplay) {
+      // 如果封面帧已经是HTMLImageElement，立即绘制
+      if (frames[coverFrame] instanceof HTMLImageElement) {
+        images[coverFrame] = frames[coverFrame] as HTMLImageElement
+        await nextTick()
+        drawFrame(coverFrame)
+      }
+
+      // 如果所有图片都已加载完成且启用了自动播放
+      if (state.isLoaded && autoplay) {
         play(startFrame)
       }
     } catch (error) {

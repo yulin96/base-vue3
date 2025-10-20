@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { useRouteTransition } from '@/hooks/useRouterTransition'
-import { themeVars } from '@/shared/config/vant'
-import { getWechatConfig } from '@/shared/third/wx'
+import { getWechatConfig } from '@/shared/integrations/wx'
 import { registerButtonEffect } from '@/shared/user/registerButtonEffect'
 import { registerWechatShare } from '@/shared/user/share'
-import { isWeChat } from '@/utils/ua'
+import { isWeChat } from '@/utils/browser/ua'
 import { isHttps } from '@/utils/validator'
 import { onMounted } from 'vue'
-import { Toaster } from 'vue-sonner'
-import 'vue-sonner/style.css'
 
 registerButtonEffect()
 
@@ -33,21 +30,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <teleport to="body">
-    <toaster :rich-colors="false" :expand="false" position="top-center" :visible-toasts="2" :duration="2000" />
-  </teleport>
-
-  <van-config-provider :theme-vars="themeVars" theme-vars-scope="global">
-    <router-view v-slot="{ Component }">
-      <template v-if="Component">
-        <transition :name="name">
-          <keep-alive :exclude="[]">
-            <component :is="Component"></component>
-          </keep-alive>
-        </transition>
-      </template>
-    </router-view>
-  </van-config-provider>
+  <router-view v-slot="{ Component }">
+    <template v-if="Component">
+      <transition :name="name">
+        <keep-alive :exclude="[]">
+          <component :is="Component"></component>
+        </keep-alive>
+      </transition>
+    </template>
+  </router-view>
 </template>
 
 <style>

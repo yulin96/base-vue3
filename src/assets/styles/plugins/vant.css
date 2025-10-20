@@ -1,0 +1,129 @@
+:root:root {
+  --van-action-bar-button-danger-color: #344bb6;
+  --z-toast-background: #f5f5f7c2;
+  --z-toast-color: #1d1d1f;
+  --van-overlay-background: #000a;
+  --van-toast-loading-icon-color: #fff;
+  --van-black: #1d1d1f;
+  --van-primary-color: #344bb6;
+  --van-floating-bubble-background: transparent;
+  --van-toast-position-bottom-distance: 9%;
+}
+
+body {
+  .van-config-provider {
+    height: 100%;
+  }
+
+  /* Toast */
+  .center_toast_overlay {
+    background: #0000;
+  }
+
+  .van-toast.center_toast {
+    padding: calc(var(--base-scale, 1) * 16 * 1px) calc(var(--base-scale, 1) * 30 * 1px);
+    color: #fff;
+    background: #000a;
+    backdrop-filter: saturate(180%) blur(12px);
+    border: none;
+    border-radius: calc(var(--base-scale, 1) * 20 * 1px);
+    box-shadow: #0000001f 0 3px calc(var(--base-scale, 1) * 8 * 1px);
+    max-width: 69%;
+  }
+
+  .van-toast--html .van-toast__text {
+    display: flex;
+    align-items: center;
+  }
+
+  .center-toast-enter-active,
+  .center-toast-leave-active {
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  .center-toast-enter-from,
+  .center-toast-leave-to {
+    opacity: 0;
+    transform: translateY(calc(-50% - 120px)) scale(0.6);
+  }
+
+  /* Toast Loading */
+  /* .van-toast--loading.van-popup--center {
+    background: #000d;
+  } */
+
+  /* Popup Center */
+  .van-popup--center {
+    max-width: 100%;
+    /* background: unset; */
+    margin-top: -2vh;
+  }
+}
+
+body .van-popup--center .van-loading__line:before {
+  border-radius: calc(var(--base-scale, 1) * 12 * 1px);
+}
+
+/* body .van-toast__text {
+  white-space: nowrap;
+} */
+
+body .van-dialog {
+  background: white;
+}
+
+body .van-dialog__message--has-title {
+  padding: calc(var(--base-scale, 1) * 36 * 1px) calc(var(--base-scale, 1) * 20 * 1px)
+    calc(var(--base-scale, 1) * 60 * 1px) !important;
+}
+
+body .van-dialog--round-button .van-dialog__footer {
+  padding: calc(var(--base-scale, 1) * 20 * 1px) calc(var(--base-scale, 1) * 60 * 1px)
+    calc(var(--base-scale, 1) * 60 * 1px);
+  background: transparent;
+}
+
+body .van-dialog--round-button .van-dialog__footer .van-button {
+  border-radius: 9999px;
+}
+
+body .van-dialog--round-button .van-dialog__footer .van-dialog__confirm {
+  border-radius: 9999px;
+  background: var(--van-action-bar-button-danger-color);
+  box-shadow:
+    #0000002a 0px 4px 6px -1px,
+    #0000000f 0px 2px 4px -1px;
+  flex: 1.5;
+}
+
+body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel {
+  border-radius: 9999px;
+  background: transparent;
+  margin-right: calc(var(--base-scale, 1) * 50 * 1px);
+  flex: 1;
+}
+
+body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel .van-button__content {
+  border: 1px solid #777;
+  border-radius: 9999px;
+  color: #555;
+  font-weight: normal;
+}
+
+body .van-action-bar-button--first.van-dialog__confirm {
+  width: 300px !important;
+  flex: unset !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body .van-dialog--round-button .van-dialog__confirm,
+body .van-dialog--round-button .van-dialog__cancel {
+  height: calc(var(--base-scale, 1) * 80 * 1px);
+}
+
+body .van-button:active:before {
+  opacity: 0;
+}

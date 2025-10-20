@@ -1,4 +1,4 @@
-import { isMobile } from '@/utils/ua'
+import { isMobile } from '@/utils/browser/ua'
 
 /**
  * 检查用户名是否仅包含字母和数字

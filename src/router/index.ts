@@ -1,4 +1,3 @@
-import { registerGuards } from '@/router/guards'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { handleHotUpdate, routes } from 'vue-router/auto-routes'
 
@@ -23,7 +22,13 @@ router.addRoute({
   meta: { index: 404 },
 })
 
-registerGuards(router)
+router.beforeEach((to, from) => {})
+
+router.afterEach((to, from) => {
+  if (typeof window._hmt !== 'undefined') {
+    window._hmt.push(['_trackPageview', `${location.pathname}#${to.fullPath}`])
+  }
+})
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -35,3 +40,9 @@ declare module 'vue-router' {
 }
 
 export default router
+
+declare global {
+  interface Window {
+    _hmt?: any
+  }
+}

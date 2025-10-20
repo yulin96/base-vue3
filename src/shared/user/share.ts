@@ -1,4 +1,4 @@
-import { wechatShare } from '@/shared/third/wx'
+import { wechatShare } from '@/shared/integrations/wx'
 
 export function registerWechatShare() {
   const title = import.meta.env.VITE_APP_SHARE_TITLE

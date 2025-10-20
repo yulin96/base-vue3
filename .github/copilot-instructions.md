@@ -100,8 +100,8 @@ import { cn } from '@/shared/common'
 const buttonClass = cn('center text-16 radius-8', isActive && 'shark-wrap')
 
 // Utility imports - organized by domain
-import { copyText } from '@/utils/user/copyText'
-import { randomString } from '@/utils/random'
+import { copyText } from '@/utils/file/copyText'
+import { randomString } from '@/utils/string/random'
 import { isPhone } from '@/utils/validator'
 ```
 

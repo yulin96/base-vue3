@@ -1,5 +1,5 @@
-import { blobToFile } from '@/utils/convert'
-import { compressPhoto } from '@/utils/photo/compressImage'
+import { compressPhoto } from '@/utils/file/compressImage'
+import { blobToFile } from '@/utils/format/convert'
 import { v1 } from 'uuid'
 
 /**

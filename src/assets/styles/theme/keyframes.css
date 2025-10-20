@@ -1,0 +1,81 @@
+@theme {
+  @keyframes handle {
+    0%,
+    30%,
+    100% {
+      transform: scale(1);
+    }
+    15% {
+      transform: scale(0.96);
+    }
+  }
+
+  @keyframes heart-beat {
+    0% {
+      transform: scale(1);
+    }
+
+    14% {
+      transform: scale(1.12);
+    }
+
+    28% {
+      transform: scale(0.96);
+    }
+
+    42% {
+      transform: scale(1.12);
+    }
+
+    70% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: none;
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+    50% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+  }
+  @keyframes next-page {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(60%);
+    }
+  }
+
+  @keyframes rotate-cube {
+    0% {
+      transform: rotateX(0deg) rotateY(0deg);
+    }
+    50% {
+      transform: rotateX(180deg) rotateY(180deg);
+    }
+    100% {
+      transform: rotateX(360deg) rotateY(360deg);
+    }
+  }
+
+  @keyframes shark-wrap {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes shark-text {
+    0% {
+      background-position: -100%;
+    }
+    100% {
+      background-position: 200%;
+    }
+  }
+}

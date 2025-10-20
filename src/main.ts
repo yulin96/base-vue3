@@ -15,7 +15,7 @@ import App from './App.vue'
 import router from './router'
 // 从 '@/lang' 导入 i18n
 
-import '@/assets/css/main.css'
+import '@/assets/styles/main.css'
 
 window.document.documentElement.style.setProperty('--main-color', import.meta.env.VITE_APP_MAIN_COLOR)
 
