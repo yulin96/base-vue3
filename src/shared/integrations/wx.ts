@@ -1,4 +1,4 @@
-import { isWeChat } from '@/utils/ua'
+import { isWeChat } from '@/utils/browser/ua'
 import { isUrl } from '@/utils/validator'
 import axios, { toFormData } from 'axios'
 import wx from 'weixin-js-sdk'

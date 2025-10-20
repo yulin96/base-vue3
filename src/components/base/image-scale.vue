@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Zoomist from '@/shared/zoomist'
+import Zoomist from '@/shared/plugins/zoomist'
 import { onUnmounted, watchPostEffect } from 'vue'
 
 const { fillType = 'cover', url } = defineProps<{

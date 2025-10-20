@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { showInfoToast } from '@/shared/vant/toast'
+import { showInfoToast } from '@/shared/plugins/vant/toast'
 import { ref } from 'vue'
 
 const { maxLength = 4 } = defineProps<{ maxLength?: number }>()

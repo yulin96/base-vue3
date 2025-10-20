@@ -1,6 +1,6 @@
 import { useLock } from '@/hooks/useLock'
+import { showFailToast } from '@/shared/plugins/vant/toast'
 import { type IFormDataOrJSON, axiosGet, axiosPost } from '@/shared/request'
-import { showFailToast } from '@/shared/vant/toast'
 import type { AxiosRequestConfig } from 'axios'
 import nprogress from 'nprogress'
 import { readonly } from 'vue'

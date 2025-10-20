@@ -1,7 +1,7 @@
 import { useLock } from '@/hooks/useLock'
 import { createToaster } from '@/shared/user/createToaster'
 import { toUrl } from '@/shared/user/location'
-import { isWeChat } from '@/utils/ua'
+import { isWeChat } from '@/utils/browser/ua'
 import { isIOS } from '@vueuse/core'
 
 const [status, lock, unLock] = useLock()
