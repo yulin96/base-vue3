@@ -132,6 +132,8 @@ export default defineConfig(({ command }) => ({
     {
       name: 'transformHtml',
       transformIndexHtml(html) {
+        html = html.replace('<html', `<html build-time="${new Date().toLocaleString()}" `)
+
         const baiduScript = `
     <script>
       var _hmt = _hmt || [];
