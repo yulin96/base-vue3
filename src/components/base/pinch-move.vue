@@ -16,10 +16,10 @@ const { key } = useTransform({
 </script>
 
 <template>
-  <div class="size-[600px] overflow-hidden">
+  <div class="size-600 overflow-hidden">
     <img
       :ref="key"
-      class="h-[1202px] max-h-none w-[2012px] max-w-none"
+      class="h-1202 max-h-none w-2012 max-w-none"
       src="https://oss.eventnet.cn/H5/zz/auto2/a/16/map.jpg"
       alt=""
     />

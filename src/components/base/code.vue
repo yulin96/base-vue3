@@ -39,8 +39,8 @@ defineExpose({ toggleCode })
 </script>
 
 <template>
-  <div ref="qrCodeRef" class="relative z-[20]" v-bind="$attrs" @click="toggleCode()">
+  <div ref="qrCodeRef" class="relative z-20" v-bind="$attrs" @click="toggleCode()">
     <img class="h-full w-full" :src="code" />
   </div>
-  <van-overlay :show="isBig" class="z-[10]" @click="toggleCode()"></van-overlay>
+  <van-overlay :show="isBig" class="z-10" @click="toggleCode()"></van-overlay>
 </template>

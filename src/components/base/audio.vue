@@ -123,7 +123,7 @@ function unregisterMediaSession() {
 <template>
   <teleport to="body">
     <div
-      class="fixed z-[2001] rounded-[50%] border-[4px] border-[#fff] p-[4px]"
+      class="fixed z-2001 rounded-[50%] border-4 border-[#fff] p-4"
       :class="{
         'top-50 right-50': position === 'top-right',
         'top-50 left-50': position === 'top-left',
@@ -143,7 +143,7 @@ function unregisterMediaSession() {
       ></audio>
       <img
         ref="playIconRef"
-        class="animate-spin-slow size-[40px] cursor-pointer"
+        class="animate-spin-slow size-40 cursor-pointer"
         :class="{
           'animation-running': isPlay,
           'animation-paused': !isPlay,

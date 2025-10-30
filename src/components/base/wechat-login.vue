@@ -43,15 +43,12 @@ onMounted(async () => {
     :overlay-class="'bg-black/30 backdrop-blur-md'"
     class="center bg-transparent"
   >
-    <div class="rounded-10 flex w-[600px] flex-col items-center justify-center bg-white py-[60px]">
-      <p class="mb-[40px] text-[32px]">您还没有登录</p>
-      <p class="mb-[40px] text-[32px]">点击微信一键登录参与活动</p>
-      <button
-        class="flex h-[80px] w-[500px] items-center justify-center rounded-[12px] bg-[#12c164] text-white"
-        @click="openLink"
-      >
+    <div class="rounded-10 flex w-600 flex-col items-center justify-center bg-white py-60">
+      <p class="text-32 mb-40">您还没有登录</p>
+      <p class="text-32 mb-40">点击微信一键登录参与活动</p>
+      <button class="rounded-12 flex h-80 w-500 items-center justify-center bg-[#12c164] text-white" @click="openLink">
         <svg
-          class="icon mr-[10px] w-[60px]"
+          class="icon mr-10 w-60"
           viewBox="0 0 1024 1024"
           version="1.1"
           xmlns="http://www.w3.org/2000/svg"

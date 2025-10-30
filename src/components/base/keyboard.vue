@@ -18,7 +18,7 @@ const onKeyboardClose = () => {
 <template>
   <van-popup v-model:show="showKeyboard" position="bottom" class="bg-[#f2f3f5]!" @closed="onPopupClose">
     <van-password-input
-      class="[&_li]:rounded-8 mx-[12px] pt-[50px] pb-[520px]"
+      class="[&_li]:rounded-8 mx-12 pt-50 pb-520"
       :value="password"
       :length="maxLength"
       :gutter="6"

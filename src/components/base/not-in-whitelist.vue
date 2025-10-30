@@ -8,21 +8,18 @@ defineProps<{ title?: string }>()
   <van-popup v-model:show="show" transition="popup" :close-on-click-overlay="false">
     <div class="center h-900 w-full">
       <div
-        class="relative flex h-[588px] w-[561px] flex-col items-center rounded-[12px] bg-[url(https://oss.eventnet.cn/H5/zz/public/tips/whitelist/bg.png)] bg-contain bg-no-repeat pt-150"
+        class="rounded-12 relative flex h-588 w-561 flex-col items-center bg-[url(https://oss.eventnet.cn/H5/zz/public/tips/whitelist/bg.png)] bg-contain bg-no-repeat pt-150"
       >
-        <img
-          class="absolute -top-[100px] w-[203px]"
-          src="https://oss.eventnet.cn/H5/zz/public/tips/whitelist/icon.png"
-        />
-        <div class="-mt-[60px] indent-[4px] text-[50px] font-semibold tracking-[4px] text-[#c42420]">温馨提示</div>
+        <img class="absolute -top-100 w-203" src="https://oss.eventnet.cn/H5/zz/public/tips/whitelist/icon.png" />
+        <div class="text-50 tracking-4 -mt-60 indent-4 font-semibold text-[#c42420]">温馨提示</div>
         <div
-          class="text-30 mt-[40px] min-h-[120px] w-full px-[20px] text-center indent-[1px] leading-[1.7] tracking-[1px] whitespace-pre-line"
+          class="text-30 tracking-1 mt-40 min-h-120 w-full px-20 text-center indent-[1px] leading-[1.7] whitespace-pre-line"
         >
           {{ title ?? '您输入的信息不在邀请名单中\n请重新输入或联系邀约人' }}
         </div>
 
         <div
-          class="center mt-[60px] h-[90px] w-[400px] rounded-full bg-[#111] indent-[2px] tracking-[2px] text-white"
+          class="center tracking-2 mt-60 h-90 w-400 rounded-full bg-[#111] indent-2 text-white"
           @click="show = false"
         >
           知道了

@@ -41,9 +41,9 @@ const touchend = (e: TouchEvent) => {
 </script>
 
 <template>
-  <div class="absolute inset-0 z-[20]">
-    <div class="absolute inset-0 z-[10]" @touchstart="touchstart" @touchend="touchend"></div>
-    <div class="absolute top-0 left-0 z-[20] size-[120px]" @click.stop="passwordKeyboardIns.open()"></div>
+  <div class="absolute inset-0 z-20">
+    <div class="absolute inset-0 z-10" @touchstart="touchstart" @touchend="touchend"></div>
+    <div class="absolute top-0 left-0 z-20 size-120" @click.stop="passwordKeyboardIns.open()"></div>
 
     <teleport to="body">
       <com-keyboard
