@@ -1,5 +1,4 @@
 import { isWeChat } from '@/utils/browser/ua'
-import { isUrl } from '@/utils/validator'
 import axios, { toFormData } from 'axios'
 import wx from 'weixin-js-sdk'
 
@@ -69,15 +68,12 @@ export function wechatShare(data: IWxShare) {
   return new Promise<boolean>((resolve, reject) => {
     const { title, desc, link, imgUrl } = data
 
-    const url = new URL(isUrl(link) ? link : location.href)
-    url.searchParams.set('t', Date.now().toString())
-
     getWechatConfig()
       .then(() => {
         wx.updateAppMessageShareData({
           title,
           desc,
-          link: url.toString().split('#')[0] ?? import.meta.env.VITE_APP_SHARE_LINK,
+          link: link || location.href.split('#')[0] || '',
           imgUrl,
           success() {
             resolve(true)
@@ -88,7 +84,7 @@ export function wechatShare(data: IWxShare) {
         })
         wx.updateTimelineShareData({
           title,
-          link: url.toString().split('#')[0] ?? import.meta.env.VITE_APP_SHARE_LINK,
+          link: link || location.href.split('#')[0] || '',
           imgUrl,
           success() {
             resolve(true)
