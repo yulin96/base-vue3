@@ -40,7 +40,7 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
         },
       })
 
-      const Key = `${dir}/${start}-${v4()}.${type}`
+      const Key = `${dir}/${start}-${v4()}.${type.toLowerCase()}`
 
       cos.uploadFile(
         {
