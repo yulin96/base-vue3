@@ -3,7 +3,6 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 
 import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
 import { visualizer } from 'rollup-plugin-visualizer'
 import vitePluginDeployFtp from 'vite-plugin-deploy-ftp'
 import vitePluginDeployOss from 'vite-plugin-deploy-oss'
@@ -66,8 +65,7 @@ export default defineConfig(({ command }) => ({
       dts: './types/typed-router.d.ts',
       importMode: command == 'build' ? 'sync' : 'async',
     }),
-    vue({}),
-    vueJsx(),
+    vue(),
     tailwindcss(),
     Components({
       dirs: ['src/components'],
