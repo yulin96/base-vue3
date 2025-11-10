@@ -11,9 +11,9 @@ import '@/shared/setup/resetWxFontSize'
 import '@/shared/setup/setRem'
 import '@/shared/setup/showShareImage'
 
+// import i18n from '@/lang'
 import App from './App.vue'
 import router from './router'
-// 从 '@/lang' 导入 i18n
 
 import '@/assets/styles/main.css'
 
