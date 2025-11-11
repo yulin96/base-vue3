@@ -63,8 +63,8 @@ importers:
         specifier: ^1.11.19
         version: 1.11.19
       dingtalk-jsapi:
-        specifier: ^3.2.0
-        version: 3.2.0
+        specifier: ^3.2.2
+        version: 3.2.2
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -2063,8 +2063,8 @@ packages:
   dijkstrajs@1.0.3:
     resolution: {integrity: sha512-qiSlmBq9+BCdCA/L46dw8Uy93mloxsPSbwnm5yrKn2vMPiy8KyAskTF6zuV/j5BMsmOGZDPs7KjU+mjb670kfA==}
 
-  dingtalk-jsapi@3.2.0:
-    resolution: {integrity: sha512-PZhTM1T9ERdaOzjFbyokegVmf/vUVvlg0BKcMiP1bB0e3vBflroPpbW2SjrZEKuvFxFtuFDpvYpk2EhbbKH/6Q==}
+  dingtalk-jsapi@3.2.2:
+    resolution: {integrity: sha512-FglWzvdMJosOkX8k2MVavX3MiDIE6vAmAHqVE0bvXRfh3El4DVqACQRw1UIyKi3UloUS07XQXGRAG6S12eehgg==}
 
   dotenv@17.2.3:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
@@ -5726,7 +5726,7 @@ snapshots:
 
   dijkstrajs@1.0.3: {}
 
-  dingtalk-jsapi@3.2.0:
+  dingtalk-jsapi@3.2.2:
     dependencies:
       promise-polyfill: 7.1.2
 
