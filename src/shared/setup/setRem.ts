@@ -1,5 +1,4 @@
 import { createQRCode, removeQRCode } from '@/shared/setup/createQRCode'
-import { isMobile } from '@/utils/browser/ua'
 import { isPcMode } from '@/utils/validator'
 import { debounce } from 'es-toolkit'
 import './pc.css'
@@ -45,11 +44,3 @@ window.addEventListener(
     setRem()
   }, 100),
 )
-
-if (isMobile()) {
-  const style = document.createElement('style')
-  style.textContent = `*:not(input, textarea) {
-  user-select: none;
-}`
-  document.head.appendChild(style)
-}
