@@ -8,7 +8,7 @@ function getClickableButton(e: TouchEvent | PointerEvent) {
 }
 
 export function registerButtonEffect() {
-  document.addEventListener('click', (e) => {
+  document.addEventListener('touchstart', (e) => {
     const ele = getClickableButton(e)
 
     if (ele) {
