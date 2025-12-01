@@ -13,5 +13,11 @@
   "automerge": true,
   "commitMessagePrefix": "chore: ",
   "commitMessageAction": "更新依赖项",
-  "commitMessageExtra": "至 {{newValue}}"
+  "commitMessageExtra": "至 {{newValue}}",
+  "packageRules": [
+    {
+      "matchPackageNames": ["unplugin-vue-router"],
+      "enabled": false
+    }
+  ]
 }
