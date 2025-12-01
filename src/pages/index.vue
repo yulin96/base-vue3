@@ -3,10 +3,6 @@ import { useLoading } from '@/hooks/useLoading'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-definePage({
-  meta: { index: 10 },
-})
-
 const router = useRouter()
 
 const { start } = useLoading(window.IMG_RESOURCES ?? [])
@@ -27,3 +23,11 @@ onMounted(() => {
     </section>
   </div>
 </template>
+
+<route lang="json">
+{
+  "meta": {
+    "index": 10
+  }
+}
+</route>
