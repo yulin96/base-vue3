@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useLoading } from '@/hooks/useLoading'
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 definePage({
   meta: { index: 10 },
 })
+
+const router = useRouter()
 
 const { start } = useLoading(window.IMG_RESOURCES ?? [])
 
@@ -19,7 +22,7 @@ onMounted(() => {
 
 <template>
   <div class="size-full">
-    <section class="scroll-box index">
+    <section class="scroll-box index" @click="router.replace({ name: '/about' })">
       <main class="content"></main>
     </section>
   </div>

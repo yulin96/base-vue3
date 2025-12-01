@@ -1,8 +1,7 @@
-import router from '@/router'
-import { type ClassValue, clsx } from 'clsx'
+import { clsx, type ClassValue } from 'clsx'
 import { debounce } from 'es-toolkit'
 import { twMerge } from 'tailwind-merge'
-import type { RouteLocationRaw } from 'vue-router'
+import { useRouter, type RouteLocationRaw } from 'vue-router'
 
 /**
  * 创建一个防抖函数，在首次触发时立即执行，后续在指定时间内忽略重复调用。
@@ -21,6 +20,7 @@ export function debounceLeading<F extends (...args: any[]) => void>(fn: F, time 
  * @returns 路由跳转的 Promise
  */
 export function routerTo(to: RouteLocationRaw) {
+  const router = useRouter()
   return router.replace(to)
 }
 
