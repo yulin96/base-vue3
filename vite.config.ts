@@ -99,6 +99,7 @@ export default defineConfig(({ command }) => ({
       open: !!env.VITE_FTP_DIRNAME,
       uploadPath: `${env.VITE_FTP_DIRNAME}`,
       singleBack: true,
+      // autoUpload: true,
       // defaultFtp: process.env.zH5FtpName,
       ftps: [
         {
