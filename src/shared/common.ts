@@ -20,7 +20,7 @@ export function debounceLeading<F extends (...args: any[]) => void>(fn: F, time 
  * @param to 目标路由地址
  * @returns 路由跳转的 Promise
  */
-export function routerTo(to: RouteLocationRaw) {
+export function redirectTo(to: RouteLocationRaw) {
   return router.replace(to)
 }
 
