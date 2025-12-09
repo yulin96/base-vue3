@@ -76,9 +76,9 @@
 }
 
 @utility back-full {
-  background-size: 100% 100%;
+  background-size: contain;
   background-repeat: no-repeat;
-  background-position: bottom;
+  background-position: center;
 }
 
 @utility loquat {
