@@ -247,11 +247,11 @@ importers:
         specifier: ^7.2.7
         version: 7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
       vite-plugin-deploy-ftp:
-        specifier: ^1.1.1
-        version: 1.1.1(@types/node@24.10.2)(vite@7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
+        specifier: ^1.1.2
+        version: 1.1.2(@types/node@24.10.2)(vite@7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
       vite-plugin-deploy-oss:
-        specifier: ^1.0.0
-        version: 1.0.0(vite@7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
+        specifier: ^1.0.2
+        version: 1.0.2(vite@7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
       vite-plugin-image-optimizer:
         specifier: ^2.0.3
         version: 2.0.3(sharp@0.34.5)(vite@7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
@@ -3817,13 +3817,13 @@ packages:
     peerDependencies:
       vue: ^3.0.0
 
-  vite-plugin-deploy-ftp@1.1.1:
-    resolution: {integrity: sha512-YFdrm8eE3MmeUFK0asOK1e2w5sqzUNiz0cgfFgnnWZN0sXN9gmqkFTEmq2Hp912Z4tSbax3W8T2UOGHzMN9zUQ==}
+  vite-plugin-deploy-ftp@1.1.2:
+    resolution: {integrity: sha512-NVD8E8PBInWmJn/nWV24XwDqZMPOhLX1frNBtOl+JCG1oNIpk+uAo/73jOFCJ4sGxQN0+r5CzEvITqsqS66pXw==}
     peerDependencies:
       vite: ^6.0.3 || ^7
 
-  vite-plugin-deploy-oss@1.0.0:
-    resolution: {integrity: sha512-VJtoL8RLC7n0JqM5OllPfQOtuevdRHlGtc/dgdMrlaJLAzsI4VJzTAQ4rind0Q8uEWA6WZh4eT3FBs/cfneycA==}
+  vite-plugin-deploy-oss@1.0.2:
+    resolution: {integrity: sha512-8/KHv7DDu1IsYhYps+M5moKY6TnUUOXGbCWqwPP9Ix+qnrSoQpYJjxtODLoTwu/QY62+4kcOk8fvOWPCMHqFnQ==}
     peerDependencies:
       vite: ^6.0.3 || ^7
 
@@ -7525,7 +7525,7 @@ snapshots:
       '@vue/shared': 3.5.25
       vue: 3.5.25(typescript@5.9.3)
 
-  vite-plugin-deploy-ftp@1.1.1(@types/node@24.10.2)(vite@7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)):
+  vite-plugin-deploy-ftp@1.1.2(@types/node@24.10.2)(vite@7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)):
     dependencies:
       '@inquirer/prompts': 7.10.1(@types/node@24.10.2)
       '@types/archiver': 6.0.4
@@ -7540,7 +7540,7 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  vite-plugin-deploy-oss@1.0.0(vite@7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)):
+  vite-plugin-deploy-oss@1.0.2(vite@7.2.7(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)):
     dependencies:
       '@types/ali-oss': 6.16.13
       '@types/delete-empty': 3.0.5
