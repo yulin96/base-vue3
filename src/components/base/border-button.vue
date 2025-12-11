@@ -1,9 +1,9 @@
 <script setup lang="ts">
-defineProps<{ color: string }>()
+defineProps<{ bgColor: string; highlight: string }>()
 </script>
 
 <template>
-  <div class="center tracking-2 rounded-full p-0 indent-2 font-semibold" :style="{ backgroundColor: color }">
+  <div class="center rounded-full p-0" :style="{ backgroundColor: bgColor }">
     <div class="conic center h-full w-full rounded-full">
       <slot />
     </div>
@@ -34,8 +34,8 @@ defineProps<{ color: string }>()
   background-position: 0 0;
   background-image: conic-gradient(
     transparent 0deg,
-    transparent 50deg,
-    #191919 110deg,
+    transparent 40deg,
+    v-bind(highlight) 110deg,
     transparent 130deg,
     transparent 360deg
   );
@@ -46,8 +46,8 @@ defineProps<{ color: string }>()
   content: '';
   position: absolute;
   z-index: -1;
-  background-color: #e4dfcb;
+  background-color: v-bind(bgColor);
   border-radius: 9999px;
-  inset: 4px;
+  inset: 6px;
 }
 </style>
