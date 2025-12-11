@@ -79,30 +79,98 @@ Controlled by environment variables and `.env` settings:
 - Code splitting by vendor: `gsap`, `html2canvas`, `lottie-web`, etc.
 - Lazy route imports in dev, sync in production
 
+## Vue 3.5+ Modern Syntax
+
+### Template Refs (useTemplateRef)
+
+```typescript
+<script setup lang="ts">
+import { useTemplateRef, onMounted } from 'vue'
+
+// DOM ref - name must match template ref attribute
+const inputRef = useTemplateRef<HTMLInputElement>('inputRef')
+
+// Component ref
+const childRef = useTemplateRef<InstanceType<typeof ChildComponent>>('child')
+
+// v-for refs (returns array)
+const itemRefs = useTemplateRef<HTMLLIElement[]>('items')
+
+onMounted(() => inputRef.value?.focus())
+</script>
+
+<template>
+  <input ref="inputRef" />
+  <ChildComponent ref="child" />
+  <li v-for="item in list" ref="items">{{ item }}</li>
+</template>
+```
+
+### defineModel (Two-way Binding)
+
+```typescript
+<script setup lang="ts">
+// Simple v-model
+const modelValue = defineModel<string>()
+
+// Named v-model with default
+const title = defineModel<string>('title', { default: '' })
+
+// Required model (removes undefined)
+const count = defineModel<number>('count', { required: true })
+</script>
+```
+
+### defineProps & defineEmits (Type-based)
+
+```typescript
+<script setup lang="ts">
+// Type-based props with defaults
+const props = withDefaults(defineProps<{
+  msg?: string
+  items?: string[]
+}>(), {
+  msg: 'hello',
+  items: () => []  // Use function for mutable types
+})
+
+// Type-based emits (3.3+ named tuple syntax)
+const emit = defineEmits<{
+  change: [id: number]
+  update: [value: string]
+}>()
+</script>
+```
+
+### defineExpose
+
+```typescript
+<script setup lang="ts">
+const inputRef = useTemplateRef<HTMLInputElement>('input')
+
+defineExpose({
+  focus: () => inputRef.value?.focus(),
+  getValue: () => inputRef.value?.value
+})
+</script>
+```
+
 ## Common Patterns
 
 ```typescript
-// Auto-imported components - use directly
-<template>
-  <ImageScale :src="image" />
-  <Keyboard v-model="password" />
-</template>
-
 // Store with auto-persistence
 const { user } = useStore()
-user.value.clear() // Built-in clear method
+user.value.clear()
 
 // Lock pattern for API calls
 const [isLocked, lock, unlock] = useLock()
 
-// Tailwind 4 custom utilities and class merging
+// Class merging
 import { cn } from '@/shared/common'
-const buttonClass = cn('center text-16 radius-8', isActive && 'shark-wrap')
+const cls = cn('center text-16', isActive && 'shark-wrap')
 
-// Utility imports - organized by domain
-import { copyText } from '@/utils/file/copyText'
-import { randomString } from '@/utils/string/random'
-import { isPhone } from '@/utils/validator'
+// Template ref (Vue 3.5+)
+const domRef = useTemplateRef<HTMLDivElement>('domRef')
 ```
 
 When creating new features:
