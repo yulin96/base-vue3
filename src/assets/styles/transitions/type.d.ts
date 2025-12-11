@@ -1,6 +1,5 @@
 type RouteTransitionNames =
   | 'none'
-  | 'fade'
   | 'blur'
   | 'zoom'
   | 'slide'
