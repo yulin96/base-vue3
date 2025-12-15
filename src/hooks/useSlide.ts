@@ -33,7 +33,7 @@ export function useSlide({
   next,
   prevScroll,
   nextScroll,
-  slideNumber = 100,
+  slideNumber = 150,
   wheelThreshold = 60,
   minSlideDistance = 20,
 }: ISlideOptions = {}) {
@@ -47,6 +47,20 @@ export function useSlide({
   const key = v4()
   const ele = useTemplateRef<HTMLDivElement>(key)
   const { arrivedState } = useScroll(ele, { offset: { bottom: 0 } })
+
+  // 记录当前已绑定事件的元素，支持 v-if / keep-alive 等导致的元素切换
+  let boundElement: HTMLDivElement | null = null
+
+  const isElementAtBottom = (element: HTMLDivElement) => {
+    if (arrivedState.bottom) return true
+    // arrivedState.bottom 在不同移动端浏览器上可能受小数像素/回弹影响，这里加一点容错
+    return Math.ceil(element.scrollTop) + Math.ceil(element.clientHeight) + 2 >= element.scrollHeight
+  }
+
+  const isElementAtTop = (element: HTMLDivElement) => {
+    if (arrivedState.top) return true
+    return element.scrollTop <= 0
+  }
 
   // 重置触摸状态
   const resetTouchState = () => {
@@ -66,6 +80,7 @@ export function useSlide({
 
     touchState.value.isLocked = false
     touchState.value.isTracking = false
+    touchState.value.startY = event.touches[0].pageY
   }
 
   // 触摸移动处理
@@ -76,8 +91,8 @@ export function useSlide({
     const element = ele.value
 
     // 检查是否在边界位置
-    const isAtTop = arrivedState.top || element.scrollTop <= 0
-    const isAtBottom = arrivedState.bottom
+    const isAtTop = isElementAtTop(element)
+    const isAtBottom = isElementAtBottom(element)
 
     if (!isAtTop && !isAtBottom) return
 
@@ -150,43 +165,60 @@ export function useSlide({
   // 事件监听器管理
   const eventOptions = { passive: false }
 
-  const addEventListeners = () => {
-    if (!ele.value) return
-
-    const element = ele.value
+  const addEventListeners = (element: HTMLDivElement) => {
     element.addEventListener('touchstart', handleTouchStart, eventOptions)
     element.addEventListener('touchmove', handleTouchMove, eventOptions)
     element.addEventListener('touchend', handleTouchEnd, eventOptions)
     element.addEventListener('wheel', handleWheel, eventOptions)
   }
 
-  const removeEventListeners = () => {
-    if (!ele.value) return
-
-    const element = ele.value
+  const removeEventListeners = (element: HTMLDivElement) => {
     element.removeEventListener('touchstart', handleTouchStart)
     element.removeEventListener('touchmove', handleTouchMove)
     element.removeEventListener('touchend', handleTouchEnd)
     element.removeEventListener('wheel', handleWheel)
   }
 
+  const rebindEventListeners = () => {
+    const current = ele.value
+    if (current === boundElement) return
+
+    if (boundElement) {
+      removeEventListeners(boundElement)
+    }
+
+    boundElement = current
+    if (boundElement) {
+      addEventListeners(boundElement)
+    }
+  }
+
   // 生命周期管理
   onMounted(() => {
-    addEventListeners()
+    rebindEventListeners()
   })
 
   onActivated(() => {
-    addEventListeners()
+    rebindEventListeners()
   })
 
   onBeforeUnmount(() => {
-    removeEventListeners()
+    if (boundElement) {
+      removeEventListeners(boundElement)
+      boundElement = null
+    }
   })
 
   onDeactivated(() => {
     resetTouchState()
-    removeEventListeners()
+    if (boundElement) {
+      removeEventListeners(boundElement)
+      boundElement = null
+    }
   })
+
+  // 当模板 ref 在 mount 后才出现（例如 v-if / 异步渲染）时，自动补绑监听
+  watch(ele, () => rebindEventListeners(), { flush: 'post' })
 
   return {
     key,
