@@ -88,3 +88,20 @@ body .popup-top-bottom-leave-to {
   opacity: 0 !important;
   transform: translateY(calc(-50% + 120px)) !important;
 }
+
+body .popup-scale-enter-active,
+body .popup-scale-leave-active {
+  transition:
+    opacity 0.36s ease,
+    transform 0.36s ease !important;
+}
+
+body .popup-scale-enter-from {
+  opacity: 0 !important;
+  transform: translateY(calc(-50%)) rotateX(36deg) !important;
+}
+
+body .popup-scale-leave-to {
+  opacity: 0 !important;
+  transform: translateY(calc(-50%)) rotateX(36deg) !important;
+}
