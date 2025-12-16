@@ -57,7 +57,7 @@ body {
   /* Popup Center */
   .van-popup--center {
     max-width: 100%;
-    /* background: unset; */
+    background: unset;
     margin-top: -2vh;
   }
 }
