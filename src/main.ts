@@ -26,7 +26,7 @@ registerDirective(app)
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
-// App.use(i18n)
+// app.use(i18n)
 app.use(pinia)
 app.use(router)
 
