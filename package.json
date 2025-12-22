@@ -104,6 +104,6 @@
     "vite-plugin-meta-share": "^0.0.1",
     "vite-plugin-organize-resource": "^0.0.12",
     "vite": "^7.3.0",
-    "vue-tsc": "3.2.0"
+    "vue-tsc": "3.2.1"
   }
 }
