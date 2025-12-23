@@ -97,13 +97,6 @@ export const useClient = <T = any>(
 
       // 进入频道
       window.ROP.Enter(pub, sub, generateSessionId(), true)
-
-      // 订阅主题
-      if (subIsString) {
-        window.ROP.Subscribe(subScribes as string)
-      } else {
-        ;(subScribes as string[]).forEach((topic) => window.ROP.Subscribe(topic))
-      }
     } catch (error) {
       console.error('连接失败:', error)
       scheduleRetry()
@@ -126,6 +119,12 @@ export const useClient = <T = any>(
       connectionStatus.value = 'connected'
       retryCount.value = 0
       clearRetryTimer()
+
+      if (subIsString) {
+        window.ROP.Subscribe(subScribes as string)
+      } else {
+        ;(subScribes as string[]).forEach((topic) => window.ROP.Subscribe(topic))
+      }
     })
 
     ROP.On('reconnect', () => {
