@@ -10,9 +10,7 @@ const { start } = useLoading(window.IMG_RESOURCES ?? [])
 
 onMounted(() => {
   gsap.context(() => {
-    gsap.timeline({ delay: 0.5 }).then(() => {
-      start()
-    })
+    gsap.timeline({ delay: 0.5 })
   }, '.index')
 })
 </script>
