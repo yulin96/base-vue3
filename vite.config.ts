@@ -64,6 +64,14 @@ export default defineConfig(({ command }) => ({
     VueRouter({
       dts: './types/typed-router.d.ts',
       importMode: command == 'build' ? 'sync' : 'async',
+      extendRoute(route) {
+        const routeName = route.name
+        if (!routeName) return
+        const [name, index = 10] = routeName.toString().split('_')
+        route.name = name
+        route.path = name
+        route.addToMeta({ index })
+      },
     }),
     vue(),
     tailwindcss(),
