@@ -20,7 +20,7 @@ setToastDefaultOptions('loading', { duration: 0, loadingType: 'spinner' })
 
 const statusMap = { success, info, fail }
 
-export function toast(option: (ToastOptions & { status?: 'success' | 'info' | 'fail' }) | string) {
+export function myToast(option: (ToastOptions & { status?: 'success' | 'info' | 'fail' }) | string) {
   if (typeof option === 'string') return _showToast({ message: option, type: 'text' })
 
   const _message = option?.status
@@ -31,15 +31,15 @@ export function toast(option: (ToastOptions & { status?: 'success' | 'info' | 'f
 }
 
 export function successToast(option: string | ToastOptions) {
-  return toast(typeof option === 'string' ? { message: option, status: 'success' } : { ...option, status: 'success' })
+  return myToast(typeof option === 'string' ? { message: option, status: 'success' } : { ...option, status: 'success' })
 }
 
 export function infoToast(option: string | ToastOptions) {
-  return toast(typeof option === 'string' ? { message: option, status: 'info' } : { ...option, status: 'info' })
+  return myToast(typeof option === 'string' ? { message: option, status: 'info' } : { ...option, status: 'info' })
 }
 
 export function failToast(option: string | ToastOptions) {
-  return toast(typeof option === 'string' ? { message: option, status: 'fail' } : { ...option, status: 'fail' })
+  return myToast(typeof option === 'string' ? { message: option, status: 'fail' } : { ...option, status: 'fail' })
 }
 
 export const loadingToast = _showLoadingToast

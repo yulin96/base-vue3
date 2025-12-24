@@ -6,6 +6,8 @@ import { registerWechatShare } from '@/shared/user/share'
 import { isWeChat } from '@/utils/browser/ua'
 import { isHttps } from '@/utils/validator'
 import { onMounted } from 'vue'
+import { Toaster } from 'vue-sonner'
+import 'vue-sonner/style.css'
 
 registerButtonEffect()
 
@@ -33,6 +35,8 @@ onMounted(async () => {
 </script>
 
 <template>
+  <Toaster rich-colors :duration="2000" position="top-center" />
+
   <router-view v-slot="{ Component }">
     <template v-if="Component">
       <transition :name="name">
