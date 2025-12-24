@@ -18,8 +18,6 @@ window.addEventListener(
     const lastClickTime = clickRecord.get(target) || 0
     const now = Date.now()
 
-    console.log(target, target.style.pointerEvents)
-
     if (now - lastClickTime < delay) {
       e.stopImmediatePropagation()
       e.preventDefault()
