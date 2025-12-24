@@ -2,22 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", "group:monorepos", "group:allNonMajor", ":semanticCommits"],
   "lockFileMaintenance": {
-    "enabled": true,
-    "commitMessageAction": "更新锁文件"
+    "enabled": true
   },
   "rangeStrategy": "bump",
   "dependencyDashboard": false,
   "prHourlyLimit": 2,
   "prConcurrentLimit": 5,
   "automergeType": "pr",
-  "automerge": true,
-  "commitMessagePrefix": "chore: ",
-  "commitMessageAction": "更新依赖项",
-  "commitMessageExtra": "至 {{newValue}}",
-  "packageRules": [
-    {
-      "matchPackageNames": ["unplugin-vue-router"],
-      "enabled": false
-    }
-  ]
+  "automerge": true
 }
