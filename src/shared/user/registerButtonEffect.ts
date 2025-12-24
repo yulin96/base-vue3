@@ -1,15 +1,6 @@
-function getClickableButton(e: TouchEvent | PointerEvent) {
-  const target = e.target as HTMLDivElement
-  const parent = target.parentElement as HTMLDivElement | null
-
-  let ele = target?.hasAttribute('btn') ? target : parent?.hasAttribute('btn') ? parent : null
-  if (!ele) ele = target?.getAttribute('type') === 'button' ? target : null
-  return ele
-}
-
 export function registerButtonEffect() {
-  document.addEventListener('touchstart', (e) => {
-    const ele = getClickableButton(e)
+  document.addEventListener('click', (e) => {
+    const ele = (e.target as HTMLElement)?.closest('[btn]')
 
     if (ele) {
       // createClickEffect(e.pageX, e.pageY)

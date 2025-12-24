@@ -6,6 +6,7 @@ import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createApp } from 'vue'
 
+import '@/shared/setup/clickRecord'
 import '@/shared/setup/dev'
 import '@/shared/setup/resetWxFontSize'
 import '@/shared/setup/setRem'
