@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from '@/router'
 import { useStore } from '@/stores/user'
-import { isPcMode } from '@/utils/validator'
+import { isPcMode } from '@/utils/platform/ua'
 import { useWindowSize } from '@vueuse/core'
 import { ref, watch } from 'vue'
 import type { RouteNamedMap } from 'vue-router/auto-routes'

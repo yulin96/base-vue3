@@ -1,5 +1,5 @@
-import { sleep } from '@/shared/common'
-import { failToast, loadingToast, successToast } from '@/shared/plugins/vant/toast'
+import { failToast, loadingToast, successToast } from '@/plugins/vant/toast'
+import { sleep } from '@/utils/common'
 import axios, { toFormData } from 'axios'
 import COS from 'cos-js-sdk-v5'
 import { v4 } from 'uuid'

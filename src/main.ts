@@ -1,24 +1,14 @@
-import '@/shared/setup/gsap'
+import '@/assets/styles/main.css'
+import '@/plugins/appInit'
 
-import { registerDirective } from '@/shared/directive'
-import '@vant/touch-emulator'
+import { registerDirective } from '@/plugins/directives'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createApp } from 'vue'
 
-import '@/shared/setup/clickRecord'
-import '@/shared/setup/dev'
-import '@/shared/setup/resetWxFontSize'
-import '@/shared/setup/setRem'
-import '@/shared/setup/showShareImage'
-
 // import i18n from '@/lang'
 import App from './App.vue'
 import router from './router'
-
-import '@/assets/styles/main.css'
-
-window.document.documentElement.style.setProperty('--main-color', import.meta.env.VITE_APP_MAIN_COLOR)
 
 const app = createApp(App)
 

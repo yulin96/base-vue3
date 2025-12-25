@@ -1,7 +1,7 @@
+import { toUrl } from '@/config/urls'
 import { useLock } from '@/hooks/useLock'
-import { failToast, loadingToast } from '@/shared/plugins/vant/toast'
-import { toUrl } from '@/shared/user/location'
-import { isWeChat } from '@/utils/browser/ua'
+import { failToast, loadingToast } from '@/plugins/vant/toast'
+import { isWeChat } from '@/utils/platform/ua'
 import { isIOS } from '@vueuse/core'
 import { closeToast } from 'vant'
 

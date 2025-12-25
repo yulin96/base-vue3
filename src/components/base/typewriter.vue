@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { sleep } from '@/shared/common'
+import { sleep } from '@/utils/common'
 import { randomInt } from 'es-toolkit'
 import { nextTick, onMounted, ref, useTemplateRef } from 'vue'
 

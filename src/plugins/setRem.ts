@@ -1,7 +1,7 @@
-import { createQRCode, removeQRCode } from '@/shared/setup/createQRCode'
-import { isPcMode } from '@/utils/validator'
+import '@/assets/styles/pc.css'
+import { createQRCode, removeQRCode } from '@/plugins/createQRCode'
+import { isPcMode } from '@/utils/platform/ua'
 import { debounce } from 'es-toolkit'
-import './pc.css'
 
 function setRem() {
   const baseSize = 10

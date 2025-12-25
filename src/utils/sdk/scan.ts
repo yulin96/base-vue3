@@ -1,6 +1,6 @@
-import { isDingDing } from '@/shared/integrations/dingtalk'
-import { wechatScan } from '@/shared/integrations/wx'
-import { isWeChat } from '@/utils/browser/ua'
+import { isDingDing } from '@/utils/libs/dd'
+import { wechatScan } from '@/utils/libs/wx'
+import { isWeChat } from '@/utils/platform/ua'
 import { biz } from 'dingtalk-jsapi'
 import { showDialog } from 'vant'
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useActive } from '@/hooks/useActive'
-import { sleep } from '@/shared/common'
+import { sleep } from '@/utils/common'
 import { random, randomInt, range, sample } from 'es-toolkit'
 import { onMounted, onUnmounted, useTemplateRef } from 'vue'
 

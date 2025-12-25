@@ -1,18 +1,10 @@
 import { useLock } from '@/hooks/useLock'
-import { failToast, loadingToast } from '@/shared/plugins/vant/toast'
-import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/shared/request'
+import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/utils/request'
 import type { AxiosRequestConfig } from 'axios'
-import nprogress from 'nprogress'
-import { closeToast } from 'vant'
 import { readonly } from 'vue'
+import { toast } from 'vue-sonner'
 
-nprogress.configure({
-  showSpinner: false,
-  minimum: 0.3,
-  trickleSpeed: 120,
-})
-
-export function useLockRequest(disableLock = false, showProgress = false, delay = 500) {
+export function useLockRequest(disableLock = false, delay = 500) {
   const [status, lock, unLock] = useLock()
 
   const makeRequest = <T>(requestFn: () => Promise<T>): Promise<T> => {
@@ -20,30 +12,18 @@ export function useLockRequest(disableLock = false, showProgress = false, delay 
       return Promise.reject({ code: -9996, error: '请求正在进行中，请稍后再试' })
     }
 
-    showProgress && nprogress?.start()
     lock()
 
     return new Promise((resolve, reject) => {
-      let isShowLoading = false
-      const requestTimer = setTimeout(() => {
-        isShowLoading = true
-        loadingToast('加载中...')
-      }, 12000)
-
       requestFn()
         .then(resolve)
         .catch((err) => {
           reject(err)
           if (err.name !== 'CanceledError' || err.message === 'Request aborted') {
-            failToast('正在加载中...')
+            toast.error('正在加载中...')
           }
         })
         .finally(() => {
-          clearTimeout(requestTimer)
-          if (isShowLoading) closeToast()
-
-          showProgress && nprogress?.done()
-
           const unlock = () => unLock()
           delay ? setTimeout(unlock, delay) : unlock()
         })

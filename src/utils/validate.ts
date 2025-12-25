@@ -1,5 +1,3 @@
-import { isMobile } from '@/utils/browser/ua'
-
 /**
  * 检查用户名是否仅包含字母和数字
  * @param str 字符串
@@ -76,81 +74,6 @@ export function isHttps(): boolean {
 }
 
 /**
- * 判断当前系统是否开启了深色模式
- * @type {boolean} - 如果开启了深色模式则为 true，否则为 false
- */
-export const isDarkMode: boolean = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-
-/**
- * 监听深色模式变化
- * @param callback 回调函数，当深色模式变化时触发
- * @returns 取消监听的函数
- */
-export function watchDarkMode(callback: (isDark: boolean) => void): () => void {
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-
-  const listener = (e: MediaQueryListEvent) => {
-    callback(e.matches)
-  }
-
-  mediaQuery.addEventListener('change', listener)
-
-  // 返回取消监听的函数
-  return () => mediaQuery.removeEventListener('change', listener)
-}
-
-/**
- * 检查设备是否有摄像头
- * @returns {Promise<boolean>} - 如果设备有摄像头则返回 true，否则返回 false
- */
-export function hasCamera(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-      resolve(false)
-      return
-    }
-
-    navigator.mediaDevices
-      .enumerateDevices()
-      .then((devices) => {
-        const hasVideoInput = devices.some((device) => device.kind === 'videoinput')
-        resolve(hasVideoInput)
-      })
-      .catch(() => {
-        resolve(false)
-      })
-  })
-}
-
-/**
- * 检查浏览器是否支持 WebP 图片格式
- * @returns {Promise<boolean>} - 如果支持则返回 true，否则返回 false
- */
-export function supportsWebp(): Promise<boolean> {
-  if ('_webpSupport' in window) {
-    return Promise.resolve((window as any)._webpSupport)
-  }
-
-  return new Promise((resolve) => {
-    const webpTestImage = 'data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA=='
-    const img = new Image()
-
-    img.onload = function () {
-      const result = img.width > 0 && img.height > 0
-      ;(window as any)._webpSupport = result
-      resolve(result)
-    }
-
-    img.onerror = function () {
-      ;(window as any)._webpSupport = false
-      resolve(false)
-    }
-
-    img.src = webpTestImage
-  })
-}
-
-/**
  * 判断给定的数据是否为 FormData 对象
  * @param formData 要检查的数据
  * @returns 如果给定的数据是 FormData 对象，则返回 true；否则返回 false
@@ -169,13 +92,6 @@ export function isUrl(str: string): boolean {
   } catch {
     return false
   }
-}
-
-/**
- * 判断是否展示PC模式
- */
-export function isPcMode() {
-  return !isMobile() || innerWidth > 700
 }
 
 /**

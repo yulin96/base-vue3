@@ -39,7 +39,7 @@ export function randomString(prefix = 'z', len = 16): string {
  * 生成一个随机的 UUID v4 字符串
  * @returns 生成的 UUID 字符串
  */
-export function uuid(): string {
+export function randomUuid(): string {
   // 如果可用，使用Web Crypto API
   if (window.crypto && window.crypto.randomUUID) {
     return window.crypto.randomUUID()

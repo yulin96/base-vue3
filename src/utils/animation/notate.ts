@@ -1,4 +1,4 @@
-import { sleep } from '@/shared/common'
+import { sleep } from '@/utils/common'
 import { annotate } from 'rough-notation'
 import type { RoughAnnotationConfig } from 'rough-notation/lib/model'
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { sleep } from '@/shared/common'
+import { sleep } from '@/utils/common'
 import { randomInt } from 'es-toolkit'
 import { createApp, nextTick, toRaw, type CSSProperties } from 'vue'
 import BarrageCard from './barrage-card.vue'

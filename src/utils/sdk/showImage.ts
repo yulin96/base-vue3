@@ -1,6 +1,7 @@
-import { wechatPreviewImage } from '@/shared/integrations/wx'
-import { isWeChat } from '@/utils/browser/ua'
-import { isHttps } from '@/utils/validator'
+import { wechatPreviewImage } from '@/utils/libs/wx'
+import { isWeChat } from '@/utils/platform/ua'
+import { isHttps } from '@/utils/validate'
+
 import { showImagePreview } from 'vant'
 import 'vant/es/image-preview/style'
 

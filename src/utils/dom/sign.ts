@@ -1,4 +1,4 @@
-import { infoToast } from '@/shared/plugins/vant/toast'
+import { infoToast } from '@/plugins/vant/toast'
 
 export default class LineCanvas {
   private el: HTMLElement

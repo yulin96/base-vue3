@@ -1,8 +1,8 @@
-import { redirectTo } from '@/shared/common'
 import { useStore } from '@/stores/user'
-import { formDataToObj } from '@/utils/format/convert'
-import { isFormData } from '@/utils/validator'
+import { formDataToObj } from '@/utils/convert'
+import { isFormData } from '@/utils/validate'
 import axios, { toFormData, type AxiosInstance, type AxiosRequestConfig } from 'axios'
+import { useRouter } from 'vue-router'
 
 export type IFormDataOrJSON = 'FormData' | 'JSON'
 
@@ -27,7 +27,8 @@ const interceptor = (instance: AxiosInstance) => {
       if (response.data?.code == 8401) {
         const { user } = useStore()
         user.clear()
-        redirectTo({ name: '/' })
+        const router = useRouter()
+        router.replace({ name: '/' })
       }
 
       return response

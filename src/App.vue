@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { useRouteTransition } from '@/hooks/useRouterTransition'
-import { getWechatConfig } from '@/shared/integrations/wx'
-import { registerButtonEffect } from '@/shared/user/registerButtonEffect'
-import { registerWechatShare } from '@/shared/user/share'
-import { isWeChat } from '@/utils/browser/ua'
-import { isHttps } from '@/utils/validator'
+import { registerWechatShare } from '@/plugins/share'
+import { getWechatConfig } from '@/utils/libs/wx'
+import { isWeChat } from '@/utils/platform/ua'
+import { isHttps } from '@/utils/validate'
 import { onMounted } from 'vue'
 import { Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
-
-registerButtonEffect()
 
 const { name } = useRouteTransition()
 

@@ -1,19 +1,19 @@
-const focusMap = new Map<string, gsap.core.Timeline>()
+const focusMap = new WeakMap<Element, gsap.core.Timeline>()
 
-export function focusElement(name: string) {
+export function focusDom(name: string) {
   const dom = document.querySelector(`[${name}]`)
 
   if (dom) {
     dom.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
-    const oldTimeline = focusMap.get(name)
+    const oldTimeline = focusMap.get(dom)
     if (oldTimeline) oldTimeline.kill()
 
     const timeline = gsap
       .timeline({
         onComplete: () => {
           timeline.kill()
-          focusMap.delete(name)
+          focusMap.delete(dom)
         },
       })
       .to(dom, {
@@ -30,6 +30,6 @@ export function focusElement(name: string) {
       .to(dom, { duration: 0.5, color: '#e7000b', borderColor: '#e7000b' }, '<')
       .to(dom, { duration: 0.5, color: '#000', borderColor: '#e8e8e8' }, '>1')
 
-    focusMap.set(name, timeline)
+    focusMap.set(dom, timeline)
   }
 }
