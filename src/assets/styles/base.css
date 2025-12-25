@@ -49,6 +49,10 @@ code {
   font-family: inherit;
 }
 
+[isBusy='true'] {
+  pointer-events: none !important;
+}
+
 img {
   object-fit: contain;
 }
