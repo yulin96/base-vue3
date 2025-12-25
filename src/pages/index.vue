@@ -16,9 +16,7 @@ onMounted(() => {
 <template>
   <div class="size-full">
     <section class="scroll-box index">
-      <main class="content center">
-        <div class="center size-500 border" btn>123</div>
-      </main>
+      <main class="content"></main>
     </section>
   </div>
 </template>

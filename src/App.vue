@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useRouteTransition } from '@/hooks/useRouterTransition'
 import { registerWechatShare } from '@/plugins/share'
-import { getWechatConfig } from '@/utils/libs/wx'
 import { isWeChat } from '@/utils/platform/ua'
+import { getWechatConfig } from '@/utils/platform/wechat'
 import { isHttps } from '@/utils/validate'
 import { onMounted } from 'vue'
 import { Toaster } from 'vue-sonner'

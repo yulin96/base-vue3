@@ -17,19 +17,19 @@
 } */
 
 :root [data-sonner-toaster][data-theme='light'] {
-  /* --normal-bg: #ffffffee; */
+  --normal-bg: #ffffffee;
   --normal-border: #edededee;
   --normal-text: #171717ee;
-  /* --success-bg: #ffffffee; */
+  --success-bg: #ffffffee;
   --success-border: #d3fde5ee;
   --success-text: #008a2cee;
-  /* --info-bg: #ffffffee; */
+  --info-bg: #ffffffee;
   --info-border: #d3e0fdee;
   --info-text: #0973dcee;
-  /* --warning-bg: #ffffffee; */
+  --warning-bg: #ffffffee;
   --warning-border: #fdf5d3ee;
   --warning-text: #dc7609ee;
-  /* --error-bg: #ffffffee; */
+  --error-bg: #ffffffee;
   --error-border: #ffe0e1ee;
   --error-text: #e60000ee;
 }
@@ -46,6 +46,6 @@
   }
 
   body [data-sonner-toast][data-styled='true'] {
-    padding: calc(var(--base-scale, 1) * 40 * 1px) calc(var(--base-scale, 1) * 32 * 1px);
+    padding: calc(var(--base-scale, 1) * 36 * 1px) calc(var(--base-scale, 1) * 32 * 1px);
   }
 }

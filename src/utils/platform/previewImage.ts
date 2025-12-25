@@ -1,11 +1,11 @@
-import { wechatPreviewImage } from '@/utils/libs/wx'
 import { isWeChat } from '@/utils/platform/ua'
+import { wechatPreviewImage } from '@/utils/platform/wechat'
 import { isHttps } from '@/utils/validate'
 
 import { showImagePreview } from 'vant'
 import 'vant/es/image-preview/style'
 
-export function showImage(url: string[] | string, index: number = 0) {
+export function previewImage(url: string[] | string, index: number = 0) {
   const imageUrls = Array.isArray(url) ? url : [url]
 
   if (isWeChat() && isHttps() && imageUrls[index]) {

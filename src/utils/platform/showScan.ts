@@ -1,11 +1,11 @@
-import { isDingDing } from '@/utils/libs/dd'
-import { wechatScan } from '@/utils/libs/wx'
+import { myDialog } from '@/plugins/vant/dialog'
+import { isDingDing } from '@/utils/platform/dingtalk'
 import { isWeChat } from '@/utils/platform/ua'
+import { wechatScan } from '@/utils/platform/wechat'
 import { biz } from 'dingtalk-jsapi'
-import { showDialog } from 'vant'
 
 let isScanning = false
-export function openScanQR() {
+export function showScan() {
   return new Promise<string>((resolve, reject) => {
     if (isScanning) return reject('扫码功能正在运行中')
     isScanning = true
@@ -31,7 +31,7 @@ export function openScanQR() {
         })
     } else {
       isScanning = false
-      showDialog({ message: '请在微信或钉钉中使用扫码功能' })
+      myDialog({ message: '请在微信或钉钉中使用扫码功能' })
     }
   })
 }

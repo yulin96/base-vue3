@@ -9,4 +9,4 @@ setDialogDefaultOptions({
   transition: 'popup',
 })
 
-export const showDialog = vantShowDialog
+export const myDialog = vantShowDialog
