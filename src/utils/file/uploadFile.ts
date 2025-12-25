@@ -1,24 +1,23 @@
-import { failToast, loadingToast, successToast } from '@/plugins/vant/toast'
 import { sleep } from '@/utils/common'
 import axios, { toFormData } from 'axios'
 import COS from 'cos-js-sdk-v5'
 import { v4 } from 'uuid'
-import { closeToast } from 'vant/lib/toast'
+import { toast } from 'vue-sonner'
 
 type IUploadOption = {
   id: string
   file: File
   type?: string
   start?: string
-  showLoading?: boolean
+  loading?: boolean
   test?: boolean
 }
 
 export async function uploadFile(option: IUploadOption): Promise<[null, string] | [unknown, null]> {
   return new Promise<[null, string] | [unknown, null]>(async (resolve) => {
-    const { id, file, type = 'jpg', start = 'zh', showLoading = false, test = true } = option
+    const { id, file, type = 'jpg', start = 'zh', loading = false, test = true } = option
 
-    showLoading && loadingToast('上传中...')
+    loading && toast.loading('上传中...')
 
     try {
       const {
@@ -63,8 +62,8 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
           }
 
           resolve([null, url])
-          closeToast()
-          successToast('上传成功')
+          toast.dismiss()
+          toast.success('上传成功')
         },
       )
     } catch (error) {
@@ -72,8 +71,8 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
     }
 
     function showError(message: string) {
-      closeToast()
-      failToast(message)
+      toast.dismiss()
+      toast.error(message)
     }
   })
 }
