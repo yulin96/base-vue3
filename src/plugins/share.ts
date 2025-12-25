@@ -1,3 +1,4 @@
+import { isWeChat } from '@/utils/platform/ua'
 import { wechatShare } from '@/utils/platform/wechat'
 
 export function registerWechatShare() {
@@ -6,5 +7,5 @@ export function registerWechatShare() {
   const link = import.meta.env.VITE_APP_SHARE_LINK
   const imgUrl = import.meta.env.VITE_APP_SHARE_IMGURL
 
-  wechatShare({ title, desc, link, imgUrl })
+  isWeChat() && wechatShare({ title, desc, link, imgUrl })
 }
