@@ -80,7 +80,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^9.39.2",
     "eslint-plugin-vue": "^10.6.2",
-    "jsdom": "^27.3.0",
+    "jsdom": "^27.4.0",
     "npm-run-all2": "^8.0.4",
     "postcss-preset-env": "^10.5.0",
     "postcss-px-to-viewport-8-plugin": "^1.2.5",
