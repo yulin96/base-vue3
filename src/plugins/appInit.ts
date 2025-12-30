@@ -7,5 +7,3 @@ import '@/plugins/setRem'
 import '@vant/touch-emulator'
 
 window.document.documentElement.style.setProperty('--main-color', import.meta.env.VITE_APP_MAIN_COLOR)
-
-Object.hasOwn({ name: '' }, 'name') && document.documentElement.setAttribute('hasOwn', 'true')

@@ -87,6 +87,7 @@ export default defineConfig(({ command }) => ({
     legacy({
       targets: ['chrome >= 87', 'safari >= 13', 'firefox >= 78', 'edge >= 88'],
       modernTargets: ['chrome >= 87', 'safari >= 13', 'firefox >= 78', 'edge >= 88'],
+      additionalModernPolyfills: ['core-js/es/object/has-own'],
       renderLegacyChunks: false,
       modernPolyfills: true,
     }),
