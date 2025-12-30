@@ -31,6 +31,9 @@ const splitDependencies: Record<string, string> = {
 const env = loadEnv('production', process.cwd())
 
 export default defineConfig(({ command }) => ({
+  define: {
+    __ARMSEndpoint: JSON.stringify(process.env.ARMSEndpoint),
+  },
   plugins: [
     {
       name: 'build-check',

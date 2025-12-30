@@ -2,6 +2,8 @@
 /// <reference types="@plugin-web-update-notification/vite" />
 /// <reference types="unplugin-vue-router/client" />
 
+declare const __ARMSEndpoint: string
+
 interface ImportMetaEnv {
   readonly VITE_APP_API_URL: string
   readonly VITE_APP_LOCALSTORAGE_NAME: string

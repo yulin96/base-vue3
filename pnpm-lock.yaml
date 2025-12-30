@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@arms/rum-browser':
+        specifier: ^0.1.2
+        version: 0.1.2(@babel/runtime@7.28.4)
       '@iconify/vue':
         specifier: 5.0.0
         version: 5.0.0(vue@3.5.26(typescript@5.9.3))
@@ -254,6 +257,16 @@ importers:
         version: 3.2.1(typescript@5.9.3)
 
 packages:
+
+  '@arms/rum-browser@0.1.2':
+    resolution: {integrity: sha512-Rh+liYoc0x0R69QEGw0TDsjJIQLKWhCQQWjCRRlAWdFNN3QoIZlikHjigTBRDQL2z7Bu1vcSnWL9L0rDAEYZsQ==}
+    peerDependencies:
+      '@babel/runtime': ^7.24.5
+
+  '@arms/rum-core@0.1.2':
+    resolution: {integrity: sha512-k9GofhJkmWOqQ+7p4IZmPhNuspSMNF205500UdP9/IEU1/HKlXDw/SzGnD2cmC0Ntdfq5osk3q+hsbBFx/rGwQ==}
+    peerDependencies:
+      '@babel/runtime': ^7.24.5
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -733,6 +746,10 @@ packages:
     resolution: {integrity: sha512-HrcgcIESLm9aIR842yhJ5RWan/gebQUJ6E/E5+rf0y9o6oj7w0Br+sWuL6kEQ/o/AdfvR1Je9jG18/gnpwjEyA==}
     peerDependencies:
       '@babel/core': ^7.0.0-0 || ^8.0.0-0 <8.0.0
+
+  '@babel/runtime@7.28.4':
+    resolution: {integrity: sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==}
+    engines: {node: '>=6.9.0'}
 
   '@babel/template@7.27.2':
     resolution: {integrity: sha512-LPDZ85aEJyYSd18/DkjNh4/y1ntkE5KwUHWTiqgRxruuZL2F1yuHligVHLvcHY2vMHXttKFpJn6LwfI7cw7ODw==}
@@ -4326,6 +4343,9 @@ packages:
       typescript:
         optional: true
 
+  web-vitals@3.5.2:
+    resolution: {integrity: sha512-c0rhqNcHXRkY/ogGDJQxZ9Im9D19hDihbzSQJrsioex+KnFgmMzBiy57Z1EjkhX/+OjyBpclDCzz2ITtjokFmg==}
+
   webpack-virtual-modules@0.6.2:
     resolution: {integrity: sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ==}
 
@@ -4428,6 +4448,16 @@ packages:
     engines: {node: '>= 14'}
 
 snapshots:
+
+  '@arms/rum-browser@0.1.2(@babel/runtime@7.28.4)':
+    dependencies:
+      '@arms/rum-core': 0.1.2(@babel/runtime@7.28.4)
+      '@babel/runtime': 7.28.4
+      web-vitals: 3.5.2
+
+  '@arms/rum-core@0.1.2(@babel/runtime@7.28.4)':
+    dependencies:
+      '@babel/runtime': 7.28.4
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -5057,6 +5087,8 @@ snapshots:
       '@babel/helper-plugin-utils': 7.27.1
       '@babel/types': 7.28.5
       esutils: 2.0.3
+
+  '@babel/runtime@7.28.4': {}
 
   '@babel/template@7.27.2':
     dependencies:
@@ -8531,6 +8563,8 @@ snapshots:
       '@vue/shared': 3.5.26
     optionalDependencies:
       typescript: 5.9.3
+
+  web-vitals@3.5.2: {}
 
   webpack-virtual-modules@0.6.2: {}
 
