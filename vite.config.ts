@@ -2,6 +2,7 @@ import path from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 
+import legacy from '@vitejs/plugin-legacy'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
 import vitePluginDeployFtp from 'vite-plugin-deploy-ftp'
@@ -82,6 +83,12 @@ export default defineConfig(({ command }) => ({
       resolvers: [VantResolver()],
       dts: './types/components.d.ts',
       directoryAsNamespace: true,
+    }),
+    legacy({
+      targets: ['chrome >= 87', 'safari >= 13', 'firefox >= 78', 'edge >= 88'],
+      modernTargets: ['chrome >= 87', 'safari >= 13', 'firefox >= 78', 'edge >= 88'],
+      renderLegacyChunks: false,
+      modernPolyfills: true,
     }),
     vitePluginDeployOss({
       open: !!env.VITE_OSS_ROOT_DIR && env.VITE_OSS_ROOT_DIR !== 'H5/zz/auto2/',
@@ -168,7 +175,6 @@ export default defineConfig(({ command }) => ({
     drop: command === 'serve' ? [] : env.VITE_DROP_CONSOLE == '1' ? ['console', 'debugger'] : [],
   },
   build: {
-    target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
     assetsInlineLimit: 10240,
     assetsDir: 'assets',
     chunkSizeWarningLimit: 1000,

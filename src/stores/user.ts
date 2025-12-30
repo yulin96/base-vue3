@@ -1,4 +1,3 @@
-import { deepClone } from '@/utils/convert'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -22,9 +21,9 @@ export const useStore = defineStore(
     }
 
     const user = ref({
-      ...deepClone(originData),
+      ...structuredClone(originData),
       clear() {
-        const clone = deepClone(originData)
+        const clone = structuredClone(originData)
         Object.keys(this).forEach((key) => {
           if (key === 'clear') return
           this[key] = clone[key]
