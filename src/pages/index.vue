@@ -20,3 +20,7 @@ onMounted(() => {
     </section>
   </div>
 </template>
+
+<route lang="json">
+{ "meta": { "index": 10 } }
+</route>
