@@ -1,8 +1,6 @@
-import { useStore } from '@/stores/user'
 import { formDataToObj } from '@/utils/convert'
 import { isFormData } from '@/utils/validate'
 import axios, { toFormData, type AxiosInstance, type AxiosRequestConfig } from 'axios'
-import { useRouter } from 'vue-router'
 
 export type IFormDataOrJSON = 'FormData' | 'JSON'
 
@@ -23,13 +21,6 @@ const interceptor = (instance: AxiosInstance) => {
       requestBody.data = isFormData(data) ? formDataToObj(data) : data
 
       response.data._request = requestBody
-
-      if (response.data?.code == 8401) {
-        const { user } = useStore()
-        user.clear()
-        const router = useRouter()
-        router.replace({ name: '/' })
-      }
 
       return response
     },
