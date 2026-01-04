@@ -17,7 +17,17 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
   return new Promise<[null, string] | [unknown, null]>(async (resolve) => {
     const { id, file, type = 'jpg', start = 'zh', loading = false, test = true } = option
 
-    loading && toast.loading('上传中...')
+    let toastId: string | number | undefined = undefined
+    let _updateTimer: number | undefined = undefined
+    if (loading) {
+      toastId = toast.loading('上传中...', {
+        duration: Infinity,
+        class: 'process-toast',
+        style: {
+          '--process-toast': '0%',
+        },
+      })
+    }
 
     try {
       const {
@@ -48,10 +58,18 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
           Key,
           Body: file,
           SliceSize: 1024 * 1024,
+          onProgress: function (progressData) {
+            const process = Math.floor(progressData.percent * 50)
+            if (loading) updateLoadingToast(toastId, process)
+          },
         },
         async (err, data) => {
           if (err) return (showError('上传失败'), resolve([err, null]))
 
+          let process = 50
+          _updateTimer = window.setInterval(() => {
+            if (loading) updateLoadingToast(toastId, (process += 5))
+          }, 500)
           await sleep(3000)
           const url = `https://oss.1ycloud.com/${Key}`
           if (test) {
@@ -62,8 +80,15 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
           }
 
           resolve([null, url])
-          toast.dismiss()
-          toast.success('上传成功')
+
+          if (loading) {
+            clearInterval(_updateTimer)
+            updateLoadingToast(toastId, 100)
+            toast.success('上传成功', { id: toastId })
+            setTimeout(() => {
+              toast.dismiss(toastId)
+            }, 2000)
+          }
         },
       )
     } catch (error) {
@@ -71,8 +96,14 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
     }
 
     function showError(message: string) {
-      toast.dismiss()
-      toast.error(message)
+      if (loading) {
+        clearInterval(_updateTimer)
+        updateLoadingToast(toastId, 100, true)
+        toast.error(message, { id: toastId })
+        setTimeout(() => {
+          toast.dismiss(toastId)
+        }, 2600)
+      }
     }
   })
 }
@@ -84,4 +115,14 @@ export async function isResourceAvailable(url: string): Promise<boolean> {
   } catch {
     return false
   }
+}
+
+function updateLoadingToast(toastId: string | number | undefined, percent: number, isError = false) {
+  toast.loading('上传中...', {
+    id: toastId,
+    style: {
+      '--process-toast': `${Math.min(percent, 100)}%`,
+      '--process-bg-process': isError ? 'var(--error-bg-process, #fff0f0ff)' : 'var(--process-bg-process, #ecfdf3ff)',
+    },
+  })
 }

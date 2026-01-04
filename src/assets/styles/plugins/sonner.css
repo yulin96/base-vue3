@@ -1,42 +1,36 @@
-/* :root [data-sonner-toaster][data-theme='light'] {
-  --normal-bg: #f;
-  --normal-border: var(--gray4);
-  --normal-text: var(--gray12);
-  --success-bg: #ecfdf3;
-  --success-border: #d3fde5;
-  --success-text: #008a2e;
-  --info-bg: #f0f8ff;
-  --info-border: #d3e0fd;
-  --info-text: #0973dc;
-  --warning-bg: #fffcf0;
-  --warning-border: #fdf5d3;
-  --warning-text: #dc7609;
-  --error-bg: #fff0f0;
-  --error-border: #ffe0e1;
-  --error-text: #e60000;
-} */
-
 :root [data-sonner-toaster][data-theme='light'] {
-  --normal-bg: #ffffff;
-  --normal-border: #ededed;
-  --normal-text: #171717;
-  --success-bg: #ffffff;
-  --success-border: #d3fde5;
-  --success-text: #008a2c;
-  --info-bg: #ffffff;
-  --info-border: #d3e0fd;
-  --info-text: #0973dc;
-  --warning-bg: #ffffff;
-  --warning-border: #fdf5d3;
-  --warning-text: #dc7609;
-  --error-bg: #ffffff;
-  --error-border: #ffe0e1;
-  --error-text: #e60000;
+  --normal-bg: #fff;
+  --normal-border: #edededff;
+  --normal-text: #171717ff;
+
+  --process-bg-process: #ecfdf3ff;
+
+  /* --success-bg: #ecfdf3ff; */
+  --success-bg: #fff;
+  --success-border: #bffcd9ff;
+  --success-text: #008a2eff;
+
+  /* --info-bg: #f0f8ffff; */
+  --info-bg: #fff;
+  --info-border: #dde7fdff;
+  --info-text: #0973dcff;
+
+  /* --warning-bg: #fffcf0ff; */
+  --warning-bg: #fff;
+  --warning-border: #fbeeb1ff;
+  --warning-text: #dc7609ff;
+
+  --error-bg-process: #fff0f0ff;
+
+  /* --error-bg: #fff0f0ff; */
+  --error-bg: #fff;
+  --error-border: #ffe0e1ff;
+  --error-text: #e60000ff;
 }
 
 @media screen and (max-width: 768px) {
   body [data-sonner-toaster][data-theme='light'] li {
-    backdrop-filter: blur(12px);
+    /* backdrop-filter: blur(12px); */
     font-size: calc(var(--base-scale, 1) * 30 * 1px);
   }
 
@@ -48,4 +42,20 @@
   body [data-sonner-toast][data-styled='true'] {
     padding: calc(var(--base-scale, 1) * 36 * 1px) calc(var(--base-scale, 1) * 32 * 1px);
   }
+}
+
+.process-toast {
+  overflow: hidden;
+}
+
+.process-toast::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: var(--process-toast, 0%);
+  transition: width 0.36s ease;
+  height: 100%;
+  background: var(--process-bg-process, #ecfdf3ff);
+  z-index: -1;
+  border-radius: var(--border-radius);
 }
