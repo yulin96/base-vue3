@@ -20,6 +20,7 @@ import pxtorem from '@minko-fe/postcss-pxtorem'
 import postcssPresetEnv from 'postcss-preset-env'
 
 const splitDependencies: Record<string, string> = {
+  arms: '@arms+rum-browser',
   gsap: 'gsap',
   html2canvas: 'html2canvas',
   lottie: 'lottie-web',
