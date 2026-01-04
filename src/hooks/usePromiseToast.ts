@@ -1,29 +1,32 @@
-import { usePromise } from '@/hooks/usePromise'
 import { shallowRef } from 'vue'
 import { toast } from 'vue-sonner'
 
 export const usePromiseToast = () => {
-  const { promise, resolve, reject, reset } = usePromise<string>()
+  const inert = shallowRef(false)
 
-  const isBusy = shallowRef(false)
-
+  let resolver = Promise.withResolvers<string>()
   const createToast = (message?: string) => {
-    isBusy.value = true
-    toast.promise(promise.value, {
+    inert.value = true
+
+    toast.promise(resolver.promise, {
       loading: message || '处理中...',
       success: (value: string) => value,
       error: (value: string) => value,
       finally() {
-        isBusy.value = false
+        inert.value = false
         reset()
       },
     })
   }
 
+  function reset() {
+    resolver = Promise.withResolvers<string>()
+  }
+
   return {
-    isBusy,
+    inert,
     createToast,
-    resolveToast: (v = '处理成功！') => resolve(v),
-    rejectToast: (e = '处理失败！') => reject(e),
+    resolveToast: (v = '处理成功！') => resolver.resolve(v),
+    rejectToast: (e = '处理失败！') => resolver.reject(e),
   }
 }
