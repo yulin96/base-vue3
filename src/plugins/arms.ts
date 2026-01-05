@@ -15,8 +15,8 @@ export function registerARMS() {
           tags: document.title || 'unknown',
         },
 
-        parseViewName(url: string) {
-          return location.pathname + url
+        parseViewName() {
+          return location.pathname + location.hash.split('?')?.[0]
         },
 
         // 监控项配置
