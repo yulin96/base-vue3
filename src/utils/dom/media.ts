@@ -1,6 +1,7 @@
 import { blobToFile } from '@/utils/convert'
 import { compressPhoto } from '@/utils/file/compressImage'
 import { v1 } from 'uuid'
+import { toast } from 'vue-sonner'
 
 /**
  * 获取用户图片
@@ -28,7 +29,8 @@ export function getUserImage(option?: Compressor.Options) {
             resolve(blobToFile(f, `${v1()}.jpg`))
           })
           .catch((err) => {
-            reject(err)
+            toast.error('请上传有效的图片文件')
+            resolve()
           })
           .finally(() => {
             document.body.removeChild(input)
