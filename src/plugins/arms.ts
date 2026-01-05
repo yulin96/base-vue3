@@ -11,6 +11,14 @@ export function registerARMS() {
         // 路由模式：'history' | 'hash'
         spaMode: 'hash',
 
+        user: {
+          tags: document.title || 'unknown',
+        },
+
+        parseViewName(url: string) {
+          return location.pathname + url
+        },
+
         // 监控项配置
         collectors: {
           perf: true, // 页面性能指标

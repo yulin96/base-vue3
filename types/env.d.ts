@@ -26,4 +26,5 @@ declare const WeixinJSBridge: any
 
 interface Window {
   IMG_RESOURCES?: string[]
+  RumSDK?: any
 }
