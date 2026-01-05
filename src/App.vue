@@ -18,7 +18,7 @@ registerWechatShare()
 onMounted(async () => {
   const title = import.meta.env.VITE_APP_TITLE
   if (title) {
-    document.title = title + ' '
+    document.title = title + '​'
     document.title = title
   }
 })
