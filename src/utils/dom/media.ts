@@ -48,7 +48,7 @@ export function getUserImage(option?: Compressor.Options) {
 }
 
 export function getUserVideo() {
-  return new Promise<File>((resolve, reject) => {
+  return new Promise<File | void>((resolve) => {
     const input = document.createElement('input')
     document.body.appendChild(input)
     input.type = 'file'
@@ -57,12 +57,8 @@ export function getUserVideo() {
 
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
-      if (!file) return
-      if (file) {
-        resolve(file)
-      } else {
-        reject(new Error('No file selected'))
-      }
+      if (!file) return resolve()
+      resolve(file)
       document.body.removeChild(input)
     }
     input.click()
@@ -70,7 +66,7 @@ export function getUserVideo() {
 }
 
 export function getUserFile(accept = '*') {
-  return new Promise<File>((resolve, reject) => {
+  return new Promise<File | void>((resolve) => {
     const input = document.createElement('input')
     document.body.appendChild(input)
     input.type = 'file'
@@ -79,12 +75,9 @@ export function getUserFile(accept = '*') {
 
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
-      if (!file) return
-      if (file) {
-        resolve(file)
-      } else {
-        reject(new Error('No file selected'))
-      }
+      if (!file) return resolve()
+      resolve(file)
+
       document.body.removeChild(input)
     }
     input.click()
