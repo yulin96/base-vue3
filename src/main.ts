@@ -28,5 +28,5 @@ meta.name = 'naive-ui-style'
 document.head.appendChild(meta)
 
 app.mount('#app').$nextTick(() => {
-  prodModel && registerARMS()
+  prodModel && import.meta.env.VITE_APP_ARMS == '1' && registerARMS()
 })

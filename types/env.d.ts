@@ -20,6 +20,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_CONTACT: string
   readonly VITE_APP_COMPANY: string
   readonly VITE_APP_COMPANY_LINK: string
+  readonly VITE_APP_ARMS: string
 }
 
 declare const WeixinJSBridge: any
