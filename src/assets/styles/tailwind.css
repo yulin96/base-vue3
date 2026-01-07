@@ -19,6 +19,7 @@
   --animate-handle: handle 1s ease infinite;
   --animate-next-page: next-page 0.9s ease infinite alternate;
   --animate-rotate-cube: rotate-cube 5s infinite linear;
+  --animate-flash: flash 1s infinite;
 }
 
 @theme {
