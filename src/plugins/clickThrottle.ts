@@ -1,5 +1,5 @@
 const clickRecord = new WeakMap()
-const DEFAULT_DELAY = 900
+const DEFAULT_DELAY = 600
 
 window.addEventListener(
   'click',
