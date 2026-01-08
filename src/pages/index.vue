@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { useLoading } from '@/hooks/useLoading'
 import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const { start } = useLoading(window.IMG_RESOURCES ?? [])
 
 onMounted(() => {
