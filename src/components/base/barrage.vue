@@ -87,14 +87,13 @@ const createCard = async (id: number, gap: number) => {
     createCard(id, typeof space === 'number' ? space : randomInt(space[0], space[1]))
   })
 
-  const _ani = gsap.to(div, {
+  gsap.to(div, {
     x: -right,
     duration: duration,
     ease: 'none',
     z: 0,
     onComplete() {
       nextCardTimer.kill()
-      _ani.kill()
       render(null, div2)
       div.remove()
     },
