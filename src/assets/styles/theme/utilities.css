@@ -86,3 +86,11 @@
   mask-size: 250% 100%;
   mask-position: 90%;
 }
+
+@utility shadow-stroke {
+  text-shadow:
+    -2px -2px 0 #000,
+    2px -2px 0 #000,
+    -2px 2px 0 #000,
+    2px 2px 0 #000;
+}
