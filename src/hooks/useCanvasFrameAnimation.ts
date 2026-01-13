@@ -559,3 +559,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 }
 
 export default useCanvasFrameAnimation
+
+export function createFrameList(prefix: string, count: number, extension = 'png'): string[] {
+  return Array.from({ length: count }, (_, i) => `${prefix}${i}.${extension}`)
+}
