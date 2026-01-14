@@ -80,7 +80,7 @@
     "eslint": "^9.39.2",
     "eslint-plugin-vue": "^10.6.2",
     "npm-run-all2": "^8.0.4",
-    "postcss-preset-env": "^11.0.1",
+    "postcss-preset-env": "^11.1.0",
     "postcss-px-to-viewport-8-plugin": "^1.2.5",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",
