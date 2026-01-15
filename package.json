@@ -82,7 +82,7 @@
     "npm-run-all2": "^8.0.4",
     "postcss-preset-env": "^11.1.0",
     "postcss-px-to-viewport-8-plugin": "^1.2.5",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "rollup-plugin-visualizer": "^6.0.5",
     "sharp": "^0.34.5",
