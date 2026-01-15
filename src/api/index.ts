@@ -25,20 +25,14 @@ export const apiMenus = (title: string) => {
   })
 }
 
-export async function replaceToWithMenus(name: string, path?: keyof RouteNamedMap) {
-  const pathIsUndefined = path === undefined
-  const pathIsUrl = pathIsUndefined ? false : isUrl(String(path))
-
+export async function replaceToWithMenus(name: string, path?: keyof RouteNamedMap | (string & {})) {
   const [status, res] = await apiMenus(name)
   if (!status) return infoToast('敬请期待')
 
-  if (!pathIsUndefined) {
-    if (!pathIsUrl) replaceTo({ name: path })
-    else toUrl(String(path))
+  const url = path || res?.url || ''
 
-    return
-  }
+  if (!url) return infoToast('敬请期待!')
 
-  if (!res?.url || !isUrl(res?.url)) return infoToast('敬请期待！')
-  toUrl(res.url)
+  if (isUrl(url)) return toUrl(url)
+  replaceTo({ path: path })
 }
