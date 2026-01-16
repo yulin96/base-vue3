@@ -11,6 +11,7 @@ const props = withDefaults(
     maxScale?: number
     draggable?: boolean
     scaleSensitivity?: number
+    allowOverflow?: boolean
   }>(),
   {
     mode: 'cover',
@@ -18,6 +19,7 @@ const props = withDefaults(
     maxScale: 4,
     draggable: true,
     scaleSensitivity: 1,
+    allowOverflow: false,
   },
 )
 
@@ -50,7 +52,7 @@ const updateBaseScale = () => {
 }
 
 const clampTranslate = () => {
-  if (!isReady.value || props.mode !== 'cover') return
+  if (!isReady.value || props.mode !== 'cover' || props.allowOverflow) return
   const renderedWidth = imageSize.width * baseScale.value * userScale.value
   const renderedHeight = imageSize.height * baseScale.value * userScale.value
   const maxOffsetX = Math.max(0, (renderedWidth - containerSize.width) / 2)
@@ -87,7 +89,7 @@ const onImageLoad = () => {
 }
 
 const onWheel = (event: WheelEvent) => {
-  if (!isReady.value) return
+  if (!isReady.value || !props.draggable) return
   event.preventDefault()
   const factor = Math.exp(-event.deltaY * 0.001)
   setScale(userScale.value * factor)
@@ -329,7 +331,7 @@ watch(
 <template>
   <div
     ref="containerRef"
-    class="base-scale"
+    class="relative size-full touch-none overflow-hidden"
     @wheel="onWheel"
     @mousedown="onMouseDown"
     @touchstart.passive="onTouchStart"
@@ -340,7 +342,7 @@ watch(
   >
     <img
       ref="imgRef"
-      class="base-scale__img"
+      class="pointer-events-none absolute top-1/2 left-1/2 will-change-transform select-none"
       :src="props.src"
       :style="imgStyle"
       draggable="false"
@@ -349,22 +351,3 @@ watch(
     />
   </div>
 </template>
-
-<style scoped>
-.base-scale {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  touch-action: none;
-}
-
-.base-scale__img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  will-change: transform;
-  user-select: none;
-  pointer-events: none;
-}
-</style>
