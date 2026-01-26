@@ -33,7 +33,7 @@ const clickBack = async () => {
     class="center"
     @click="clickBack"
   >
-    <img btn class="size-full" src="../../assets/imgs/back.svg" alt="" draggable="false" />
+    <img btn class="size-full" src="../../assets/images/back.svg" alt="" draggable="false" />
   </van-floating-bubble>
 
   <div
@@ -42,6 +42,6 @@ const clickBack = async () => {
     :style="{ width: `${size * (height / 720)}px`, height: `${size * (height / 720)}px` }"
     @click="clickBack"
   >
-    <img btn class="size-full" src="../../assets/imgs/back.svg" alt="" draggable="false" />
+    <img btn class="size-full" src="../../assets/images/back.svg" alt="" draggable="false" />
   </div>
 </template>
