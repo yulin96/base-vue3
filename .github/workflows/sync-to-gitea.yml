@@ -12,4 +12,4 @@ jobs:
           GIT_ACCESS_TOKEN: ${{ secrets.GITEA_TOKEN_WORK }}
         with:
           source-repo: 'https://github.com/${{ github.repository }}.git'
-          destination-repo: ${{ secrets.GITEA_DESTINATION_URL_WORK }}
+          destination-repo: 'https://oauth2:${{ secrets.GITEA_TOKEN_WORK }}@gitea.eventnet.cn/yulin96/base-vue3.git'
