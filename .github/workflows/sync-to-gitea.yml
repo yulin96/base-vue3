@@ -1,0 +1,15 @@
+name: Mirror to Gitea
+
+on: [push, delete] # 监听推送和删除操作
+
+jobs:
+  mirror_to_gitea:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror Action
+        uses: wearerequired/git-mirror-action@v1
+        env:
+          GIT_ACCESS_TOKEN: ${{ secrets.GITEA_TOKEN_WORK }}
+        with:
+          source-repo: 'https://github.com/${{ github.repository }}.git'
+          destination-repo: ${{ secrets.GITEA_DESTINATION_URL_WORK }}
