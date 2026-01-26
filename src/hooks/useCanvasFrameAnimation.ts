@@ -89,12 +89,27 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   let loadedCount = 0
   let targetFrame: number | null = null // 目标帧，用于播放到指定帧后停止
   let onCompleteCallback: (() => void) | null = null // 完成回调
+  let loadingPromise: Promise<HTMLImageElement[]> | null = null
+
+  const createCompletionPromise = (onComplete?: () => void): Promise<void> => {
+    return new Promise((resolve) => {
+      onCompleteCallback = () => {
+        try {
+          onComplete?.()
+        } catch (error) {
+          console.error('回调函数执行出错:', error)
+        } finally {
+          resolve()
+        }
+      }
+    })
+  }
 
   // 动态计算帧间隔时间（毫秒）
   const getFrameInterval = () => 1000 / state.currentFps
 
   // 预加载图片
-  const preloadImages = async (): Promise<HTMLImageElement[]> => {
+  const preloadImagesInternal = async (suppressAutoplay: boolean): Promise<HTMLImageElement[]> => {
     // 优先加载封面帧
     const loadImage = (frame: string | HTMLImageElement, index: number): Promise<HTMLImageElement> => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -157,7 +172,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       images = loadedImages
 
       // 如果启用了自动播放且当前没在播放，开始播放
-      if (autoplay && !state.isPlaying) {
+      if (autoplay && !state.isPlaying && !suppressAutoplay) {
         play(startFrame)
       }
 
@@ -166,6 +181,25 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       console.error('Failed to preload all images:', error)
       throw error
     }
+  }
+
+  const preloadImages = async (): Promise<HTMLImageElement[]> => {
+    if (!loadingPromise) {
+      loadingPromise = preloadImagesInternal(false).finally(() => {
+        loadingPromise = null
+      })
+    }
+    return loadingPromise
+  }
+
+  const ensureLoadedForPlayback = async () => {
+    if (state.isLoaded) return
+    if (!loadingPromise) {
+      loadingPromise = preloadImagesInternal(true).finally(() => {
+        loadingPromise = null
+      })
+    }
+    await loadingPromise
   }
 
   // 绘制当前帧
@@ -297,7 +331,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       if (targetFrame !== null) {
         // 如果超出图片范围，停止播放
         if (nextFrame >= frames.length) {
-          stop()
+          pause()
           const callback = onCompleteCallback
           targetFrame = null
           onCompleteCallback = null
@@ -345,14 +379,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
         // 停止动画但保持当前帧位置（不重置到coverFrame）
         pause()
         onCompleteCallback = null // 重置回调
-
-        if (callback) {
-          try {
-            callback() // 执行完成回调
-          } catch (error) {
-            console.error('回调函数执行出错:', error)
-          }
-        }
+        callback?.()
         return
       }
     }
@@ -361,9 +388,11 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   }
 
   // 播放控制方法
-  const play = (fromFrame?: number, onComplete?: () => void) => {
-    if (!state.isLoaded) {
-      console.warn('Images not loaded yet')
+  const play = async (fromFrame?: number, onComplete?: () => void): Promise<void> => {
+    try {
+      await ensureLoadedForPlayback()
+    } catch (error) {
+      console.error('Failed to preload all images:', error)
       return
     }
 
@@ -372,14 +401,29 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       drawFrame(state.currentFrame)
     }
 
-    // 如果有完成回调，设置为全局回调
-    if (onComplete && targetFrame === null) {
-      onCompleteCallback = onComplete
+    // play 默认播放到最后一帧并定格（非循环）
+    if (loop) {
+      targetFrame = null
+    } else {
+      targetFrame = frames.length - 1
+    }
+
+    const completionPromise = createCompletionPromise(onComplete)
+
+    if (targetFrame !== null && state.currentFrame >= targetFrame) {
+      pause()
+      const callback = onCompleteCallback
+      targetFrame = null
+      onCompleteCallback = null
+      callback?.()
+      return completionPromise
     }
 
     state.isPlaying = true
     lastFrameTime = performance.now()
     animationId = requestAnimationFrame(animate)
+
+    return completionPromise
   }
 
   const pause = () => {
@@ -404,18 +448,20 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     drawFrame(targetFrameIndex)
   }
 
-  const goToAndPlay = (frameIndex: number, onComplete?: () => void) => {
+  const goToAndPlay = (frameIndex: number, onComplete?: () => void): Promise<void> => {
     goToFrame(frameIndex)
-    play(undefined, onComplete)
+    return play(undefined, onComplete)
   }
 
   const goToAndStop = (frameIndex: number) => {
     stop()
     goToFrame(frameIndex)
   } // 播放到指定帧后停止
-  const playToFrame = (endFrame: number, onComplete?: () => void) => {
-    if (!state.isLoaded) {
-      console.warn('Images not loaded yet')
+  const playToFrame = async (endFrame: number, onComplete?: () => void): Promise<void> => {
+    try {
+      await ensureLoadedForPlayback()
+    } catch (error) {
+      console.error('Failed to preload all images:', error)
       return
     }
 
@@ -424,14 +470,14 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     // 如果目标帧就是当前帧，直接执行完成回调
     if (validEndFrame === state.currentFrame) {
       onComplete?.()
-      return
+      return Promise.resolve()
     }
 
     // 如果目标帧在当前帧之前，直接跳转并执行回调
     if (validEndFrame < state.currentFrame) {
       goToFrame(validEndFrame)
       onComplete?.()
-      return
+      return Promise.resolve()
     }
 
     // 重置之前的目标帧和回调
@@ -442,17 +488,25 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
     // 设置目标帧和完成回调
     targetFrame = validEndFrame
-    onCompleteCallback = onComplete || null
+    const completionPromise = createCompletionPromise(onComplete)
 
     state.isPlaying = true
     lastFrameTime = performance.now()
     animationId = requestAnimationFrame(animate)
+
+    return completionPromise
   }
 
   // 从指定帧播放到指定帧后停止
-  const playFromToFrame = (startFrame: number, endFrame: number, onComplete?: () => void) => {
+  const playFromToFrame = async (startFrame: number, endFrame: number, onComplete?: () => void): Promise<void> => {
+    try {
+      await ensureLoadedForPlayback()
+    } catch (error) {
+      console.error('Failed to preload all images:', error)
+      return
+    }
     goToFrame(startFrame)
-    playToFrame(endFrame, onComplete)
+    return playToFrame(endFrame, onComplete)
   }
 
   // 重置动画
@@ -515,6 +569,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     state.isLoaded = false
     state.loadProgress = 0
     state.completedLoops = 0
+    loadingPromise = null
   }
 
   // 生命周期处理
