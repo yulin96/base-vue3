@@ -6,26 +6,6 @@ export type IFormDataOrJSON = 'FormData' | 'JSON'
 
 const interceptor = (instance: AxiosInstance) => {
   instance.interceptors.request.use((config) => {
-    try {
-      const armsRum = window?.RumSDK?.default
-      if (armsRum) {
-        const method = config.method
-        const body = method === 'post' ? config.data : config.params
-
-        armsRum.sendCustom({
-          type: `request_${method}`,
-          name: `${config.baseURL}${config.url}`,
-          group: `request_${location.href.split('#')[0]}`,
-          properties: {
-            data: isFormData(body) ? formDataToObj(body) : body,
-            headers: config.headers,
-          },
-        })
-      }
-    } catch (error) {
-      console.error('ARMS RUM 上报请求信息失败:', error)
-    }
-
     return config
   })
 
