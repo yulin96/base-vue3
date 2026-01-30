@@ -81,11 +81,11 @@ export default defineConfig(({ command }) => ({
       directoryAsNamespace: true,
     }),
     legacy({
-      targets: ['chrome >= 87', 'safari >= 13', 'firefox >= 78', 'edge >= 88'],
-      modernTargets: ['chrome >= 87', 'safari >= 13', 'firefox >= 78', 'edge >= 88'],
-      additionalModernPolyfills: ['core-js/es/object/has-own'],
-      renderLegacyChunks: false,
+      targets: ['chrome >= 64', 'safari >= 13', 'not IE 11'],
+      modernTargets: ['chrome >= 64', 'safari >= 13'],
+      renderLegacyChunks: true,
       modernPolyfills: true,
+      additionalModernPolyfills: ['core-js/es/object/has-own'],
     }),
     vitePluginDeployOss({
       open: !!env.VITE_OSS_ROOT_DIR && env.VITE_OSS_ROOT_DIR !== 'H5/zz/auto2/',
