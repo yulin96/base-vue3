@@ -58,7 +58,7 @@
     "weixin-js-sdk": "^1.6.5"
   },
   "devDependencies": {
-    "@eslint/compat": "^2.0.1",
+    "@eslint/compat": "^2.0.2",
     "@inspira-ui/plugins": "^0.0.1",
     "@minko-fe/postcss-pxtorem": "^1.5.0",
     "@tailwindcss/vite": "^4.1.18",
