@@ -14,7 +14,7 @@ import vitePluginOrganize from 'vite-plugin-organize-resource'
 import tailwindcss from '@tailwindcss/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
 import Components from 'unplugin-vue-components/vite'
-import VueRouter from 'unplugin-vue-router/vite'
+import VueRouter from 'vue-router/vite'
 
 import pxtorem from '@minko-fe/postcss-pxtorem'
 import postcssPresetEnv from 'postcss-preset-env'
@@ -67,7 +67,7 @@ export default defineConfig(({ command }) => ({
       cacheLocation: 'node_modules/.cache-image/',
     }),
     VueRouter({
-      dts: './types/typed-router.d.ts',
+      dts: './types/route-map.d.ts',
       importMode: command == 'build' ? 'sync' : 'async',
     }),
     vue(),

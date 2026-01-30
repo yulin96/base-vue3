@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="@plugin-web-update-notification/vite" />
-/// <reference types="unplugin-vue-router/client" />
+
 
 declare const __ARMSEndpoint: string
 
