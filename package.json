@@ -53,7 +53,7 @@
     "vant": "^4.9.22",
     "vue": "^3.5.27",
     "vue-i18n": "^11.2.7",
-    "vue-router": "^5.0.1",
+    "vue-router": "^5.0.2",
     "vue-sonner": "^2.0.9",
     "weixin-js-sdk": "^1.6.5"
   },
@@ -69,7 +69,7 @@
     "@types/nprogress": "^0.2.3",
     "@types/qrcode": "^1.5.6",
     "@vitejs/plugin-legacy": "^7.2.1",
-    "@vitejs/plugin-vue": "^6.0.3",
+    "@vitejs/plugin-vue": "^6.0.4",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/tsconfig": "^0.8.1",
