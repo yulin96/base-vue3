@@ -32,54 +32,7 @@
     </script> -->
   </head>
   <body>
-    <div id="app">
-      <style>
-        @keyframes loading-in {
-          0% {
-            opacity: 0;
-            transform: scale(0);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        @keyframes init-spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      </style>
-      <div
-        style="
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 9999;
-          opacity: 0;
-          animation: loading-in 0.36s ease forwards 0.6s;
-        "
-      >
-        <div
-          style="
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #999;
-            border-radius: 50%;
-            animation: init-spin 1s linear infinite;
-          "
-        ></div>
-      </div>
-    </div>
+    <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
