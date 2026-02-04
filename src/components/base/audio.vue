@@ -22,12 +22,12 @@ const [isPlay, toggleIsPlay] = useToggle(false)
 
 const togglePlayStatus = () => {
   if (!audioRef.value) {
-    return console.error('audio is not ready!')
+    return console.info('audio is not ready!')
   }
 
   if (audioRef.value.paused) {
     audioRef.value.play().catch((err) => {
-      console.error('播放失败:', err)
+      console.info('播放失败:', err)
     })
   } else {
     audioRef.value.pause()
@@ -36,12 +36,12 @@ const togglePlayStatus = () => {
 
 const clickPlay = (ele: MouseEvent) => {
   if (!audioRef.value) {
-    return console.error('audio is not ready!')
+    return console.info('audio is not ready!')
   }
 
   if (ele.target !== playIconRef.value && audioRef.value.paused) {
     audioRef.value.play().catch((err) => {
-      console.error('播放失败:', err)
+      console.info('播放失败:', err)
     })
   }
 }
@@ -60,7 +60,7 @@ onMounted(() => {
         cleanupTouchend()
       })
       .catch((err) => {
-        console.error('微信环境下自动播放失败:', err)
+        console.info('微信环境下自动播放失败:', err)
       })
   }
 
