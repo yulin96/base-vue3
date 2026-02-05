@@ -54,12 +54,12 @@ export default defineConfig(({ command }) => ({
     ViteImageOptimizer({
       exclude: /\.(webp|svg)$/i,
       jpg: {
-        quality: 96,
+        quality: 90,
         progressive: true,
         mozjpeg: true,
       },
       png: {
-        quality: 96,
+        quality: 90,
         progressive: true,
         adaptiveFiltering: true,
       },
