@@ -68,7 +68,7 @@ export default defineConfig(({ command }) => ({
     }),
     VueRouter({
       dts: './types/route-map.d.ts',
-      importMode: command == 'build' ? 'sync' : 'async',
+      importMode: 'sync',
     }),
     vue(),
     tailwindcss(),
@@ -82,7 +82,6 @@ export default defineConfig(({ command }) => ({
     }),
     legacy({
       targets: ['chrome >= 64', 'safari >= 13', 'not IE 11'],
-      modernTargets: ['chrome >= 64', 'safari >= 13'],
       renderLegacyChunks: true,
       modernPolyfills: true,
       additionalModernPolyfills: ['core-js/es/object/has-own'],

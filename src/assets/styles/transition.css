@@ -1,3 +1,15 @@
+@import '@/assets/styles/transitions/blur.css';
+@import '@/assets/styles/transitions/collapse-y.css';
+@import '@/assets/styles/transitions/diagonally-fade-out.css';
+@import '@/assets/styles/transitions/flip-y.css';
+@import '@/assets/styles/transitions/left-fly-out.css';
+@import '@/assets/styles/transitions/none.css';
+@import '@/assets/styles/transitions/slide-cover.css';
+@import '@/assets/styles/transitions/slide-page.css';
+@import '@/assets/styles/transitions/slide.css';
+@import '@/assets/styles/transitions/type.d.ts';
+@import '@/assets/styles/transitions/zoom.css';
+
 .list-move,
 .list-enter-active,
 .list-leave-active {

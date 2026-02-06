@@ -2,10 +2,6 @@ import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 export function useRouteTransition(transitionName: RouteTransitionNames = 'slide') {
-  import(`@/assets/styles/transitions/${transitionName}.css`).catch((err) => {
-    console.error('Error loading transition CSS:', err)
-  })
-
   const name = ref('none')
   const route = useRoute()
   watch(
