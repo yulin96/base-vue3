@@ -10,24 +10,22 @@ type IWxInfo = {
 export const useStore = defineStore(
   'user',
   () => {
-    const _user = {
+    const createInitialState = () => ({
       code: '',
+
       info: {} as Partial<Record<string, unknown>>,
       wxInfo: {} as Partial<IWxInfo>,
 
       backXY: { x: 0, y: 0 },
+
       other: {} as Partial<Record<string, unknown>>,
       ignore: {} as Partial<Record<string, unknown>>,
-    }
+    })
 
     const user = ref({
-      ...structuredClone(_user),
+      ...createInitialState(),
       clear() {
-        const clone = structuredClone(_user)
-        Object.keys(this).forEach((key) => {
-          if (key === 'clear') return
-          this[key] = clone[key]
-        })
+        Object.assign(this, createInitialState())
       },
     })
 
