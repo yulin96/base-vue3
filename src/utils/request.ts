@@ -3,6 +3,13 @@ import { isFormData } from '@/utils/validate'
 import axios, { toFormData, type AxiosInstance, type AxiosRequestConfig } from 'axios'
 
 export type IFormDataOrJSON = 'FormData' | 'JSON'
+type Dict = Record<string, unknown>
+type RequestMeta = {
+  data: Dict | null
+  url?: string
+  method?: string
+  baseUrl: string
+}
 
 const interceptor = (instance: AxiosInstance) => {
   instance.interceptors.request.use((config) => {
@@ -11,8 +18,8 @@ const interceptor = (instance: AxiosInstance) => {
 
   instance.interceptors.response.use(
     (response) => {
-      const requestBody = {
-        data: null as null | object,
+      const requestBody: RequestMeta = {
+        data: null,
         url: response.config?.url,
         method: response.config?.method,
         baseUrl: response.config?.baseURL ?? '',
@@ -20,9 +27,11 @@ const interceptor = (instance: AxiosInstance) => {
 
       const method = response.config.method?.toLowerCase()
       const data = method === 'post' ? response.config?.data : response.config?.params
-      requestBody.data = isFormData(data) ? formDataToObj(data) : data
+      requestBody.data = (isFormData(data) ? formDataToObj(data) : (data ?? null)) as Dict | null
 
-      response.data._request = requestBody
+      if (response.data && typeof response.data === 'object') {
+        ;(response.data as Dict)._request = requestBody
+      }
 
       return response
     },
@@ -38,48 +47,29 @@ const instance = axios.create({
 
 interceptor(instance)
 
-export const axiosGet = <T = any>(
-  url: string,
-  params?: Record<string, any>,
-  config?: AxiosRequestConfig<any>,
-  data?: Record<string, any>,
-): Promise<T> => {
-  return new Promise<T>((resolve, reject) => {
-    instance
-      .get(url, {
-        params,
-        ...(data ? { data } : {}),
-        // adapter: ['fetch', 'xhr'],
-        ...config,
-      })
-      .then((response) => resolve(response.data))
-      .catch((error) => reject(error))
-  })
+export const axiosGet = <T = any>(url: string, params?: Dict, config?: AxiosRequestConfig, data?: Dict): Promise<T> => {
+  return instance
+    .get(url, {
+      params,
+      ...(data ? { data } : {}),
+      ...config,
+    })
+    .then((response) => {
+      return response.data as T
+    })
 }
 
 export const axiosPost = <T = any>(
   url: string,
-  data?: Record<string, any>,
-  config?: AxiosRequestConfig<any>,
+  data?: Dict,
+  config?: AxiosRequestConfig,
   dataType: IFormDataOrJSON = 'FormData',
 ): Promise<T> => {
-  return new Promise<T>((resolve, reject) => {
-    instance
-      .post(url, data && (dataType === 'FormData' ? toFormData(data) : data), {
-        // adapter: ['fetch', 'xhr'],
-        ...config,
-      })
-      .then((response) => resolve(response.data))
-      .catch((error) => reject(error))
-  })
-}
-
-export function getLocalJson(url: string) {
-  return new Promise((resolve, reject) => {
-    fetch('./' + url)
-      .then((response) => response.json())
-      .then((res) => {
-        resolve(res)
-      })
-  })
+  return instance
+    .post(url, data && (dataType === 'FormData' ? toFormData(data) : data), {
+      ...config,
+    })
+    .then((response) => {
+      return response.data as T
+    })
 }

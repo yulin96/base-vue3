@@ -1,4 +1,4 @@
-name: Type Check
+name: CI
 
 on:
   push:
@@ -9,8 +9,18 @@ on:
       - main
 
 jobs:
-  type-check:
+  quality-check:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check:
+          - name: type-check
+            cmd: pnpm type-check
+          - name: lint
+            cmd: pnpm lint
+          - name: build
+            cmd: pnpm build-only
 
     steps:
       - name: Checkout code
@@ -33,5 +43,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run type check
-        run: pnpm type-check
+      - name: Run ${{ matrix.check.name }}
+        run: ${{ matrix.check.cmd }}

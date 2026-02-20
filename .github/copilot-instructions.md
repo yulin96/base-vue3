@@ -1,182 +1,61 @@
 # GitHub Copilot Instructions
 
-This is a mobile-first Vue3 + Vite project optimized for rapid development through automation and convention-driven architecture.
+This repository is a mobile-first Vue 3 + Vite starter focused on H5 activity pages.
 
 ## Core Architecture
 
-This project follows **convention over configuration** with heavy automation:
+- **Auto routing**: `src/pages/**/*.vue` is converted to routes by `vue-router/auto-routes`.
+- **Auto components**: components under `src/components` are auto-registered by `unplugin-vue-components`.
+- **State persistence**: Pinia uses `pinia-plugin-persistedstate` in `src/main.ts`.
+- **Build deploy hooks**: OSS/FTP deploy plugins are configured in `vite.config.ts` and gated by env flags.
 
-- **Auto-routing**: Files in `src/pages/` become routes automatically (e.g., `src/pages/user/profile.vue` → `/user/profile`)
-- **Auto-imports**: Components in `src/components/` are automatically imported - use directly in templates without manual imports
-- **Auto-persistence**: All Pinia stores automatically persist to localStorage via `pinia-plugin-persistedstate`
-- **Auto-deployment**: `pnpm build` auto-uploads to OSS when env vars are set (`zAccessKeyId`, `zAccessKeySecret`, `zBucket`)
-
-## Development Workflow
+## Development Commands
 
 ```bash
-pnpm dev              # Start dev server (auto-generates QR code for mobile testing)
-pnpm build            # Type-check + build + auto-upload to OSS
-pnpm build-only       # Build without OSS upload
-pnpm lint             # ESLint with auto-fix
+pnpm dev              # Start local dev server
+pnpm type-check       # Run vue-tsc
+pnpm lint             # Run eslint --fix
+pnpm build-only       # Build only
+pnpm build            # type-check + build-only
 ```
 
-## Key Patterns & Conventions
+## Project Layout
 
-### Mobile-First Styling with Tailwind 4
+- `src/pages`: route pages (file-based routing)
+- `src/components/base`: reusable UI/business components
+- `src/api`: API entry and API types
+- `src/hooks`: composition hooks
+- `src/utils`: utility modules (`animation`, `crypto`, `dom`, `file`, `platform`)
+- `src/plugins`: app init, directives, ARMS, Vant wrappers
+- `src/stores`: Pinia stores
+- `src/lang`: i18n resources (currently optional)
 
-- Use design mockup `px` values directly - PostCSS auto-converts to `rem`
-- Prefer Tailwind CSS atomic classes over custom CSS
-- **Custom size utilities**: Use predefined sizes `text-{1-90}`, `radius-{1-90}`, `tracking-{1-17}`
-- **Custom utility classes**: `center` (flex center), `shark-wrap` (shimmer effect), `state-paused/running`
-- **Typography**: `text-last-center`, `text-last-justify` for text alignment
-- **Touch controls**: `callout-none/default` for mobile touch behavior
-- **Class merging**: Use `cn()` helper from `@/shared/common.ts` for conditional classes
-- Example: `<div class="w-375 h-200 text-16 radius-8 center">` (combines size, text, radius, and centering)
+## Styling Conventions
 
-### State Management
+- Tailwind CSS v4 is enabled via `@tailwindcss/vite`.
+- `postcss-pxtorem` converts px to rem; Vant files use a different root value.
+- Shared CSS lives in `src/assets/styles`.
 
-- All stores auto-persist by default
-- Use `omit: ['user.ignore']` in store config to exclude fields from persistence
-- Example store pattern: `src/stores/user.ts` with built-in `.clear()` method
+## API Conventions
 
-### API Requests
+- Request helpers live in `src/utils/request.ts`.
+- API functions should be declared in `src/api/index.ts` and typed with `src/api/types.ts`.
+- Use lock wrappers in `src/hooks/useLockRequest.ts` when duplicate submit must be prevented.
 
-- All requests through `src/shared/request/index.ts` axios instance
-- Use `useLock()` hook to prevent duplicate requests
-- Pattern: Define interfaces in `src/api/types.ts`, implementations in `src/api/index.ts`
+## Routing Conventions
 
-### Component Structure
+- Define per-page route meta in SFC `<route lang="json">` blocks.
+- Keep global guards in `src/router/index.ts`.
+- Avoid registering global guards inside components.
 
-- `src/components/com/`: Complex interactive components (audio, image-scale, keyboard)
-- `src/components/icon/`: Icon components (checkbox, radio)
-- Auto-imported via `unplugin-vue-components` - no manual imports needed
+## Environment
 
-### Hooks & Utils Organization
+- Runtime app env uses `VITE_*` vars from `.env*` files.
+- Deployment credentials are read from shell env (`process.env`) in `vite.config.ts`.
 
-- `src/hooks/`: Composition API functions (useLock, useToaster, useTimer)
-- `src/utils/`: Pure functions organized by domain (crypto/, dom/, validator/)
-- `src/shared/`: Project-wide integrations (wx.ts, dingtalk.ts, request/)
+## Guardrails
 
-## Critical Integration Points
-
-### OSS Auto-Upload
-
-Controlled by environment variables and `.env` settings:
-
-- Upload path: `VITE_OSS_ROOT_DIRNAME` + `VITE_OSS_DIRNAME`
-- Skips: `index.html` and `pluginWebUpdateNotice/` files
-- Base URL rewrite: `https://oss.eventnet.cn/`
-
-### Third-Party Services
-
-- WeChat integration: `src/shared/third/wx.ts`
-- DingTalk integration: `src/shared/third/dingtalk.ts`
-- All configured for mobile H5 environments
-
-### Build Optimizations
-
-- Image auto-compression (requires Node 18.17.0+, uses sharp)
-- Code splitting by vendor: `gsap`, `html2canvas`, `lottie-web`, etc.
-- Lazy route imports in dev, sync in production
-
-## Vue 3.5+ Modern Syntax
-
-### Template Refs (useTemplateRef)
-
-```typescript
-<script setup lang="ts">
-import { useTemplateRef, onMounted } from 'vue'
-
-// DOM ref - name must match template ref attribute
-const inputRef = useTemplateRef<HTMLInputElement>('inputRef')
-
-// Component ref
-const childRef = useTemplateRef<InstanceType<typeof ChildComponent>>('child')
-
-// v-for refs (returns array)
-const itemRefs = useTemplateRef<HTMLLIElement[]>('items')
-
-onMounted(() => inputRef.value?.focus())
-</script>
-
-<template>
-  <input ref="inputRef" />
-  <ChildComponent ref="child" />
-  <li v-for="item in list" ref="items">{{ item }}</li>
-</template>
-```
-
-### defineModel (Two-way Binding)
-
-```typescript
-<script setup lang="ts">
-// Simple v-model
-const modelValue = defineModel<string>()
-
-// Named v-model with default
-const title = defineModel<string>('title', { default: '' })
-
-// Required model (removes undefined)
-const count = defineModel<number>('count', { required: true })
-</script>
-```
-
-### defineProps & defineEmits (Type-based)
-
-```typescript
-<script setup lang="ts">
-// Type-based props with defaults
-const props = withDefaults(defineProps<{
-  msg?: string
-  items?: string[]
-}>(), {
-  msg: 'hello',
-  items: () => []  // Use function for mutable types
-})
-
-// Type-based emits (3.3+ named tuple syntax)
-const emit = defineEmits<{
-  change: [id: number]
-  update: [value: string]
-}>()
-</script>
-```
-
-### defineExpose
-
-```typescript
-<script setup lang="ts">
-const inputRef = useTemplateRef<HTMLInputElement>('input')
-
-defineExpose({
-  focus: () => inputRef.value?.focus(),
-  getValue: () => inputRef.value?.value
-})
-</script>
-```
-
-## Common Patterns
-
-```typescript
-// Store with auto-persistence
-const { user } = useStore()
-user.value.clear()
-
-// Lock pattern for API calls
-const [isLocked, lock, unlock] = useLock()
-
-// Class merging
-import { cn } from '@/shared/common'
-const cls = cn('center text-16', isActive && 'shark-wrap')
-
-// Template ref (Vue 3.5+)
-const domRef = useTemplateRef<HTMLDivElement>('domRef')
-```
-
-When creating new features:
-
-1. Pages go in `src/pages/` (auto-routed)
-2. Reusable components in `src/components/` (auto-imported)
-3. API calls in `src/api/` with proper TypeScript types
-4. State in Pinia stores (auto-persisted)
-5. Use existing hooks/utils before creating new ones
+1. Prefer existing hooks/utils/components before adding new abstractions.
+2. Keep mobile behavior first (touch interaction, viewport, lightweight first screen).
+3. For new dependencies, justify bundle impact and usage scope.
+4. Keep docs and paths aligned with actual repository structure.

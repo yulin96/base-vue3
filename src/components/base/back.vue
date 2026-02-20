@@ -6,7 +6,7 @@ import { useWindowSize } from '@vueuse/core'
 import { ref, watch } from 'vue'
 import type { RouteNamedMap } from 'vue-router/auto-routes'
 
-const { back, size = 46 } = defineProps<{ back?: keyof RouteNamedMap; size?: number }>()
+const { back = '/', size = 46 } = defineProps<{ back?: keyof RouteNamedMap; size?: number }>()
 
 const { user } = useStore()
 if (user.backXY.x == 0) user.backXY = { x: innerWidth - size - 12, y: innerHeight - 200 }
@@ -17,7 +17,7 @@ const { width, height } = useWindowSize()
 watch(width, () => (pcMode.value = isPcMode()))
 
 const clickBack = async () => {
-  router.replace({ name: back || '/' })
+  router.replace({ name: back })
 }
 </script>
 
