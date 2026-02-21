@@ -1,6 +1,9 @@
 name: Mirror to Gitea
 
-on: [push, delete] # 监听推送和删除操作
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   mirror_to_gitea:
