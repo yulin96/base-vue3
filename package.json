@@ -84,7 +84,7 @@
     "postcss-px-to-viewport-8-plugin": "^1.2.5",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "rollup-plugin-visualizer": "^6.0.5",
+    "rollup-plugin-visualizer": "^7.0.0",
     "sharp": "^0.34.5",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.0",
