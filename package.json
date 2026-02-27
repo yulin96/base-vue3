@@ -37,7 +37,7 @@
     "cos-js-sdk-v5": "^1.10.1",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.19",
-    "dingtalk-jsapi": "^3.2.7",
+    "dingtalk-jsapi": "^3.2.8",
     "dotenv": "^17.3.1",
     "driver.js": "^1.4.0",
     "es-toolkit": "^1.44.0",
