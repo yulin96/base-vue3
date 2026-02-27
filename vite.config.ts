@@ -31,7 +31,7 @@ const splitDependencies: Record<string, string> = {
 
 const env = loadEnv('production', process.cwd())
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, mode }) => ({
   define: {
     __ARMSEndpoint: JSON.stringify(process.env.ARMSEndpoint),
   },
@@ -87,7 +87,7 @@ export default defineConfig(({ command }) => ({
       additionalModernPolyfills: ['core-js/es/object/has-own'],
     }),
     vitePluginDeployOss({
-      open: !!env.VITE_OSS_ROOT_DIR && env.VITE_OSS_ROOT_DIR !== 'H5/zz/auto2/',
+      open: !!env.VITE_OSS_ROOT_DIR && env.VITE_OSS_ROOT_DIR !== 'H5/zz/auto2/' && mode === 'deploy',
       accessKeyId: process.env.zAccessKeyId || '',
       accessKeySecret: process.env.zAccessKeySecret || '',
       bucket: process.env.zBucket || '',
@@ -107,7 +107,7 @@ export default defineConfig(({ command }) => ({
       },
     }),
     vitePluginDeployFtp({
-      open: !!env.VITE_FTP_DIRNAME,
+      open: !!env.VITE_FTP_DIRNAME && mode === 'deploy',
       uploadPath: `${env.VITE_FTP_DIRNAME}`,
       singleBack: true,
       // autoUpload: true,
