@@ -11,11 +11,24 @@ export function useQRCode(text: MaybeRefOrGetter<string>, options?: QRCode.QRCod
 
   const src = toRef(text)
   const result = shallowRef('')
+  let requestId = 0
 
   watch(
     src,
     async (value) => {
-      if (src.value) result.value = await QRCode.toDataURL(value, renderOptions)
+      const currentRequestId = ++requestId
+
+      if (!value) {
+        result.value = ''
+        return
+      }
+
+      try {
+        const url = await QRCode.toDataURL(value, renderOptions)
+        if (currentRequestId === requestId) result.value = url
+      } catch {
+        if (currentRequestId === requestId) result.value = ''
+      }
     },
     { immediate: true },
   )

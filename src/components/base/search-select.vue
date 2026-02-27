@@ -1,44 +1,42 @@
 <script setup lang="ts">
-import { onClickOutside } from '@vueuse/core'
-import { computed, onMounted, ref, watch } from 'vue'
+import { onClickOutside, useEventListener } from '@vueuse/core'
+import { computed, onMounted, ref, useTemplateRef, watch } from 'vue'
 
 const { list } = defineProps<{ list: { key: string | number; value: string }[] }>()
 
 const selectValue = defineModel<string>()
 
-const searchIns = ref({
-  value: '',
-  show: false,
-  list: computed(() => {
-    if (searchIns.value.value) {
-      return list.filter((item) => item.value.includes(searchIns.value.value))
-    } else {
-      return list
-    }
-  }),
+const panelRef = useTemplateRef<HTMLElement>('panelRef')
+
+const keyword = ref('')
+const show = ref(false)
+const filteredList = computed(() => {
+  if (!keyword.value) return list
+  return list.filter((item) => item.value.includes(keyword.value))
 })
 
 watch(
-  () => searchIns.value.show,
+  show,
   (nv) => {
-    if (!nv) searchIns.value.value = ''
+    if (!nv) keyword.value = ''
   },
 )
 
 const choose = (item: string) => {
   selectValue.value = item
+  show.value = false
 }
 
 onMounted(() => {
-  const searchDom = document.querySelector('[data-search-select]')!
-  const parent = searchDom.parentElement!
+  const parent = panelRef.value?.parentElement
+  if (!parent) return
 
-  parent.addEventListener('click', (e) => {
-    searchIns.value.show = !searchIns.value.show
+  useEventListener(parent, 'click', () => {
+    show.value = !show.value
   })
 
-  onClickOutside(ref(parent), () => {
-    searchIns.value.show = false
+  onClickOutside(parent, () => {
+    show.value = false
   })
 })
 </script>
@@ -46,13 +44,15 @@ onMounted(() => {
 <template>
   <transition name="slide-down">
     <div
-      v-show="searchIns.show"
+      ref="panelRef"
+      v-show="show"
       data-search-select
       class="absolute top-full flex h-600 w-full flex-col overflow-hidden rounded-[6px] bg-white shadow-lg"
+      @click.stop
     >
-      <van-search v-model="searchIns.value" placeholder="请输入搜索关键词" @click.stop />
+      <van-search v-model="keyword" placeholder="请输入搜索关键词" @click.stop />
       <div class="w-full flex-1 overflow-auto">
-        <div v-for="item in searchIns.list" :key="item.key" class="px-30 py-15" @click="choose(item.value)">
+        <div v-for="item in filteredList" :key="item.key" class="px-30 py-15" @click="choose(item.value)">
           {{ item.value }}
         </div>
       </div>

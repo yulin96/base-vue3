@@ -45,9 +45,6 @@ export function useTransform(options: TransformOptions) {
   let pinchStartCompositionX = 0
   let pinchStartCompositionY = 0
 
-  const lastTapTime = 0
-  const DOUBLE_TAP_DELAY = 300
-
   // 一个变量用于跟踪拖动后阻止点击的计时器
   let preventClickTimer: number | null = null
 
@@ -176,13 +173,6 @@ export function useTransform(options: TransformOptions) {
 
   const handleTouchStart = (e: TouchEvent) => {
     const touches = e.touches
-    // const now = Date.now()
-    // if (now - lastTapTime < DOUBLE_TAP_DELAY && touches.length === 1) {
-    //   resetPosition()
-    //   lastTapTime = 0
-    //   return
-    // }
-    // lastTapTime = now
 
     // 重置移动状态
     hasMoved = false
@@ -359,13 +349,6 @@ export function useTransform(options: TransformOptions) {
     const boundedY = Math.min(Math.max(y, minY), maxY)
 
     return { x: boundedX, y: boundedY }
-  }
-
-  // 重置位置和缩放
-  const resetPosition = () => {
-    scaleMark = defaultScale
-    positionMark = { x: defaultPosition.x, y: defaultPosition.y }
-    updateItemPosition()
   }
 
   onMounted(() => {

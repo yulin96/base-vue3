@@ -1,10 +1,11 @@
+import { createDeferred } from '@/utils/promise'
 import { shallowRef } from 'vue'
 import { toast } from 'vue-sonner'
 
 export const usePromiseToast = () => {
   const inert = shallowRef(false)
 
-  let resolver = Promise.withResolvers<string>()
+  let resolver = createDeferred<string>()
   const createToast = (message?: string) => {
     inert.value = true
 
@@ -20,7 +21,7 @@ export const usePromiseToast = () => {
   }
 
   function reset() {
-    resolver = Promise.withResolvers<string>()
+    resolver = createDeferred<string>()
   }
 
   return {

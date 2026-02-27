@@ -22,7 +22,13 @@ router.addRoute({
   meta: { index: 404 },
 })
 
-router.beforeEach((to, from) => {})
+router.beforeEach((to, from) => {
+  // WeChat 登录拦截（按需启用）：
+  // 仅当项目确实接入了 BaseWechatLogin / openid 体系时再打开此逻辑。
+  // const { user } = useStore()
+  // const { openid } = user.wxInfo
+  // if (!openid && to.path !== '/') return { path: '/' }
+})
 
 router.afterEach((to, from) => {
   if (typeof window._hmt !== 'undefined') {

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { toUrl } from '@/config/urls'
-import { useStore } from '@/stores/user'
 import { getOpenId } from '@/utils/platform/getOpenId'
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 const { url, auto = false } = defineProps<{ url: string; auto?: boolean }>()
 
@@ -12,15 +10,8 @@ const show = ref(false)
 const openLink = () => {
   if (!url) return console.error('url is required')
 
-  toUrl(`https://wechat.event1.cn/api/getCode?name=hudongweipingtai&action=${auto ? 2 : 1}&cUrl=${url}`)
+  toUrl(`https://wechat.event1.cn/api/getCode?name=hudongweipingtai&action=${auto ? 2 : 1}&cUrl=${encodeURIComponent(url)}`)
 }
-
-const router = useRouter()
-router.beforeEach((to) => {
-  const { user } = useStore()
-  const { openid } = user.wxInfo
-  if (!openid && to.path !== '/') return { path: '/' }
-})
 
 onMounted(async () => {
   if (!(await getOpenId())) {
