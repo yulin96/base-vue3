@@ -3,46 +3,5 @@
 @import 'tailwindcss/utilities.css';
 @import 'tw-animate-css';
 
-@import './theme/size.css';
-@import './theme/utilities.css';
-@import './theme/animation.css';
-
-@theme {
-  --base-scale: 1;
-
-  --spacing: 1px;
-
-  --radius-full: 9999px;
-}
-
-@theme {
-  --color-*: initial;
-
-  --color-white: #ffffff;
-  --color-black: #000000;
-
-  --color-red: #e7000b;
-  --color-orange: #f54900;
-  --color-amber: #e17100;
-  --color-yellow: #d08700;
-  --color-lime: #5ea500;
-  --color-green: #00a63e;
-  --color-emerald: #007a55;
-  --color-teal: #009689;
-  --color-cyan: #0092b8;
-  --color-sky: #0084d1;
-  --color-blue: #155dfb;
-  --color-indigo: #4f39f6;
-  --color-violet: #7f22fe;
-  --color-purple: #9810fa;
-  --color-fuchsia: #c800de;
-  --color-pink: #e60076;
-  --color-rose: #e60076;
-  --color-slate: #45556c;
-  --color-gray: #4a5565;
-  --color-zinc: #52525c;
-  --color-neutral: #525252;
-  --color-stone: #57534d;
-
-  --color-placeholder: #a3a9b5;
-}
+@import './size.css';
+@import './theme.css';

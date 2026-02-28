@@ -1,9 +1,7 @@
 @import './tailwind.css';
 @import './base.css';
-@import './plugins/vant.css';
-@import './plugins/sonner.css';
-@import './plugins/popup.css';
-@import './transition.css';
+@import './plugins.css';
+@import './transitions.css';
 
 #app {
   -webkit-font-smoothing: antialiased;
