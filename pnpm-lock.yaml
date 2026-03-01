@@ -127,8 +127,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2(eslint@10.0.2(jiti@2.6.1))
       '@inspira-ui/plugins':
-        specifier: ^0.0.1
-        version: 0.0.1
+        specifier: ^0.0.2
+        version: 0.0.2
       '@minko-fe/postcss-pxtorem':
         specifier: ^1.5.0
         version: 1.5.0(postcss@8.5.6)
@@ -1567,8 +1567,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@inspira-ui/plugins@0.0.1':
-    resolution: {integrity: sha512-gM4iZptDoStA7QT1lltC6Jl4qRLhkZwVtcXomQy/PPxe0lAxhrZx40KXEUJakRZLOSmyfVJCExzZhRzOrE6DBQ==}
+  '@inspira-ui/plugins@0.0.2':
+    resolution: {integrity: sha512-a3vG3pd34oOUqBq6LXIpJze7voahMecFlnj+7/+ko0AB95DnEocTklnqHym08Rvx9EP66anSqXPJpA9NU9E/FA==}
 
   '@intlify/core-base@11.2.8':
     resolution: {integrity: sha512-nBq6Y1tVkjIUsLsdOjDSJj4AsjvD0UG3zsg9Fyc+OivwlA/oMHSKooUy9tpKj0HqZ+NWFifweHavdljlBLTwdA==}
@@ -5624,9 +5624,11 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.11.0
 
-  '@inspira-ui/plugins@0.0.1':
+  '@inspira-ui/plugins@0.0.2':
     dependencies:
+      clsx: 2.1.1
       mini-svg-data-uri: 1.4.4
+      tailwind-merge: 3.5.0
 
   '@intlify/core-base@11.2.8':
     dependencies:

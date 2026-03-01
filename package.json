@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.2",
-    "@inspira-ui/plugins": "^0.0.1",
+    "@inspira-ui/plugins": "^0.0.2",
     "@minko-fe/postcss-pxtorem": "^1.5.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tsconfig/node24": "^24.0.4",
