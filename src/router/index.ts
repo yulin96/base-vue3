@@ -1,5 +1,6 @@
+import { ref } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
-import { routes } from 'vue-router/auto-routes'
+import { routes, type RouteNamedMap } from 'vue-router/auto-routes'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -30,7 +31,18 @@ router.beforeEach((to, from) => {
   // if (!openid && to.path !== '/') return { path: '/' }
 })
 
+export const routeHistory = ref({
+  list: [] as (keyof RouteNamedMap)[],
+  maxLimit: 10,
+})
+
 router.afterEach((to, from) => {
+  routeHistory.value.list.unshift(to.name)
+
+  if (routeHistory.value.list.length > routeHistory.value.maxLimit) {
+    routeHistory.value.list.pop()
+  }
+
   if (typeof window._hmt !== 'undefined') {
     window._hmt.push(['_trackPageview', `${location.pathname}#${to.fullPath}`])
   }
