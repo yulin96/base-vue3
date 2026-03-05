@@ -1,8 +1,20 @@
 import { myDialog } from '@/plugins/vant/dialog'
 import { isDingDing } from '@/utils/platform/dingtalk'
 import { isWeChat } from '@/utils/platform/ua'
-import { wechatScan } from '@/utils/platform/wechat'
 import { biz } from 'dingtalk-jsapi'
+
+let wechatScanPromise: Promise<() => Promise<string | void>> | null = null
+const loadWechatScan = async () => {
+  if (!wechatScanPromise) {
+    wechatScanPromise = import('@/utils/platform/wechat')
+      .then((mod) => mod.wechatScan)
+      .catch((error) => {
+        wechatScanPromise = null
+        throw error
+      })
+  }
+  return wechatScanPromise
+}
 
 let isScanning = false
 export function showScan() {
@@ -11,9 +23,10 @@ export function showScan() {
     isScanning = true
 
     if (isWeChat()) {
-      wechatScan()
+      loadWechatScan()
+        .then((wechatScan) => wechatScan())
         .then((resultStr) => {
-          if (resultStr) resolve(resultStr)
+          if (resultStr) resolve(resultStr as string)
         })
         .catch(() => {})
         .finally(() => {

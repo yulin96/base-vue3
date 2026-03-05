@@ -1,14 +1,40 @@
-import QRCode from 'qrcode'
+type QRCodeLib = typeof import('qrcode')
 
-export function createQRCode(app: HTMLDivElement) {
-  if (document.querySelector('.code-tips.pc')) document.body.removeChild(document.querySelector('.code-tips.pc')!)
+let qrCodeLibPromise: Promise<QRCodeLib> | null = null
+let qrCodeTaskId = 0
+
+const loadQRCodeLib = async () => {
+  if (!qrCodeLibPromise) {
+    qrCodeLibPromise = import('qrcode')
+      .then((mod) => ('default' in mod ? (mod.default as unknown as QRCodeLib) : mod))
+      .catch((error) => {
+        qrCodeLibPromise = null
+        throw error
+      })
+  }
+  return qrCodeLibPromise
+}
+
+const removeCurrentQRCode = () => {
+  const currentNode = document.querySelector('.code-tips.pc')
+  if (currentNode && currentNode.parentNode) {
+    currentNode.parentNode.removeChild(currentNode)
+  }
+}
+
+export async function createQRCode(app: HTMLDivElement) {
+  const taskId = ++qrCodeTaskId
+  removeCurrentQRCode()
 
   const clearedUrl = location.href.split('#')[0] || location.href
 
-  QRCode.toDataURL(clearedUrl, { margin: 2, errorCorrectionLevel: 'H', width: 900 }).then((res) => {
-    const left = Math.round(app.getBoundingClientRect().right + innerWidth / 100)
+  try {
+    const QRCode = await loadQRCodeLib()
+    const res = await QRCode.toDataURL(clearedUrl, { margin: 2, errorCorrectionLevel: 'H', width: 900 })
+    if (taskId !== qrCodeTaskId) return
 
     const div = document.createElement('div')
+    const left = Math.round(app.getBoundingClientRect().right + innerWidth / 100)
     div.style.left = `${left}px`
     div.classList.add('code-tips')
     div.classList.add('pc')
@@ -35,10 +61,12 @@ export function createQRCode(app: HTMLDivElement) {
     if (divRight > innerWidth) {
       div.remove()
     }
-  })
+  } catch (error) {
+    console.error('生成二维码失败:', error)
+  }
 }
 
 export function removeQRCode() {
-  const codeTips = document.querySelector('.code-tips.pc')
-  if (codeTips) document.body.removeChild(codeTips)
+  qrCodeTaskId++
+  removeCurrentQRCode()
 }
