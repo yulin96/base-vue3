@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { useLoading } from '@/hooks/useLoading'
 import { onMounted } from 'vue'
-
-const { start } = useLoading(window.IMG_RESOURCES ?? [])
 
 onMounted(() => {
   gsap.context(() => {
