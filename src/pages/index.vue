@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { useGsapContext } from '@/hooks/useGsapContext'
 
-onMounted(() => {
-  gsap.context(() => {
-    gsap.timeline({ delay: 0.5 })
-  }, '.index')
+useGsapContext('.index', () => {
+  gsap.timeline({ delay: 0.5 })
 })
 </script>
 
