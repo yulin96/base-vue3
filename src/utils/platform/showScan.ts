@@ -3,28 +3,15 @@ import { isDingDing } from '@/utils/platform/dingtalk'
 import { isWeChat } from '@/utils/platform/ua'
 import { biz } from 'dingtalk-jsapi'
 
-let wechatScanPromise: Promise<() => Promise<string | void>> | null = null
-const loadWechatScan = async () => {
-  if (!wechatScanPromise) {
-    wechatScanPromise = import('@/utils/platform/wechat')
-      .then((mod) => mod.wechatScan)
-      .catch((error) => {
-        wechatScanPromise = null
-        throw error
-      })
-  }
-  return wechatScanPromise
-}
-
 let isScanning = false
 export function showScan() {
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<string>(async (resolve, reject) => {
     if (isScanning) return reject('扫码功能正在运行中')
     isScanning = true
 
     if (isWeChat()) {
-      loadWechatScan()
-        .then((wechatScan) => wechatScan())
+      const { wechatScan } = await import('@/utils/platform/wechat')
+      wechatScan()
         .then((resultStr) => {
           if (resultStr) resolve(resultStr as string)
         })

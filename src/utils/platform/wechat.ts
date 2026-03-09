@@ -2,7 +2,7 @@ import { isWeChat } from '@/utils/platform/ua'
 import axios, { toFormData } from 'axios'
 
 let wxSdkPromise: Promise<any> | null = null
-const loadWechatSdk = async () => {
+const loadWechatSdk = async (): Promise<typeof import('weixin-js-sdk').default> => {
   if (!wxSdkPromise) {
     wxSdkPromise = import('weixin-js-sdk')
       .then((mod) => ('default' in mod ? mod.default : mod))
@@ -54,25 +54,28 @@ async function applyWechatSdkConfig(data: any, debug = false): Promise<void> {
 }
 
 export async function ensureWechatSdkReady() {
-  if (wxConfigIsReady) return Promise.resolve()
+  if (wxConfigIsReady) return
   if (wxConfigPromise) return wxConfigPromise
 
   const url = location.href.split('#')[0]
-  if (!url) return Promise.reject(new Error('无法获取页面URL'))
+  if (!url) throw new Error('无法获取页面URL')
 
-  wxConfigPromise = axios
-    .post(
-      'https://wechat.event1.cn/api/getJsSdk',
-      toFormData({
-        url,
-        name: 'hudongweipingtai',
-      }),
-    )
-    .then(({ data }) => applyWechatSdkConfig(data?.data ?? {}))
-    .catch((error) => {
+  wxConfigPromise = (async () => {
+    try {
+      const { data } = await axios.post(
+        'https://wechat.event1.cn/api/getJsSdk',
+        toFormData({
+          url,
+          name: 'hudongweipingtai',
+        }),
+      )
+
+      await applyWechatSdkConfig(data?.data ?? {})
+    } catch (error) {
       wxConfigPromise = null
-      return Promise.reject(error)
-    })
+      throw error
+    }
+  })()
 
   return wxConfigPromise
 }
@@ -87,66 +90,51 @@ export type IWxShare = {
   imgUrl?: string
 }
 
-export function wechatShare(data: IWxShare) {
-  return new Promise<boolean>((resolve, reject) => {
-    const { title, desc, link, imgUrl } = data
+export async function wechatShare(data: IWxShare) {
+  const { title, desc, link, imgUrl } = data
 
-    ensureWechatSdkReady()
-      .then(async () => {
-        const wx = await loadWechatSdk()
-        wx.updateAppMessageShareData({
-          title,
-          desc,
-          link: link || location.href.split('#')[0] || '',
-          imgUrl,
-          success() {
-            resolve(true)
-          },
-          fail() {
-            resolve(false)
-          },
-        })
-        wx.updateTimelineShareData({
-          title,
-          link: link || location.href.split('#')[0] || '',
-          imgUrl,
-          success() {
-            resolve(true)
-          },
-          fail() {
-            resolve(false)
-          },
-        })
+  try {
+    await ensureWechatSdkReady()
+    const wx = await loadWechatSdk()
+
+    return await new Promise<boolean>((resolve) => {
+      wx.updateAppMessageShareData({
+        title: title || document.title,
+        desc: desc || document.title,
+        link: link || location.href.split('#')[0] || '',
+        imgUrl: imgUrl || '',
+        success() {
+          resolve(true)
+        },
+        fail() {
+          resolve(false)
+        },
       })
-      .catch((err) => {
-        resolve(false)
-        console.log(err)
-      })
-  })
+    })
+  } catch (err) {
+    console.log(err)
+    return false
+  }
 }
 
-export function wechatScan(): Promise<string | void> {
-  return new Promise<string>((resolve, reject) => {
-    ensureWechatSdkReady()
-      .then(async () => {
-        const wx = await loadWechatSdk()
-        wx.scanQRCode({
-          needResult: 1,
-          scanType: ['qrCode', 'barCode'],
-          success(res: { resultStr: string; scan_code: { scan_result: string } }) {
-            resolve(res?.resultStr || res?.scan_code?.scan_result || '')
-          },
-          fail() {
-            resolve('')
-          },
-          cancel() {
-            resolve('')
-          },
-        })
-      })
-      .catch((err) => {
-        reject(err)
-      })
+export async function wechatScan(): Promise<string | void> {
+  await ensureWechatSdkReady()
+  const wx = await loadWechatSdk()
+
+  return await new Promise<string>((resolve) => {
+    wx.scanQRCode({
+      needResult: 1,
+      scanType: ['qrCode', 'barCode'],
+      success(res: { resultStr: string; scan_code: { scan_result: string } }) {
+        resolve(res?.resultStr || res?.scan_code?.scan_result || '')
+      },
+      fail() {
+        resolve('')
+      },
+      cancel() {
+        resolve('')
+      },
+    })
   })
 }
 
@@ -173,8 +161,10 @@ export function wechatOpenLocation(data: IWxOpenLocation): void {
   if (openLocationLock) return
   openLocationLock = true
   const { latitude, longitude, name, address, scale = 20, infoUrl = '' } = data
-  ensureWechatSdkReady()
-    .then(async () => {
+
+  void (async () => {
+    try {
+      await ensureWechatSdkReady()
       const wx = await loadWechatSdk()
       wx.openLocation({
         latitude,
@@ -187,48 +177,59 @@ export function wechatOpenLocation(data: IWxOpenLocation): void {
           openLocationLock = false
         },
       })
-    })
-    .catch((err) => {
+    } catch (err) {
       console.log(err)
       openLocationLock = false
-    })
+    }
+  })()
 }
 
-export function wechatPreviewImage(current: string, urls: string[]): void {
-  ensureWechatSdkReady()
-    .then(async () => {
+export function wechatPreviewImage(current: string, urls: string[], onFail?: () => void): void {
+  void (async () => {
+    try {
+      await ensureWechatSdkReady()
       const wx = await loadWechatSdk()
-      wx.previewImage({ current, urls })
-    })
-    .catch((err) => {
+      wx.previewImage({
+        current,
+        urls,
+        fail() {
+          onFail?.()
+        },
+      })
+    } catch (err) {
       console.log(err)
-    })
+      onFail?.()
+    }
+  })()
 }
 
 export function wechatHideAllNonBaseMenuItem() {
-  ensureWechatSdkReady().then(async () => {
+  void (async () => {
+    await ensureWechatSdkReady()
     const wx = await loadWechatSdk()
     wx.hideAllNonBaseMenuItem()
-  })
+  })()
 }
 
 export function closeWindow() {
   isWeChat()
-    ? ensureWechatSdkReady().then(async () => {
+    ? void (async () => {
+        await ensureWechatSdkReady()
         const wx = await loadWechatSdk()
         wx.closeWindow()
-      })
+      })()
     : window.close()
 }
 
 export function wechatDisableTimeline() {
   if (isWeChat()) {
-    ensureWechatSdkReady().then(async () => {
+    void (async () => {
+      await ensureWechatSdkReady()
       const wx = await loadWechatSdk()
       wx.hideMenuItems({
         menuList: ['menuItem:share:QZone', 'menuItem:share:timeline'],
       })
-    })
+    })()
   } else {
     console.error('disableTimeline: not in wechat')
   }

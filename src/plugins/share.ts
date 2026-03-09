@@ -1,6 +1,6 @@
 import { isWeChat } from '@/utils/platform/ua'
 
-export function registerWechatShare() {
+export async function registerWechatShare() {
   if (!isWeChat()) return
 
   const title = import.meta.env.VITE_APP_SHARE_TITLE
@@ -8,7 +8,7 @@ export function registerWechatShare() {
   const link = import.meta.env.VITE_APP_SHARE_LINK
   const imgUrl = import.meta.env.VITE_APP_SHARE_IMGURL
 
-  void import('@/utils/platform/wechat').then(({ wechatShare }) => {
-    wechatShare({ title, desc, link, imgUrl })
-  })
+  const { wechatShare } = await import('@/utils/platform/wechat')
+
+  wechatShare({ title, desc, link, imgUrl })
 }

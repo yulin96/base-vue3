@@ -10,7 +10,7 @@ import 'vue-sonner/style.css'
 const { start } = useLoading(window.IMG_RESOURCES ?? [])
 const { name } = useRouteTransition()
 
-registerWechatShare()
+void registerWechatShare()
 
 // const { locale } = useI18n()
 // const { VITE_APP_LOCALSTORAGE_NAME: localName } = import.meta.env
