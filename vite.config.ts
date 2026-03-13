@@ -1,5 +1,4 @@
 import path from 'node:path'
-import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 
 import legacy from '@vitejs/plugin-legacy'
@@ -81,8 +80,8 @@ export default defineConfig(({ command, mode }) => ({
       directoryAsNamespace: true,
     }),
     legacy({
-      targets: ['chrome >= 64', 'safari >= 13', 'not IE 11'],
-      renderLegacyChunks: true,
+      targets: ['chrome >= 87', 'safari >= 13'],
+      renderLegacyChunks: false,
       modernPolyfills: true,
       additionalModernPolyfills: ['core-js/es/object/has-own'],
     }),
@@ -162,24 +161,25 @@ export default defineConfig(({ command, mode }) => ({
     visualizer(),
   ],
   resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
+    tsconfigPaths: true,
   },
   base: './',
-  esbuild: {
-    drop: command === 'serve' ? [] : env.VITE_DROP_CONSOLE == '1' ? ['console', 'debugger'] : [],
-  },
   build: {
     assetsInlineLimit: 10240,
     assetsDir: 'assets',
     chunkSizeWarningLimit: 1000,
     cssCodeSplit: false,
-    rollupOptions: {
+    rolldownOptions: {
       input: {
         index: path.resolve(__dirname, 'index.html'),
       },
       output: {
+        minify: {
+          compress: {
+            dropConsole: env.VITE_DROP_CONSOLE == '1',
+            dropDebugger: env.VITE_DROP_CONSOLE == '1',
+          },
+        },
         manualChunks(id) {
           if (id.includes('node_modules')) {
             for (const key in splitDependencies) {
@@ -188,18 +188,22 @@ export default defineConfig(({ command, mode }) => ({
           }
         },
       },
+      checks: {
+        pluginTimings: false,
+      },
     },
   },
   server: {
     host: '0.0.0.0',
-    port: 3010,
+    port: 3020,
     hmr: true,
+    forwardConsole: true,
   },
   css: {
     postcss: {
       plugins: [
         postcssPresetEnv({
-          browsers: ['ios >= 13', 'chrome >= 64'],
+          browsers: ['ios >= 13', 'chrome >= 87', 'safari >= 13'],
           autoprefixer: {},
           features: {
             'cascade-layers': false,
