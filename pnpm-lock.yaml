@@ -232,11 +232,11 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)
       vite-plugin-deploy-ftp:
-        specifier: ^3.0.1
-        version: 3.0.1(@types/node@24.12.0)(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))
+        specifier: ^3.1.1
+        version: 3.1.1(@types/node@24.12.0)(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))
       vite-plugin-deploy-oss:
-        specifier: ^3.0.1
-        version: 3.0.1(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))
+        specifier: ^3.1.0
+        version: 3.1.0(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))
       vite-plugin-image-optimizer:
         specifier: ^2.0.3
         version: 2.0.3(sharp@0.34.5)(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))
@@ -244,8 +244,8 @@ importers:
         specifier: ^0.0.1
         version: 0.0.1
       vite-plugin-organize-resource:
-        specifier: ^1.0.1
-        version: 1.0.1(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))
+        specifier: ^1.1.1
+        version: 1.1.1(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))
       vue-tsc:
         specifier: 3.2.5
         version: 3.2.5(typescript@5.9.3)
@@ -4241,15 +4241,15 @@ packages:
     peerDependencies:
       vue: ^3.0.0
 
-  vite-plugin-deploy-ftp@3.0.1:
-    resolution: {integrity: sha512-xq8VKwhZUyw1GAYsXuENQrExL/PwPizncPenYXiO0nUPHJfpzanOMV0DMxlOK9fBwBVUzOGYaqLwQ2zANRbHIA==}
+  vite-plugin-deploy-ftp@3.1.1:
+    resolution: {integrity: sha512-UOawzVdGaJt1uYqi4VKDTKmglzKBrK/oznLoVszSxgJmI2jU+Jq4g9/YQ97KauBlEj1d3kuUrpqp/MTOWRgjug==}
     peerDependencies:
-      vite: ^6.0.3 || ^7
+      vite: ^6.0.3 || ^7 || ^8
 
-  vite-plugin-deploy-oss@3.0.1:
-    resolution: {integrity: sha512-IQsQqjDYxUhoQkpI8MYXe+favfKbEyBpCVCf+6/uprcYaz6MC1BU5ugcK0GiQ1OGYbYgecMrBfdC+sIFceJRPA==}
+  vite-plugin-deploy-oss@3.1.0:
+    resolution: {integrity: sha512-eeinYvLDsSvPzFm64Trbe1ACeE3mgwu2hx0+AYmUiD1yav5LEXAIQmHoAcCLk/FHmGScIu4QkayNMeOToqTrhA==}
     peerDependencies:
-      vite: ^6.0.3 || ^7
+      vite: ^6.0.3 || ^7 || ^8
 
   vite-plugin-image-optimizer@2.0.3:
     resolution: {integrity: sha512-1vrFOTcpSvv6DCY7h8UXab4wqMAjTJB/ndOzG/Kmj1oDOuPF6mbjkNQoGzzCEYeWGe7qU93jc8oQqvoJ57al3A==}
@@ -4267,10 +4267,10 @@ packages:
   vite-plugin-meta-share@0.0.1:
     resolution: {integrity: sha512-NxIMZhtft9F38KpnVOpq+HvRvMZzxEG/VZZoULZROKpdE8kABYilLl85cpKGOIJXEVL2LDE8MWP1dBLnsNhAkg==}
 
-  vite-plugin-organize-resource@1.0.1:
-    resolution: {integrity: sha512-4SgrHHKH7+WB+UTbsjiDPkBF4nDhiZoFQCcDyE4LJN336Tj7d/qEYj/HknnAmkwyy4SlBvFAc3kqDTa7okYY0w==}
+  vite-plugin-organize-resource@1.1.1:
+    resolution: {integrity: sha512-XjPAvtNtSioNT95Acmg2dARiSNGCZkHnja1diSBxMQ+bFcZs9xjt/RWBTTTb5pbfugn4RzH6cKvdHOq0f50U2A==}
     peerDependencies:
-      vite: ^6 || ^7
+      vite: ^6 || ^7 || ^8
 
   vite@8.0.0:
     resolution: {integrity: sha512-fPGaRNj9Zytaf8LEiBhY7Z6ijnFKdzU/+mL8EFBaKr7Vw1/FWcTBAMW0wLPJAGMPX38ZPVCVgLceWiEqeoqL2Q==}
@@ -8402,7 +8402,7 @@ snapshots:
       '@vue/shared': 3.5.30
       vue: 3.5.30(typescript@5.9.3)
 
-  vite-plugin-deploy-ftp@3.0.1(@types/node@24.12.0)(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)):
+  vite-plugin-deploy-ftp@3.1.1(@types/node@24.12.0)(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)):
     dependencies:
       '@inquirer/prompts': 7.10.1(@types/node@24.12.0)
       basic-ftp: 5.2.0
@@ -8414,7 +8414,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  vite-plugin-deploy-oss@3.0.1(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)):
+  vite-plugin-deploy-oss@3.1.0(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)):
     dependencies:
       ali-oss: 6.23.0
       chalk: 5.6.2
@@ -8437,7 +8437,7 @@ snapshots:
     dependencies:
       chalk: 5.6.2
 
-  vite-plugin-organize-resource@1.0.1(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)):
+  vite-plugin-organize-resource@1.1.1(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)):
     dependencies:
       chalk: 5.6.2
       vite: 8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)
