@@ -68,7 +68,7 @@ export default defineConfig(({ command, mode }) => ({
     }),
     VueRouter({
       dts: './types/route-map.d.ts',
-      importMode: 'sync',
+      importMode: command === 'build' ? 'sync' : 'async',
     }),
     vue(),
     tailwindcss(),
