@@ -4,6 +4,25 @@ import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/utils/request'
 import type { AxiosRequestConfig } from 'axios'
 import { readonly } from 'vue'
 
+const isCanceledRequest = (error: unknown) => {
+  if (!error || typeof error !== 'object') return false
+
+  const err = error as {
+    name?: string
+    code?: string
+    message?: string
+    __CANCEL__?: boolean
+  }
+
+  return (
+    err.name === 'CanceledError' ||
+    err.code === 'ERR_CANCELED' ||
+    err.message === 'canceled' ||
+    err.message === 'Request aborted' ||
+    err.__CANCEL__ === true
+  )
+}
+
 export function useLockRequest(disableLock = false, delay = 500) {
   const [status, lock, unLock] = useLock()
 
@@ -19,7 +38,7 @@ export function useLockRequest(disableLock = false, delay = 500) {
         .then(resolve)
         .catch((err) => {
           reject(err)
-          if (err.name !== 'CanceledError' || err.message === 'Request aborted') {
+          if (!isCanceledRequest(err)) {
             infoToast('正在加载中...')
           }
         })
