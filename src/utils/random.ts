@@ -1,4 +1,17 @@
 /**
+ * 获取 crypto 对象，支持 SSR 安全
+ */
+function getCrypto(): Crypto | undefined {
+  if (typeof window !== 'undefined' && window.crypto) {
+    return window.crypto
+  }
+  if (typeof crypto !== 'undefined') {
+    return crypto
+  }
+  return undefined
+}
+
+/**
  * 生成指定范围内的随机数
  * @param min 最小值（包含）
  * @param max 最大值（包含）
@@ -17,8 +30,17 @@ export function randomNum(min: number, max?: number): number {
     ;[min, max] = [max, min]
   }
 
-  const randomValue = Math.floor(Math.random() * (max - min + 1)) + min
-  return randomValue
+  const range = max - min + 1
+  const cryptoObj = getCrypto()
+
+  if (cryptoObj) {
+    const array = new Uint32Array(1)
+    cryptoObj.getRandomValues(array)
+    return (array[0] % range) + min
+  }
+
+  // 回退到 Math.random() (仅当 Web Crypto 不可用时)
+  return Math.floor(Math.random() * range) + min
 }
 
 /**
@@ -30,27 +52,18 @@ export function randomNum(min: number, max?: number): number {
 export function randomString(prefix = 'z', len = 16): string {
   const seed = 'abcdefghijklmnopqrstuvwxyz1234567890'
   const timestamp = new Date().getTime()
-  const randomChars = Array.from({ length: len }, () => seed[Math.floor(Math.random() * seed.length)]).join('')
+  const cryptoObj = getCrypto()
 
-  return `${prefix}_${timestamp}_${randomChars}`
-}
-
-/**
- * 生成一个随机的 UUID v4 字符串
- * @returns 生成的 UUID 字符串
- */
-export function randomUuid(): string {
-  // 如果可用，使用Web Crypto API
-  if (window.crypto && window.crypto.randomUUID) {
-    return window.crypto.randomUUID()
+  let randomChars = ''
+  if (cryptoObj) {
+    const array = new Uint32Array(len)
+    cryptoObj.getRandomValues(array)
+    randomChars = Array.from(array, (val) => seed[val % seed.length]).join('')
+  } else {
+    randomChars = Array.from({ length: len }, () => seed[Math.floor(Math.random() * seed.length)]).join('')
   }
 
-  // 回退到手动实现
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0
-    const v = c === 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
+  return `${prefix}_${timestamp}_${randomChars}`
 }
 
 /**
@@ -58,7 +71,16 @@ export function randomUuid(): string {
  * @returns 一个随机的十六进制颜色值，格式为 "#RRGGBB"
  */
 export function randomHex(): string {
-  return `#${Math.floor(Math.random() * 0xffffff)
-    .toString(16)
-    .padStart(6, '0')}`
+  const cryptoObj = getCrypto()
+  let randomVal: number
+
+  if (cryptoObj) {
+    const array = new Uint32Array(1)
+    cryptoObj.getRandomValues(array)
+    randomVal = array[0] & 0xffffff
+  } else {
+    randomVal = Math.floor(Math.random() * 0xffffff)
+  }
+
+  return `#${randomVal.toString(16).padStart(6, '0')}`
 }
