@@ -319,7 +319,8 @@ export function arrayBufferToBase64(buffer: ArrayBuffer): string {
 
   // 按块处理数据
   for (let i = 0; i < uint8Array.length; i += chunkSize) {
-    const chunk = uint8Array.slice(i, i + chunkSize)
+    // 使用 subarray 代替 slice 以避免内存分配和数据拷贝
+    const chunk = uint8Array.subarray(i, i + chunkSize)
     chunks.push(String.fromCharCode.apply(null, chunk as unknown as number[]))
   }
 
