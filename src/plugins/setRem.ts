@@ -26,8 +26,8 @@ function setRem() {
     const app = document.querySelector('#app') as HTMLDivElement
     if (app) {
       app.classList.remove('pc')
+      app.setAttribute('style', '')
     }
-    app.setAttribute('style', '')
     removeQRCode()
   }
 
@@ -36,7 +36,11 @@ function setRem() {
   document.documentElement.style.fontSize = `${baseSize * scale}px`
 }
 
-setRem()
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setRem)
+} else {
+  setRem()
+}
 
 window.addEventListener(
   'resize',
