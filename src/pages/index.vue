@@ -109,8 +109,7 @@ const orbActive = ref(false)
 const startX = ref(0)
 const startRotation = ref(0)
 const lastOrbAngle = ref(0)
-const orbTravelDegrees = ref(0)
-const orbRotationOrigin = ref(0)
+const startOrbTurn = ref(0)
 
 const motion = reactive({
   rotation: 2,
@@ -142,7 +141,8 @@ const trackMetrics = computed(() => {
 const currentIndex = computed(() => wrapIndex(Math.round(motion.rotation), cardCount))
 
 const orbStyle = computed(() => ({
-  '--orb-turn-angle': `${motion.orbTurn - 90}deg`,
+  '--orb-turn-angle': `${motion.orbTurn}deg`,
+  '--orb-progress-angle': `${motion.orbTurn}deg`,
   '--orb-bloom': `${motion.orbGlow}`,
 }))
 
@@ -181,15 +181,6 @@ const setOrbActive = (active: boolean) => {
     duration: active ? 0.32 : 0.44,
     ease: active ? 'power3.out' : 'expo.out',
   })
-
-  if (!active) {
-    gsap.killTweensOf(motion, 'orbTurn')
-    gsap.to(motion, {
-      orbTurn: 0,
-      duration: 0.3,
-      ease: 'power2.out',
-    })
-  }
 }
 
 const getOrbAngle = (event: PointerEvent) => {
@@ -200,16 +191,35 @@ const getOrbAngle = (event: PointerEvent) => {
   const centerX = rect.left + rect.width / 2
   const centerY = rect.top + rect.height / 2
 
-  return (Math.atan2(event.clientY - centerY, event.clientX - centerX) * 180) / Math.PI
+  const angle = (Math.atan2(event.clientY - centerY, event.clientX - centerX) * 180) / Math.PI
+
+  return wrapIndex(angle + 90, 360)
 }
 
-const snapRotation = () => {
+const snapRotation = (syncOrb = false) => {
+  const snappedRotation = Math.round(motion.rotation)
+
   gsap.killTweensOf(motion, 'rotation')
-  gsap.to(motion, {
-    rotation: Math.round(motion.rotation),
+  const tweenState: {
+    rotation: number
+    duration: number
+    ease: string
+    orbTurn?: number
+  } = {
+    rotation: snappedRotation,
     duration: 0.68,
     ease: 'elastic.out(1, 0.78)',
-  })
+  }
+
+  if (syncOrb) {
+    tweenState.orbTurn = gsap.utils.clamp(
+      0,
+      360,
+      motion.orbTurn + (snappedRotation - motion.rotation) * (360 / cardCount),
+    )
+  }
+
+  gsap.to(motion, tweenState)
 }
 
 const startCarouselDrag = (event: PointerEvent) => {
@@ -231,11 +241,10 @@ const startOrbDrag = (event: PointerEvent) => {
   event.preventDefault()
   activePointerId.value = event.pointerId
   dragMode.value = 'orb'
-  orbRotationOrigin.value = motion.rotation
-  orbTravelDegrees.value = 0
-  motion.orbTurn = 0
+  startRotation.value = motion.rotation
+  startOrbTurn.value = motion.orbTurn
   lastOrbAngle.value = getOrbAngle(event)
-  gsap.killTweensOf(motion, 'rotation')
+  gsap.killTweensOf(motion, 'rotation,orbTurn')
   setOrbActive(true)
 }
 
@@ -255,9 +264,10 @@ const handlePointerMove = (event: PointerEvent) => {
     const delta = normalizeAngleDelta(nextAngle - lastOrbAngle.value)
 
     lastOrbAngle.value = nextAngle
-    orbTravelDegrees.value = gsap.utils.clamp(-360, 360, orbTravelDegrees.value + delta)
-    motion.orbTurn = orbTravelDegrees.value
-    motion.rotation = orbRotationOrigin.value + orbTravelDegrees.value / (360 / cardCount)
+    const nextTurn = gsap.utils.clamp(0, 360, motion.orbTurn + delta)
+
+    motion.orbTurn = nextTurn
+    motion.rotation = startRotation.value + (nextTurn - startOrbTurn.value) / (360 / cardCount)
   }
 }
 
@@ -271,7 +281,7 @@ const finishDrag = (event?: PointerEvent) => {
   dragMode.value = 'idle'
 
   if (wasOrb) setOrbActive(false)
-  snapRotation()
+  snapRotation(wasOrb)
 }
 
 const getCardStyle = (index: number) => {
@@ -401,8 +411,8 @@ onBeforeUnmount(() => {
               <span class="orb-aura"></span>
               <span class="orb-body"></span>
               <span class="orb-track"></span>
+              <span class="orb-progress"></span>
               <span class="orb-handle"></span>
-              <span class="orb-core-dot"></span>
             </button>
           </div>
         </div>
@@ -717,8 +727,8 @@ onBeforeUnmount(() => {
 .orb-aura,
 .orb-body,
 .orb-track,
-.orb-handle,
-.orb-core-dot {
+.orb-progress,
+.orb-handle {
   position: absolute;
   inset: 0;
   display: block;
@@ -741,9 +751,7 @@ onBeforeUnmount(() => {
     inset 0 1px 0 rgb(255 255 255 / 36%),
     inset 0 0 0 1px rgb(255 255 255 / 10%),
     0 30px 70px rgb(0 0 0 / 24%);
-  background:
-    radial-gradient(circle at 52% 26%, rgb(255 255 255 / 88%), transparent 5%),
-    linear-gradient(180deg, rgb(255 255 255 / 22%), rgb(255 255 255 / 10%));
+  background: linear-gradient(180deg, rgb(255 255 255 / 22%), rgb(255 255 255 / 10%));
   backdrop-filter: blur(22px) saturate(1.2);
   transition:
     transform 280ms ease,
@@ -755,7 +763,27 @@ onBeforeUnmount(() => {
 .orb-track {
   inset: -16px;
   opacity: 0;
-  border: 4px solid rgb(255 255 255 / 92%);
+  border: 4px solid rgb(255 255 255 / 34%);
+  box-shadow: 0 0 14px rgb(255 255 255 / 6%);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+  transform: scale(0.92);
+}
+
+.orb-progress {
+  inset: -16px;
+  opacity: 0;
+  background:
+    conic-gradient(
+      from 0deg,
+      rgb(255 255 255 / 98%) 0deg,
+      rgb(255 255 255 / 98%) var(--orb-progress-angle),
+      transparent var(--orb-progress-angle),
+      transparent 360deg
+    );
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
   box-shadow: 0 0 18px rgb(255 255 255 / 18%);
   transition:
     opacity 220ms ease,
@@ -767,28 +795,21 @@ onBeforeUnmount(() => {
   inset: 50% auto auto 50%;
   width: calc(var(--orb-size) * 0.31);
   height: calc(var(--orb-size) * 0.31);
-  opacity: 0;
-  background:
-    radial-gradient(circle at 60% 34%, rgb(255 255 255 / 98%), transparent 16%),
-    linear-gradient(145deg, rgb(223 185 255) 0%, rgb(164 194 255) 58%, rgb(120 151 255) 100%);
+  opacity: 1;
+  background: rgb(255 255 255 / 96%);
   box-shadow:
-    0 0 0 3px rgb(13 17 34 / 38%),
-    0 16px 32px rgb(0 0 0 / 28%);
-  transform: translate(-50%, -50%) rotate(var(--orb-turn-angle)) translateY(calc(var(--orb-size) * -0.58)) scale(0.78);
+    0 0 0 1px rgb(255 255 255 / 34%),
+    0 0 18px rgb(255 237 251 / 42%);
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--orb-turn-angle))
+    translateY(calc(var(--orb-size) * -0.28))
+    scale(0.22);
   transition:
+    background 220ms ease,
+    box-shadow 220ms ease,
     opacity 220ms ease,
     transform 220ms ease;
-}
-
-.orb-core-dot {
-  inset: 33% auto auto 50%;
-  width: 12px;
-  height: 12px;
-  background: rgb(255 255 255 / 92%);
-  box-shadow:
-    0 0 0 4px rgb(255 255 255 / 8%),
-    0 0 14px rgb(255 237 251 / 78%);
-  transform: translate(-50%, -50%);
 }
 
 .control-orb.is-active .orb-aura {
@@ -809,7 +830,7 @@ onBeforeUnmount(() => {
 }
 
 .control-orb.is-active .orb-track,
-.control-orb.is-active .orb-handle {
+.control-orb.is-active .orb-progress {
   opacity: 1;
 }
 
@@ -818,7 +839,21 @@ onBeforeUnmount(() => {
 }
 
 .control-orb.is-active .orb-handle {
-  transform: translate(-50%, -50%) rotate(var(--orb-turn-angle)) translateY(calc(var(--orb-size) * -0.58)) scale(1);
+  background:
+    radial-gradient(circle at 60% 34%, rgb(255 255 255 / 98%), transparent 16%),
+    linear-gradient(145deg, rgb(223 185 255) 0%, rgb(164 194 255) 58%, rgb(120 151 255) 100%);
+  box-shadow:
+    0 0 0 3px rgb(13 17 34 / 38%),
+    0 16px 32px rgb(0 0 0 / 28%);
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--orb-turn-angle))
+    translateY(calc(var(--orb-size) * -0.58))
+    scale(1);
+}
+
+.control-orb.is-active .orb-progress {
+  transform: scale(1);
 }
 
 @media (min-width: 640px) {
