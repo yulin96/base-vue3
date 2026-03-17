@@ -122,11 +122,11 @@ const motion = reactive({
 const mix = (from: number, to: number, amount: number) => from + (to - from) * amount
 
 const trackMetrics = computed(() => {
-  const stageWidth = Math.min(viewportWidth.value, 560)
+  const stageWidth = viewportWidth.value
   const expand = motion.expansion
 
   return {
-    radiusX: mix(stageWidth * 0.42, stageWidth * 0.62, expand),
+    radiusX: mix(stageWidth * 0.46, stageWidth * 0.68, expand),
     radiusY: mix(stageWidth * 0.12, stageWidth * 0.25, expand),
     dragDistance: mix(Math.max(stageWidth * 0.22, 92), Math.max(stageWidth * 0.3, 116), expand),
     slotAngle: mix(20.5, 13.4, expand),
@@ -442,7 +442,7 @@ onBeforeUnmount(() => {
   z-index: 1;
   display: flex;
   min-height: 100vh;
-  width: min(100%, 560px);
+  width: 100%;
   margin: 0 auto;
   flex-direction: column;
   justify-content: space-between;
@@ -517,8 +517,8 @@ onBeforeUnmount(() => {
   position: absolute;
   top: clamp(324px, 38vh, 362px);
   left: 50%;
-  width: clamp(170px, 44vw, 208px);
-  height: clamp(244px, 63vw, 306px);
+  width: clamp(186px, 47vw, 236px);
+  height: clamp(266px, 69vw, 340px);
   overflow: hidden;
   border-radius: 27px;
   padding: 18px 16px 15px;
