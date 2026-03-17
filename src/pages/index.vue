@@ -100,6 +100,8 @@ const cards: CardItem[] = [
 ]
 
 const cardCount = cards.length
+const baseRotation = 2
+const orbStepAngle = 360 / cardCount
 
 const orbRef = ref<HTMLElement | null>(null)
 const frameRef = ref<HTMLElement | null>(null)
@@ -115,12 +117,12 @@ const dragTarget = ref<HTMLElement | null>(null)
 let dragFrame = 0
 let frameResizeObserver: ResizeObserver | null = null
 const pendingMotion = {
-  rotation: 2,
+  rotation: baseRotation,
   orbTurn: 0,
 }
 
 const motion = reactive({
-  rotation: 2,
+  rotation: baseRotation,
   carouselScale: 1,
   orbGlow: 0.24,
   expansion: 0,
@@ -150,11 +152,12 @@ const currentIndex = computed(() => wrapIndex(Math.round(motion.rotation), cardC
 
 const orbStyle = computed(() => ({
   '--orb-turn-angle': `${motion.orbTurn}deg`,
-  '--orb-progress-angle': `${motion.orbTurn}deg`,
+  '--orb-progress-angle': `${wrapIndex(motion.orbTurn, 360)}deg`,
   '--orb-bloom': `${motion.orbGlow}`,
 }))
 
 const wrapIndex = (value: number, size: number) => ((value % size) + size) % size
+const rotationToOrbTurn = (rotation: number) => (rotation - baseRotation) * orbStepAngle
 
 const normalizeSlotOffset = (value: number, size: number) => {
   let wrapped = wrapIndex(value + size / 2, size) - size / 2
@@ -229,27 +232,20 @@ const getOrbAngle = (event: PointerEvent) => {
   return wrapIndex(angle + 90, 360)
 }
 
-const snapRotation = (syncOrb = false) => {
+const snapRotation = () => {
   const snappedRotation = Math.round(motion.rotation)
 
-  gsap.killTweensOf(motion, 'rotation')
+  gsap.killTweensOf(motion, 'rotation,orbTurn')
   const tweenState: {
     rotation: number
     duration: number
     ease: string
-    orbTurn?: number
+    orbTurn: number
   } = {
     rotation: snappedRotation,
+    orbTurn: rotationToOrbTurn(snappedRotation),
     duration: 0.68,
     ease: 'elastic.out(1, 0.78)',
-  }
-
-  if (syncOrb) {
-    tweenState.orbTurn = gsap.utils.clamp(
-      0,
-      360,
-      motion.orbTurn + (snappedRotation - motion.rotation) * (360 / cardCount),
-    )
   }
 
   gsap.to(motion, tweenState)
@@ -295,9 +291,11 @@ const handlePointerMove = (event: PointerEvent) => {
   if (dragMode.value === 'carousel') {
     event.preventDefault()
     const deltaX = event.clientX - startX.value
+    const nextRotation = startRotation.value - deltaX / trackMetrics.value.dragDistance
 
     queueDragMotion({
-      rotation: startRotation.value - deltaX / trackMetrics.value.dragDistance,
+      rotation: nextRotation,
+      orbTurn: rotationToOrbTurn(nextRotation),
     })
   }
 
@@ -307,11 +305,11 @@ const handlePointerMove = (event: PointerEvent) => {
     const delta = normalizeAngleDelta(nextAngle - lastOrbAngle.value)
 
     lastOrbAngle.value = nextAngle
-    const nextTurn = gsap.utils.clamp(0, 360, pendingMotion.orbTurn + delta)
+    const nextTurn = pendingMotion.orbTurn + delta
 
     queueDragMotion({
       orbTurn: nextTurn,
-      rotation: startRotation.value + (nextTurn - startOrbTurn.value) / (360 / cardCount),
+      rotation: startRotation.value + (nextTurn - startOrbTurn.value) / orbStepAngle,
     })
   }
 }
@@ -331,7 +329,7 @@ const finishDrag = (event?: PointerEvent) => {
   dragTarget.value = null
 
   if (wasOrb) setOrbActive(false)
-  snapRotation(wasOrb)
+  snapRotation()
 }
 
 const getCardStyle = (index: number) => {
