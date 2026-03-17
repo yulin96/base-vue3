@@ -1,43 +1,23 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
 node_modules
-.DS_Store
 dist
-dist-ssr
-coverage
-*.local
-__temp/**
+*.log
 
-/cypress/videos/
-/cypress/screenshots/
+template/base/node_modules
+template/base/dist
+template/base/dist-ssr
+template/base/coverage
+template/base/*.local
+template/base/__temp/**
+template/base/stats.html
+template/base/components.d.ts
+template/base/auto-imports.d.ts
+template/base/.eslintrc-auto-import.json
+template/base/tsconfig.app.tsbuildinfo
+template/base/tsconfig.node.tsbuildinfo
+template/base/vite.config.ts.timestamp-*.mjs
+template/base/.env.sentry-build-plugin
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-stats.html
-components.d.ts
-auto-imports.d.ts
-.eslintrc-auto-import.json
-tsconfig.app.tsbuildinfo
-tsconfig.node.tsbuildinfo
-
-vite.config.ts.timestamp-*.mjs
-
-# Sentry Config File
-.env.sentry-build-plugin
+playground/*
+!playground/.gitignore
 
 .playwright-cli

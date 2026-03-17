@@ -1,3 +1,6 @@
+packages:
+  - 'template/*'
+
 ignoredBuiltDependencies:
   - '@tsparticles/engine'
   - cos-js-sdk-v5

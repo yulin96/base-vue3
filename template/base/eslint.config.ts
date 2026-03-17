@@ -1,3 +1,5 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 import { configureVueProject, defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 import pluginVue from 'eslint-plugin-vue'
@@ -5,13 +7,15 @@ import { globalIgnores } from 'eslint/config'
 
 configureVueProject({ tsSyntaxInTemplates: false })
 
+const tsconfigRootDir = path.dirname(fileURLToPath(import.meta.url))
+
 export default defineConfigWithVueTs(
   {
     name: 'app/files-to-lint',
     files: ['src/**/*.{ts,mts,tsx,vue}'],
     languageOptions: {
       parserOptions: {
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir,
       },
     },
   },

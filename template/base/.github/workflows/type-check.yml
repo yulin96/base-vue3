@@ -15,16 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         check:
-          - name: lint
-            cmd: pnpm lint
           - name: type-check
             cmd: pnpm type-check
-          - name: build-cli
-            cmd: pnpm build
-          - name: build-template
-            cmd: pnpm build:template
-          - name: verify-playground
-            cmd: pnpm gen:playground && pnpm install:playground && pnpm build:playground
+          - name: lint
+            cmd: pnpm lint
+          - name: build
+            cmd: pnpm build-only
 
     steps:
       - name: Checkout code
@@ -45,7 +41,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Run ${{ matrix.check.name }}
         run: ${{ matrix.check.cmd }}
