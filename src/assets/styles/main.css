@@ -36,6 +36,10 @@ textarea {
   caret-color: currentColor;
 }
 
+textarea {
+  resize: none;
+}
+
 input::placeholder,
 select[content=''] {
   color: currentColor;
