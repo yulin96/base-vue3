@@ -1,19 +1,19 @@
 # Base Vue3（移动端项目基础库）
 
 一个面向 H5 活动页/轻应用的 Vue 3 + Vite 基础工程。
-项目内置移动端适配、自动路由、组件自动注册、常用业务组件与工具函数，可用于快速启动新项目。
+项目内置移动端适配、文件路由、组件自动注册、常用业务组件与工具函数，可用于快速启动新项目。
 
 ## 项目分析（当前仓库）
 
-- 技术栈：Vue 3 + Vite 7 + TypeScript + Pinia + Vue Router（文件路由）+ Vant + Tailwind CSS v4。
-- 工程能力：ESLint + Prettier、GitHub Actions（type-check / lint / build）、自动生成路由与组件类型声明。
+- 技术栈：Vue 3 + Vite 8 + TypeScript + Pinia + Vue Router（文件路由）+ Vant + Tailwind CSS v4。
+- 工程能力：ESLint + Prettier、GitHub Actions（type-check / lint / build-only）、自动生成路由与组件类型声明。
 - 运行特征：默认 Hash 路由、移动端 rem 适配、支持 PC 预览模式（可生成扫码二维码）。
 - 平台集成：内置微信分享/JSSDK、钉钉能力封装、可选 ARMS 前端监控。
 - 构建与发布：图片优化、分包、产物整理；可按环境变量开关上传 OSS/FTP。
 
 ## 核心特性
 
-- **移动端优先**：`postcss-pxtorem` + `setRem`，并对 Vant 使用独立 rootValue。
+- **移动端优先**：`postcss-pxtorem` + `setRem`，并对 Vant 使用独立 rootValue，同时支持 PC 模式包裹预览与二维码生成。
 - **自动化开发体验**：
   - `src/pages/**/*.vue` 自动生成路由（`vue-router/auto-routes`）
   - `src/components/**` 组件自动注册（`unplugin-vue-components`）
@@ -23,8 +23,8 @@
   - 常用 hooks（加载、计时、滑动、请求锁、二维码等）
   - 常用工具（动画、加密、DOM、文件处理、平台能力）
 - **构建增强**：
-  - Legacy 兼容构建（Chrome >= 64 / Safari >= 13）
-  - 图片压缩、资源整理、Rollup 可视化分析
+  - Legacy 兼容构建（Chrome >= 87 / Safari >= 13）
+  - 图片压缩、资源整理、自动注入分享 Meta、Rollup 可视化分析
   - 支持发布后自动上传 OSS / FTP（可选）
 
 ## 快速开始
@@ -46,7 +46,7 @@ pnpm install
 pnpm dev
 ```
 
-默认地址：`http://localhost:3010`
+默认地址：`http://localhost:3020`（监听 `0.0.0.0`，可局域网访问）
 
 ## 常用命令
 
@@ -58,7 +58,9 @@ pnpm dev
 | `pnpm lint:fix`   | ESLint 检查并自动修复 |
 | `pnpm format`     | 格式化 `src/` 下文件   |
 | `pnpm build-only` | 仅打包（Vite build）   |
+| `pnpm build-only:deploy` | 使用 `deploy` 模式打包 |
 | `pnpm build`      | 先 type-check 再 build |
+| `pnpm build:deploy` | 先 type-check 再以 `deploy` 模式打包 |
 | `pnpm preview`    | 预览构建产物           |
 
 ## 环境变量
@@ -78,6 +80,8 @@ pnpm dev
 | `VITE_APP_SHARE_DESC`        | 微信分享描述                                  |
 | `VITE_APP_SHARE_LINK`        | 微信分享链接                                  |
 | `VITE_APP_SHARE_IMGURL`      | 微信分享图片                                  |
+| `VITE_APP_AUTHOR`            | 注入到 `index.html` 的作者信息                |
+| `VITE_APP_CONTACT`           | 注入到 `index.html` 的联系信息                |
 | `VITE_OSS_ROOT_DIR`          | OSS 上传目录（用于发布插件开关）              |
 | `VITE_FTP_DIRNAME`           | FTP 上传目录（用于发布插件开关）              |
 
@@ -110,15 +114,15 @@ base-vue3/
 
 ### 路由约定
 
-- 页面放在 `src/pages` 下即可自动生成路由。
+- 页面放在 `src/pages` 下即可自动生成路由，类型声明输出到 `types/route-map.d.ts`。
 - 页面可在 SFC 中通过 `<route lang="json">` 定义 `meta`，用于转场等逻辑。
 - 项目默认通过 `meta.index` 自动推断页面切换动画方向。
 
 ### 组件与样式
 
-- 基础组件统一放在 `src/components/base`，按需直接在模板中使用（自动注册）。
+- `src/components` 下组件会自动注册，当前基础组件主要放在 `src/components/base`。
 - 全局样式入口：`src/assets/styles/main.css`。
-- Tailwind 主题变量在 `src/assets/styles/tailwind.css` 中维护。
+- Tailwind 入口在 `src/assets/styles/tailwind.css`，主题变量与自定义 utility 主要在 `src/assets/styles/theme.css`。
 
 ### 请求与状态
 
@@ -139,4 +143,9 @@ GitHub Actions 在 `main` 分支 push / PR 时自动执行：
 2. `pnpm lint`
 3. `pnpm build-only`
 
-配置文件：`.github/workflows/type-check.yml`。
+此外，`main` 分支 push 后还会触发仓库镜像同步到 Gitea。
+
+配置文件：
+
+- `.github/workflows/type-check.yml`
+- `.github/workflows/sync-to-gitea.yml`
