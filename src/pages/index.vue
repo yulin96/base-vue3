@@ -102,6 +102,7 @@ const cards: CardItem[] = [
 const cardCount = cards.length
 
 const orbRef = ref<HTMLElement | null>(null)
+const frameRef = ref<HTMLElement | null>(null)
 const viewportWidth = ref(390)
 const dragMode = ref<'idle' | 'carousel' | 'orb'>('idle')
 const activePointerId = ref<number | null>(null)
@@ -110,6 +111,13 @@ const startX = ref(0)
 const startRotation = ref(0)
 const lastOrbAngle = ref(0)
 const startOrbTurn = ref(0)
+const dragTarget = ref<HTMLElement | null>(null)
+let dragFrame = 0
+let frameResizeObserver: ResizeObserver | null = null
+const pendingMotion = {
+  rotation: 2,
+  orbTurn: 0,
+}
 
 const motion = reactive({
   rotation: 2,
@@ -166,7 +174,32 @@ const normalizeAngleDelta = (delta: number) => {
 }
 
 const updateViewportWidth = () => {
-  viewportWidth.value = window.innerWidth
+  viewportWidth.value =
+    frameRef.value?.clientWidth ||
+    (document.querySelector('#app') as HTMLDivElement | null)?.clientWidth ||
+    window.innerWidth
+}
+
+const flushDragMotion = () => {
+  dragFrame = 0
+  motion.rotation = pendingMotion.rotation
+  motion.orbTurn = pendingMotion.orbTurn
+}
+
+const queueDragMotion = (next: { rotation?: number; orbTurn?: number }) => {
+  if (typeof next.rotation === 'number') pendingMotion.rotation = next.rotation
+  if (typeof next.orbTurn === 'number') pendingMotion.orbTurn = next.orbTurn
+
+  if (dragFrame) return
+
+  dragFrame = requestAnimationFrame(flushDragMotion)
+}
+
+const flushPendingDragMotion = () => {
+  if (!dragFrame) return
+
+  cancelAnimationFrame(dragFrame)
+  flushDragMotion()
 }
 
 const setOrbActive = (active: boolean) => {
@@ -229,8 +262,12 @@ const startCarouselDrag = (event: PointerEvent) => {
   event.preventDefault()
   activePointerId.value = event.pointerId
   dragMode.value = 'carousel'
+  dragTarget.value = event.currentTarget as HTMLElement
   startX.value = event.clientX
   startRotation.value = motion.rotation
+  pendingMotion.rotation = motion.rotation
+  pendingMotion.orbTurn = motion.orbTurn
+  dragTarget.value?.setPointerCapture?.(event.pointerId)
   gsap.killTweensOf(motion, 'rotation')
 }
 
@@ -241,9 +278,13 @@ const startOrbDrag = (event: PointerEvent) => {
   event.preventDefault()
   activePointerId.value = event.pointerId
   dragMode.value = 'orb'
+  dragTarget.value = event.currentTarget as HTMLElement
   startRotation.value = motion.rotation
   startOrbTurn.value = motion.orbTurn
   lastOrbAngle.value = getOrbAngle(event)
+  pendingMotion.rotation = motion.rotation
+  pendingMotion.orbTurn = motion.orbTurn
+  dragTarget.value?.setPointerCapture?.(event.pointerId)
   gsap.killTweensOf(motion, 'rotation,orbTurn')
   setOrbActive(true)
 }
@@ -255,7 +296,9 @@ const handlePointerMove = (event: PointerEvent) => {
     event.preventDefault()
     const deltaX = event.clientX - startX.value
 
-    motion.rotation = startRotation.value - deltaX / trackMetrics.value.dragDistance
+    queueDragMotion({
+      rotation: startRotation.value - deltaX / trackMetrics.value.dragDistance,
+    })
   }
 
   if (dragMode.value === 'orb') {
@@ -264,10 +307,12 @@ const handlePointerMove = (event: PointerEvent) => {
     const delta = normalizeAngleDelta(nextAngle - lastOrbAngle.value)
 
     lastOrbAngle.value = nextAngle
-    const nextTurn = gsap.utils.clamp(0, 360, motion.orbTurn + delta)
+    const nextTurn = gsap.utils.clamp(0, 360, pendingMotion.orbTurn + delta)
 
-    motion.orbTurn = nextTurn
-    motion.rotation = startRotation.value + (nextTurn - startOrbTurn.value) / (360 / cardCount)
+    queueDragMotion({
+      orbTurn: nextTurn,
+      rotation: startRotation.value + (nextTurn - startOrbTurn.value) / (360 / cardCount),
+    })
   }
 }
 
@@ -276,9 +321,14 @@ const finishDrag = (event?: PointerEvent) => {
   if (dragMode.value === 'idle') return
 
   const wasOrb = dragMode.value === 'orb'
+  const pointerId = activePointerId.value
+
+  flushPendingDragMotion()
+  if (pointerId !== null) dragTarget.value?.releasePointerCapture?.(pointerId)
 
   activePointerId.value = null
   dragMode.value = 'idle'
+  dragTarget.value = null
 
   if (wasOrb) setOrbActive(false)
   snapRotation(wasOrb)
@@ -341,6 +391,8 @@ useGsapContext('.orbital-page', () => {
 
 onMounted(() => {
   updateViewportWidth()
+  frameResizeObserver = new ResizeObserver(updateViewportWidth)
+  if (frameRef.value) frameResizeObserver.observe(frameRef.value)
   window.addEventListener('resize', updateViewportWidth)
   window.addEventListener('pointermove', handlePointerMove, { passive: false })
   window.addEventListener('pointerup', finishDrag)
@@ -348,6 +400,9 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  flushPendingDragMotion()
+  frameResizeObserver?.disconnect()
+  frameResizeObserver = null
   window.removeEventListener('resize', updateViewportWidth)
   window.removeEventListener('pointermove', handlePointerMove)
   window.removeEventListener('pointerup', finishDrag)
@@ -363,7 +418,7 @@ onBeforeUnmount(() => {
         <div class="scene-halo halo-right"></div>
         <div class="scene-grid"></div>
 
-        <div class="hero-frame">
+        <div ref="frameRef" class="hero-frame">
           <div
             class="carousel-shell"
             :class="{ 'is-dragging': dragMode === 'carousel' }"
@@ -403,7 +458,7 @@ onBeforeUnmount(() => {
               ref="orbRef"
               type="button"
               class="control-orb"
-              :class="{ 'is-active': orbActive }"
+              :class="{ 'is-active': orbActive, 'is-dragging': dragMode === 'orb' }"
               :style="orbStyle"
               aria-label="Rotate cards"
               @pointerdown="startOrbDrag"
@@ -708,6 +763,7 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   padding-bottom: 12px;
+  touch-action: none;
 }
 
 .control-orb {
@@ -722,6 +778,7 @@ onBeforeUnmount(() => {
   touch-action: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  will-change: transform;
 }
 
 .orb-aura,
@@ -741,6 +798,7 @@ onBeforeUnmount(() => {
   transform: scale(1.46);
   opacity: calc(0.35 + var(--orb-bloom) * 0.35);
   filter: blur(18px);
+  will-change: transform, opacity;
   transition:
     opacity 260ms ease,
     transform 260ms ease;
@@ -753,6 +811,7 @@ onBeforeUnmount(() => {
     0 30px 70px rgb(0 0 0 / 24%);
   background: linear-gradient(180deg, rgb(255 255 255 / 22%), rgb(255 255 255 / 10%));
   backdrop-filter: blur(22px) saturate(1.2);
+  will-change: transform, opacity;
   transition:
     transform 280ms ease,
     background 280ms ease,
@@ -765,6 +824,7 @@ onBeforeUnmount(() => {
   opacity: 0;
   border: 4px solid rgb(255 255 255 / 34%);
   box-shadow: 0 0 14px rgb(255 255 255 / 6%);
+  will-change: transform, opacity;
   transition:
     opacity 220ms ease,
     transform 220ms ease;
@@ -785,6 +845,7 @@ onBeforeUnmount(() => {
   mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
   box-shadow: 0 0 18px rgb(255 255 255 / 18%);
+  will-change: transform, opacity;
   transition:
     opacity 220ms ease,
     transform 220ms ease;
@@ -805,6 +866,7 @@ onBeforeUnmount(() => {
     rotate(var(--orb-turn-angle))
     translateY(calc(var(--orb-size) * -0.28))
     scale(0.22);
+  will-change: transform, opacity;
   transition:
     background 220ms ease,
     box-shadow 220ms ease,
@@ -854,6 +916,14 @@ onBeforeUnmount(() => {
 
 .control-orb.is-active .orb-progress {
   transform: scale(1);
+}
+
+.control-orb.is-dragging .orb-aura,
+.control-orb.is-dragging .orb-body,
+.control-orb.is-dragging .orb-track,
+.control-orb.is-dragging .orb-progress,
+.control-orb.is-dragging .orb-handle {
+  transition-duration: 0s;
 }
 
 @media (min-width: 640px) {
