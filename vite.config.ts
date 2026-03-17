@@ -165,7 +165,6 @@ export default defineConfig(({ command, mode }) => ({
   },
   base: './',
   build: {
-    cssMinify: 'esbuild',
     assetsInlineLimit: 10240,
     assetsDir: 'assets',
     chunkSizeWarningLimit: 1000,
@@ -201,7 +200,6 @@ export default defineConfig(({ command, mode }) => ({
     forwardConsole: true,
   },
   css: {
-    transformer: 'postcss',
     postcss: {
       plugins: [
         postcssPresetEnv({
