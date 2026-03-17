@@ -16,7 +16,8 @@
     "build-only": "vite build",
     "build-only:deploy": "vite build --mode deploy",
     "type-check": "vue-tsc --build",
-    "lint": "eslint . --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write src/"
   },
   "dependencies": {

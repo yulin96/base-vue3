@@ -54,7 +54,8 @@ pnpm dev
 | ----------------- | ---------------------- |
 | `pnpm dev`        | 启动开发服务器         |
 | `pnpm type-check` | 运行 `vue-tsc --build` |
-| `pnpm lint`       | ESLint 检查并自动修复  |
+| `pnpm lint`       | ESLint 纯检查         |
+| `pnpm lint:fix`   | ESLint 检查并自动修复 |
 | `pnpm format`     | 格式化 `src/` 下文件   |
 | `pnpm build-only` | 仅打包（Vite build）   |
 | `pnpm build`      | 先 type-check 再 build |
