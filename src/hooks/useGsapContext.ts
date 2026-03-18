@@ -6,19 +6,25 @@ export function useGsapContext(scope: string, setup: () => void) {
   let ctx: gsap.Context | null = null
 
   const clear = async () => {
-    await sleep(360)
-    ctx?.revert()
+    const currentContext = ctx
+    if (!currentContext) return
+
     ctx = null
+    await sleep(360)
+    currentContext.revert()
   }
 
   const init = () => {
+    if (ctx) return
     ctx = gsap.context(setup, scope)
   }
 
   onMounted(init)
   // onActivated(init)
   onDeactivated(clear)
-  onUnmounted(clear)
+  onUnmounted(() => {
+    void clear()
+  })
 
   return { clear, init }
 }
