@@ -32,6 +32,96 @@ export function registerARMS() {
 
         // 链路追踪开关
         tracing: false,
+
+        evaluateApi: async (options, response, error) => {
+          let requestData = ''
+          let responseText = ''
+
+          const method = String(options.method || '').toLowerCase()
+          const normalizeJsonText = (value: string) => {
+            const text = value.trim()
+            if (!text) return ''
+
+            const firstChar = text[0]
+            const lastChar = text[text.length - 1]
+            const isJsonText = (firstChar === '{' && lastChar === '}') || (firstChar === '[' && lastChar === ']')
+
+            if (!isJsonText) return value
+
+            try {
+              return JSON.stringify(JSON.parse(text))
+            } catch {
+              return value
+            }
+          }
+          const parseUrlParams = (url: unknown) => {
+            if (typeof url !== 'string' || !url) return null
+
+            const searchParams = new URL(url, location.href).searchParams
+            const entries = Array.from(searchParams.entries())
+
+            if (!entries.length) return null
+
+            return entries.reduce<Record<string, string | string[]>>((result, [key, value]) => {
+              const currentValue = result[key]
+              if (currentValue === undefined) {
+                result[key] = value
+                return result
+              }
+              result[key] = Array.isArray(currentValue) ? [...currentValue, value] : [currentValue, value]
+              return result
+            }, {})
+          }
+
+          const body =
+            method === 'get'
+              ? (options.params ?? parseUrlParams(options.url || response?.url) ?? options.data)
+              : options.data
+          try {
+            if (body instanceof FormData) {
+              const obj = {}
+              body.forEach((value, key) => {
+                obj[key] = value instanceof File ? `[File: ${value.name}]` : value
+              })
+              requestData = JSON.stringify(obj)
+            } else if (typeof body === 'object') {
+              requestData = JSON.stringify(body)
+            } else {
+              requestData = body == null ? '' : String(body)
+            }
+
+            requestData = normalizeJsonText(requestData)
+
+            if (response) {
+              if (typeof response.clone === 'function') {
+                const clone = response.clone()
+                responseText = await clone.text()
+              } else if (response.responseText) {
+                responseText = response.responseText
+              } else if (typeof response === 'string') {
+                responseText = response
+              }
+
+              responseText = normalizeJsonText(responseText)
+            }
+          } catch (e) {
+            requestData = '解析出错'
+          }
+
+          return {
+            success: error || (response && response.status >= 400) ? 0 : 1,
+
+            snapshots: JSON.stringify({
+              reqHeaders: JSON.stringify(options.headers),
+            }),
+
+            properties: {
+              api_type: body instanceof FormData ? 'form-data' : 'json',
+              request_data: requestData.substring(0, 2000),
+              response: responseText.substring(0, 2000),
+            },
+          }
+        },
       }
 
       // 1. 将配置挂载到全局变量 __rum
