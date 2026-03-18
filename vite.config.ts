@@ -28,122 +28,123 @@ const splitDependencies: Record<string, string> = {
   vueuse: '@vueuse/core',
 }
 
-const env = loadEnv('production', process.cwd())
+export default defineConfig(({ command, mode }) => {
+  const env = loadEnv(mode, process.cwd())
 
-export default defineConfig(({ command, mode }) => ({
-  define: {
-    __ARMSEndpoint: JSON.stringify(process.env.ARMSEndpoint),
-  },
-  plugins: [
-    {
-      name: 'build-check',
-      apply: 'build',
-      buildStart() {
-        handleCheck()
-      },
-      closeBundle() {},
+  return {
+    define: {
+      __ARMSEndpoint: JSON.stringify(process.env.ARMSEndpoint),
     },
-    vitePluginMetaShare({
-      enable: true,
-      title: env.VITE_APP_SHARE_TITLE,
-      description: env.VITE_APP_SHARE_DESC,
-      link: env.VITE_APP_SHARE_LINK,
-      image: env.VITE_APP_SHARE_IMGURL,
-    }),
-    ViteImageOptimizer({
-      exclude: /\.(webp|svg)$/i,
-      jpg: {
-        quality: 90,
-        progressive: true,
-        mozjpeg: true,
+    plugins: [
+      {
+        name: 'build-check',
+        apply: 'build',
+        buildStart() {
+          handleCheck(env)
+        },
+        closeBundle() {},
       },
-      png: {
-        quality: 90,
-        progressive: true,
-        adaptiveFiltering: true,
-      },
-      cache: true,
-      cacheLocation: 'node_modules/.cache-image/',
-    }),
-    VueRouter({
-      dts: './types/route-map.d.ts',
-      importMode: command === 'build' ? 'sync' : 'async',
-    }),
-    vue(),
-    tailwindcss(),
-    Components({
-      dirs: ['src/components'],
-      extensions: ['vue'],
-      include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
-      resolvers: [VantResolver()],
-      dts: './types/components.d.ts',
-      directoryAsNamespace: true,
-    }),
-    legacy({
-      targets: ['chrome >= 87', 'safari >= 13'],
-      renderLegacyChunks: false,
-      modernPolyfills: true,
-      additionalModernPolyfills: ['core-js/es/object/has-own'],
-    }),
-    vitePluginDeployOss({
-      open: !!env.VITE_OSS_ROOT_DIR && env.VITE_OSS_ROOT_DIR !== 'H5/zz/auto2/' && mode === 'deploy',
-      accessKeyId: process.env.zAccessKeyId || '',
-      accessKeySecret: process.env.zAccessKeySecret || '',
-      bucket: process.env.zBucket || '',
-      region: 'oss-cn-beijing',
-      alias: process.env.zBucketAlias || '',
-      uploadDir: `${env.VITE_OSS_ROOT_DIR}`,
-      skip: ['**/*.html', '**/pluginWebUpdateNotice/**'],
-      overwrite: true,
-      autoDelete: true,
+      vitePluginMetaShare({
+        enable: true,
+        title: env.VITE_APP_SHARE_TITLE,
+        description: env.VITE_APP_SHARE_DESC,
+        link: env.VITE_APP_SHARE_LINK,
+        image: env.VITE_APP_SHARE_IMGURL,
+      }),
+      ViteImageOptimizer({
+        exclude: /\.(webp|svg)$/i,
+        jpg: {
+          quality: 90,
+          progressive: true,
+          mozjpeg: true,
+        },
+        png: {
+          quality: 90,
+          progressive: true,
+          adaptiveFiltering: true,
+        },
+        cache: true,
+        cacheLocation: 'node_modules/.cache-image/',
+      }),
+      VueRouter({
+        dts: './types/route-map.d.ts',
+        importMode: command === 'build' ? 'sync' : 'async',
+      }),
+      vue(),
+      tailwindcss(),
+      Components({
+        dirs: ['src/components'],
+        extensions: ['vue'],
+        include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+        resolvers: [VantResolver()],
+        dts: './types/components.d.ts',
+        directoryAsNamespace: true,
+      }),
+      legacy({
+        targets: ['chrome >= 87', 'safari >= 13'],
+        renderLegacyChunks: false,
+        modernPolyfills: true,
+        additionalModernPolyfills: ['core-js/es/object/has-own'],
+      }),
+      vitePluginDeployOss({
+        open: !!env.VITE_OSS_ROOT_DIR && env.VITE_OSS_ROOT_DIR !== 'H5/zz/auto2/' && mode === 'deploy',
+        accessKeyId: process.env.zAccessKeyId || '',
+        accessKeySecret: process.env.zAccessKeySecret || '',
+        bucket: process.env.zBucket || '',
+        region: 'oss-cn-beijing',
+        alias: process.env.zBucketAlias || '',
+        uploadDir: `${env.VITE_OSS_ROOT_DIR}`,
+        skip: ['**/*.html', '**/pluginWebUpdateNotice/**'],
+        overwrite: true,
+        autoDelete: true,
 
-      // 修改打包后的资源路径
-      configBase: `${process.env.zBucketAlias || ''}${env.VITE_OSS_ROOT_DIR}`,
-    }),
-    vitePluginOrganize({
-      config: {
-        IMG_RESOURCES: ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'],
-      },
-    }),
-    vitePluginDeployFtp({
-      open: !!env.VITE_FTP_DIRNAME && mode === 'deploy',
-      uploadPath: `${env.VITE_FTP_DIRNAME}`,
-      singleBack: true,
-      // autoUpload: true,
-      // defaultFtp: process.env.zH5FtpName,
-      ftps: [
-        {
-          name: process.env.zH5FtpName || process.env.zH5FtpAlias || '',
-          host: process.env.zH5FtpHost,
-          port: +(process.env.zH5FtpPort || 21),
-          user: process.env.zH5FtpUser,
-          password: process.env.zH5FtpPassword,
-          alias: process.env.zH5FtpAlias,
+        // 修改打包后的资源路径
+        configBase: `${process.env.zBucketAlias || ''}${env.VITE_OSS_ROOT_DIR}`,
+      }),
+      vitePluginOrganize({
+        config: {
+          IMG_RESOURCES: ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'],
         },
-        {
-          name: process.env.zH5FtpName2 || process.env.zH5FtpAlias2 || '',
-          host: process.env.zH5FtpHost2,
-          port: +(process.env.zH5FtpPort2 || 21),
-          user: process.env.zH5FtpUser2,
-          password: process.env.zH5FtpPassword2,
-          alias: process.env.zH5FtpAlias2,
-        },
-        {
-          name: process.env.zQRFtpName || process.env.zQRFtpAlias || '',
-          host: process.env.zQRFtpHost,
-          port: +(process.env.zQRFtpPort || 21),
-          user: process.env.zQRFtpUser,
-          password: process.env.zQRFtpPassword,
-          alias: process.env.zQRFtpAlias,
-        },
-      ],
-    }),
-    {
-      name: 'transformHtml',
-      transformIndexHtml(html) {
-        html = html.replace('<html', `<html build-time="${new Date().toLocaleString()}" `)
+      }),
+      vitePluginDeployFtp({
+        open: !!env.VITE_FTP_DIRNAME && mode === 'deploy',
+        uploadPath: `${env.VITE_FTP_DIRNAME}`,
+        singleBack: true,
+        // autoUpload: true,
+        // defaultFtp: process.env.zH5FtpName,
+        ftps: [
+          {
+            name: process.env.zH5FtpName || process.env.zH5FtpAlias || '',
+            host: process.env.zH5FtpHost,
+            port: +(process.env.zH5FtpPort || 21),
+            user: process.env.zH5FtpUser,
+            password: process.env.zH5FtpPassword,
+            alias: process.env.zH5FtpAlias,
+          },
+          {
+            name: process.env.zH5FtpName2 || process.env.zH5FtpAlias2 || '',
+            host: process.env.zH5FtpHost2,
+            port: +(process.env.zH5FtpPort2 || 21),
+            user: process.env.zH5FtpUser2,
+            password: process.env.zH5FtpPassword2,
+            alias: process.env.zH5FtpAlias2,
+          },
+          {
+            name: process.env.zQRFtpName || process.env.zQRFtpAlias || '',
+            host: process.env.zQRFtpHost,
+            port: +(process.env.zQRFtpPort || 21),
+            user: process.env.zQRFtpUser,
+            password: process.env.zQRFtpPassword,
+            alias: process.env.zQRFtpAlias,
+          },
+        ],
+      }),
+      {
+        name: 'transformHtml',
+        transformIndexHtml(html) {
+          html = html.replace('<html', `<html build-time="${new Date().toLocaleString()}" `)
 
-        const baiduScript = `
+          const baiduScript = `
     <script>
       var _hmt = _hmt || [];
       (function() {
@@ -154,94 +155,95 @@ export default defineConfig(({ command, mode }) => ({
       })();
     </script>`
 
-        if (env.VITE_APP_HM_BAIDU) html = html.replace('<!-- baiduTongji -->', baiduScript)
-        return html
-      },
-    },
-    visualizer(),
-  ],
-  resolve: {
-    tsconfigPaths: true,
-  },
-  base: './',
-  build: {
-    assetsInlineLimit: 10240,
-    assetsDir: 'assets',
-    chunkSizeWarningLimit: 1000,
-    cssCodeSplit: false,
-    rolldownOptions: {
-      input: {
-        index: path.resolve(__dirname, 'index.html'),
-      },
-      output: {
-        minify: {
-          compress: {
-            dropConsole: env.VITE_DROP_CONSOLE == '1',
-            dropDebugger: env.VITE_DROP_CONSOLE == '1',
-          },
+          if (env.VITE_APP_HM_BAIDU) html = html.replace('<!-- baiduTongji -->', baiduScript)
+          return html
         },
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            for (const key in splitDependencies) {
-              if (id.includes(splitDependencies[key])) return `chunks/${key}`
+      },
+      visualizer(),
+    ],
+    resolve: {
+      tsconfigPaths: true,
+    },
+    base: './',
+    build: {
+      assetsInlineLimit: 10240,
+      assetsDir: 'assets',
+      chunkSizeWarningLimit: 1000,
+      cssCodeSplit: false,
+      rolldownOptions: {
+        input: {
+          index: path.resolve(__dirname, 'index.html'),
+        },
+        output: {
+          minify: {
+            compress: {
+              dropConsole: env.VITE_DROP_CONSOLE == '1',
+              dropDebugger: env.VITE_DROP_CONSOLE == '1',
+            },
+          },
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              for (const key in splitDependencies) {
+                if (id.includes(splitDependencies[key])) return `chunks/${key}`
+              }
             }
-          }
+          },
+        },
+        checks: {
+          pluginTimings: false,
         },
       },
-      checks: {
-        pluginTimings: false,
+    },
+    server: {
+      host: '0.0.0.0',
+      port: 3020,
+      hmr: true,
+      forwardConsole: true,
+    },
+    css: {
+      postcss: {
+        plugins: [
+          postcssPresetEnv({
+            browsers: ['ios >= 13', 'chrome >= 87', 'safari >= 13'],
+            autoprefixer: {},
+            features: {
+              'cascade-layers': false,
+            },
+          }),
+          pxtorem({
+            rootValue: (root) => ((root?.file ?? '').indexOf('node_modules/vant') !== -1 ? 5 : 10),
+            propList: ['*'],
+            selectorBlackList: ['.ignore', 'pc'],
+            exclude(filePath) {
+              return filePath.includes('vue-sonner')
+            },
+            replace: true,
+            minPixelValue: 0,
+          }),
+          // postcssPxToViewport({
+          //   unitToConvert: 'px',
+          //   viewportWidth: (file) => (~file.indexOf('node_modules/vant') ? 375 : 1920),
+          //   unitPrecision: 5,
+          //   propList: ['*'],
+          //   viewportUnit: 'vw',
+          //   fontViewportUnit: 'vw',
+          //   selectorBlackList: ['ignore-'],
+          //   minPixelValue: 0,
+          //   mediaQuery: true,
+          //   replace: true,
+          //   exclude: [],
+          //   include: [],
+          //   landscape: false,
+          //   landscapeUnit: 'vw',
+          //   landscapeWidth: 1628,
+          // }),
+        ],
       },
     },
-  },
-  server: {
-    host: '0.0.0.0',
-    port: 3020,
-    hmr: true,
-    forwardConsole: true,
-  },
-  css: {
-    postcss: {
-      plugins: [
-        postcssPresetEnv({
-          browsers: ['ios >= 13', 'chrome >= 87', 'safari >= 13'],
-          autoprefixer: {},
-          features: {
-            'cascade-layers': false,
-          },
-        }),
-        pxtorem({
-          rootValue: (root) => ((root?.file ?? '').indexOf('node_modules/vant') !== -1 ? 5 : 10),
-          propList: ['*'],
-          selectorBlackList: ['.ignore', 'pc'],
-          exclude(filePath) {
-            return filePath.includes('vue-sonner')
-          },
-          replace: true,
-          minPixelValue: 0,
-        }),
-        // postcssPxToViewport({
-        //   unitToConvert: 'px',
-        //   viewportWidth: (file) => (~file.indexOf('node_modules/vant') ? 375 : 1920),
-        //   unitPrecision: 5,
-        //   propList: ['*'],
-        //   viewportUnit: 'vw',
-        //   fontViewportUnit: 'vw',
-        //   selectorBlackList: ['ignore-'],
-        //   minPixelValue: 0,
-        //   mediaQuery: true,
-        //   replace: true,
-        //   exclude: [],
-        //   include: [],
-        //   landscape: false,
-        //   landscapeUnit: 'vw',
-        //   landscapeWidth: 1628,
-        // }),
-      ],
-    },
-  },
-}))
+  }
+})
 
-function handleCheck() {
+function handleCheck(env: Record<string, string>) {
   const {
     VITE_APP_LOCALSTORAGE_NAME,
     VITE_APP_API_URL,
