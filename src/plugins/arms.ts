@@ -16,7 +16,7 @@ export function registerARMS() {
         },
 
         parseViewName() {
-          return location.pathname + location.hash.split('?')?.[0]
+          return location.origin + location.pathname + location.hash.split('?')?.[0]
         },
 
         // 监控项配置
