@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 
 type ArtType = 'sun' | 'slice' | 'bars' | 'beam' | 'halo' | 'wave'
+type DragSource = 'pointer' | 'mouse' | 'touch'
 
 type CardItem = {
   id: number
@@ -111,12 +112,14 @@ const cards: CardItem[] = [
 const cardCount = cards.length
 const baseRotation = 2
 const orbStepAngle = 360 / cardCount
+const supportsPointerEvents = typeof window !== 'undefined' && 'PointerEvent' in window
 
 const orbRef = ref<HTMLElement | null>(null)
 const frameRef = ref<HTMLElement | null>(null)
 const viewportWidth = ref(390)
 const dragMode = ref<'idle' | 'carousel' | 'orb'>('idle')
-const activePointerId = ref<number | null>(null)
+const activeDragId = ref<number | null>(null)
+const activeDragSource = ref<DragSource | null>(null)
 const orbActive = ref(false)
 const startX = ref(0)
 const startY = ref(0)
@@ -161,10 +164,11 @@ const trackMetrics = computed(() => {
 })
 
 const currentIndex = computed(() => wrapIndex(Math.round(motion.rotation), cardCount))
+const orbProgress = computed(() => wrapIndex(motion.orbTurn, 360) / 360)
 
 const orbStyle = computed(() => ({
   '--orb-turn-angle': `${motion.orbTurn}deg`,
-  '--orb-progress-angle': `${wrapIndex(motion.orbTurn, 360)}deg`,
+  '--orb-progress-offset': `${100 - orbProgress.value * 100}`,
   '--orb-bloom': `${motion.orbGlow}`,
 }))
 
@@ -186,6 +190,17 @@ const normalizeAngleDelta = (delta: number) => {
   if (next < -180) next += 360
 
   return next
+}
+
+const findTouchById = (touches: TouchList, id: number | null) => {
+  if (id === null) return null
+
+  for (let index = 0; index < touches.length; index++) {
+    const touch = touches.item(index)
+    if (touch?.identifier === id) return touch
+  }
+
+  return null
 }
 
 const updateViewportWidth = () => {
@@ -237,7 +252,7 @@ const setOrbActive = (active: boolean) => {
   })
 }
 
-const getOrbAngle = (event: PointerEvent) => {
+const getOrbAngle = (clientX: number, clientY: number) => {
   const rect = orbRef.value?.getBoundingClientRect()
 
   if (!rect) return 0
@@ -245,7 +260,7 @@ const getOrbAngle = (event: PointerEvent) => {
   const centerX = rect.left + rect.width / 2
   const centerY = rect.top + rect.height / 2
 
-  const angle = (Math.atan2(event.clientY - centerY, event.clientX - centerX) * 180) / Math.PI
+  const angle = (Math.atan2(clientY - centerY, clientX - centerX) * 180) / Math.PI
 
   return wrapIndex(angle + 90, 360)
 }
@@ -269,49 +284,74 @@ const snapRotation = () => {
   gsap.to(motion, tweenState)
 }
 
-const startCarouselDrag = (event: PointerEvent) => {
+const beginCarouselDrag = ({
+  clientX,
+  clientY,
+  id,
+  source,
+  button = 0,
+  currentTarget,
+}: {
+  clientX: number
+  clientY: number
+  id: number | null
+  source: DragSource
+  button?: number
+  currentTarget: EventTarget | null
+}) => {
   if (dragMode.value !== 'idle' || orbActive.value) return
-  if (event.pointerType === 'mouse' && event.button !== 0) return
+  if (button !== 0) return
 
-  event.preventDefault()
-  activePointerId.value = event.pointerId
+  activeDragId.value = id
+  activeDragSource.value = source
   dragMode.value = 'carousel'
-  dragTarget.value = event.currentTarget as HTMLElement
-  startX.value = event.clientX
-  startY.value = event.clientY
+  dragTarget.value = currentTarget as HTMLElement
+  startX.value = clientX
+  startY.value = clientY
   startRotation.value = motion.rotation
   carouselMoved = false
   pendingMotion.rotation = motion.rotation
   pendingMotion.orbTurn = motion.orbTurn
-  dragTarget.value?.setPointerCapture?.(event.pointerId)
+  if (source === 'pointer' && id !== null) dragTarget.value?.setPointerCapture?.(id)
   gsap.killTweensOf(motion, 'rotation')
 }
 
-const startOrbDrag = (event: PointerEvent) => {
+const beginOrbDrag = ({
+  clientX,
+  clientY,
+  id,
+  source,
+  button = 0,
+  currentTarget,
+}: {
+  clientX: number
+  clientY: number
+  id: number | null
+  source: DragSource
+  button?: number
+  currentTarget: EventTarget | null
+}) => {
   if (dragMode.value !== 'idle') return
-  if (event.pointerType === 'mouse' && event.button !== 0) return
+  if (button !== 0) return
 
-  event.preventDefault()
-  activePointerId.value = event.pointerId
+  activeDragId.value = id
+  activeDragSource.value = source
   dragMode.value = 'orb'
-  dragTarget.value = event.currentTarget as HTMLElement
+  dragTarget.value = currentTarget as HTMLElement
   startRotation.value = motion.rotation
   startOrbTurn.value = motion.orbTurn
-  lastOrbAngle.value = getOrbAngle(event)
+  lastOrbAngle.value = getOrbAngle(clientX, clientY)
   pendingMotion.rotation = motion.rotation
   pendingMotion.orbTurn = motion.orbTurn
-  dragTarget.value?.setPointerCapture?.(event.pointerId)
+  if (source === 'pointer' && id !== null) dragTarget.value?.setPointerCapture?.(id)
   gsap.killTweensOf(motion, 'rotation,orbTurn')
   setOrbActive(true)
 }
 
-const handlePointerMove = (event: PointerEvent) => {
-  if (activePointerId.value !== event.pointerId) return
-
+const handleDragMove = (clientX: number, clientY: number) => {
   if (dragMode.value === 'carousel') {
-    event.preventDefault()
-    const deltaX = event.clientX - startX.value
-    const deltaY = event.clientY - startY.value
+    const deltaX = clientX - startX.value
+    const deltaY = clientY - startY.value
     const nextRotation = startRotation.value - deltaX / trackMetrics.value.dragDistance
 
     if (!carouselMoved && Math.hypot(deltaX, deltaY) > 8) carouselMoved = true
@@ -323,8 +363,7 @@ const handlePointerMove = (event: PointerEvent) => {
   }
 
   if (dragMode.value === 'orb') {
-    event.preventDefault()
-    const nextAngle = getOrbAngle(event)
+    const nextAngle = getOrbAngle(clientX, clientY)
     const delta = normalizeAngleDelta(nextAngle - lastOrbAngle.value)
 
     lastOrbAngle.value = nextAngle
@@ -337,24 +376,142 @@ const handlePointerMove = (event: PointerEvent) => {
   }
 }
 
-const finishDrag = (event?: PointerEvent) => {
-  if (event && activePointerId.value !== event.pointerId) return
+const finishDrag = () => {
   if (dragMode.value === 'idle') return
 
   const wasOrb = dragMode.value === 'orb'
   const wasCarousel = dragMode.value === 'carousel'
-  const pointerId = activePointerId.value
+  const activeId = activeDragId.value
 
   flushPendingDragMotion()
-  if (pointerId !== null) dragTarget.value?.releasePointerCapture?.(pointerId)
+  if (activeDragSource.value === 'pointer' && activeId !== null) dragTarget.value?.releasePointerCapture?.(activeId)
 
-  activePointerId.value = null
+  activeDragId.value = null
+  activeDragSource.value = null
   dragMode.value = 'idle'
   dragTarget.value = null
 
   if (wasCarousel && carouselMoved) suppressCardClickUntil.value = performance.now() + 220
   if (wasOrb) setOrbActive(false)
   snapRotation()
+}
+
+const startCarouselPointerDrag = (event: PointerEvent) => {
+  if (!supportsPointerEvents) return
+  event.preventDefault()
+  beginCarouselDrag({
+    clientX: event.clientX,
+    clientY: event.clientY,
+    id: event.pointerId,
+    source: 'pointer',
+    button: event.pointerType === 'mouse' ? event.button : 0,
+    currentTarget: event.currentTarget,
+  })
+}
+
+const startCarouselMouseDrag = (event: MouseEvent) => {
+  if (supportsPointerEvents) return
+  event.preventDefault()
+  beginCarouselDrag({
+    clientX: event.clientX,
+    clientY: event.clientY,
+    id: null,
+    source: 'mouse',
+    button: event.button,
+    currentTarget: event.currentTarget,
+  })
+}
+
+const startCarouselTouchDrag = (event: TouchEvent) => {
+  if (supportsPointerEvents) return
+  const touch = event.changedTouches[0]
+  if (!touch) return
+
+  event.preventDefault()
+  beginCarouselDrag({
+    clientX: touch.clientX,
+    clientY: touch.clientY,
+    id: touch.identifier,
+    source: 'touch',
+    currentTarget: event.currentTarget,
+  })
+}
+
+const startOrbPointerDrag = (event: PointerEvent) => {
+  if (!supportsPointerEvents) return
+  event.preventDefault()
+  beginOrbDrag({
+    clientX: event.clientX,
+    clientY: event.clientY,
+    id: event.pointerId,
+    source: 'pointer',
+    button: event.pointerType === 'mouse' ? event.button : 0,
+    currentTarget: event.currentTarget,
+  })
+}
+
+const startOrbMouseDrag = (event: MouseEvent) => {
+  if (supportsPointerEvents) return
+  event.preventDefault()
+  beginOrbDrag({
+    clientX: event.clientX,
+    clientY: event.clientY,
+    id: null,
+    source: 'mouse',
+    button: event.button,
+    currentTarget: event.currentTarget,
+  })
+}
+
+const startOrbTouchDrag = (event: TouchEvent) => {
+  if (supportsPointerEvents) return
+  const touch = event.changedTouches[0]
+  if (!touch) return
+
+  event.preventDefault()
+  beginOrbDrag({
+    clientX: touch.clientX,
+    clientY: touch.clientY,
+    id: touch.identifier,
+    source: 'touch',
+    currentTarget: event.currentTarget,
+  })
+}
+
+const handlePointerMove = (event: PointerEvent) => {
+  if (!supportsPointerEvents || activeDragSource.value !== 'pointer' || activeDragId.value !== event.pointerId) return
+  event.preventDefault()
+  handleDragMove(event.clientX, event.clientY)
+}
+
+const handleMouseMove = (event: MouseEvent) => {
+  if (supportsPointerEvents || activeDragSource.value !== 'mouse') return
+  handleDragMove(event.clientX, event.clientY)
+}
+
+const handleTouchMove = (event: TouchEvent) => {
+  if (supportsPointerEvents || activeDragSource.value !== 'touch') return
+  const touch = findTouchById(event.touches, activeDragId.value) ?? findTouchById(event.changedTouches, activeDragId.value)
+  if (!touch) return
+
+  event.preventDefault()
+  handleDragMove(touch.clientX, touch.clientY)
+}
+
+const finishPointerDrag = (event: PointerEvent) => {
+  if (!supportsPointerEvents || activeDragSource.value !== 'pointer' || activeDragId.value !== event.pointerId) return
+  finishDrag()
+}
+
+const finishMouseDrag = () => {
+  if (supportsPointerEvents || activeDragSource.value !== 'mouse') return
+  finishDrag()
+}
+
+const finishTouchDrag = (event: TouchEvent) => {
+  if (supportsPointerEvents || activeDragSource.value !== 'touch') return
+  if (!findTouchById(event.changedTouches, activeDragId.value)) return
+  finishDrag()
 }
 
 const getCardStyle = (index: number) => {
@@ -414,12 +571,22 @@ useGsapContext('.orbital-page', () => {
 
 onMounted(() => {
   updateViewportWidth()
-  frameResizeObserver = new ResizeObserver(updateViewportWidth)
-  if (frameRef.value) frameResizeObserver.observe(frameRef.value)
+  if (typeof ResizeObserver !== 'undefined') {
+    frameResizeObserver = new ResizeObserver(updateViewportWidth)
+    if (frameRef.value) frameResizeObserver.observe(frameRef.value)
+  }
   window.addEventListener('resize', updateViewportWidth)
-  window.addEventListener('pointermove', handlePointerMove, { passive: false })
-  window.addEventListener('pointerup', finishDrag)
-  window.addEventListener('pointercancel', finishDrag)
+  if (supportsPointerEvents) {
+    window.addEventListener('pointermove', handlePointerMove, { passive: false })
+    window.addEventListener('pointerup', finishPointerDrag)
+    window.addEventListener('pointercancel', finishPointerDrag)
+  } else {
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', finishMouseDrag)
+    window.addEventListener('touchmove', handleTouchMove, { passive: false })
+    window.addEventListener('touchend', finishTouchDrag)
+    window.addEventListener('touchcancel', finishTouchDrag)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -427,9 +594,18 @@ onBeforeUnmount(() => {
   frameResizeObserver?.disconnect()
   frameResizeObserver = null
   window.removeEventListener('resize', updateViewportWidth)
-  window.removeEventListener('pointermove', handlePointerMove)
-  window.removeEventListener('pointerup', finishDrag)
-  window.removeEventListener('pointercancel', finishDrag)
+  if (supportsPointerEvents) {
+    window.removeEventListener('pointermove', handlePointerMove)
+    window.removeEventListener('pointerup', finishPointerDrag)
+    window.removeEventListener('pointercancel', finishPointerDrag)
+  } else {
+    window.removeEventListener('mousemove', handleMouseMove)
+    window.removeEventListener('mouseup', finishMouseDrag)
+    window.removeEventListener('touchmove', handleTouchMove)
+    window.removeEventListener('touchend', finishTouchDrag)
+    window.removeEventListener('touchcancel', finishTouchDrag)
+  }
+  finishDrag()
 })
 </script>
 
@@ -445,7 +621,9 @@ onBeforeUnmount(() => {
           <div
             class="carousel-shell"
             :class="{ 'is-dragging': dragMode === 'carousel' }"
-            @pointerdown="startCarouselDrag"
+            @pointerdown="startCarouselPointerDrag"
+            @mousedown="startCarouselMouseDrag"
+            @touchstart="startCarouselTouchDrag"
           >
             <div class="arc-wash"></div>
             <article
@@ -484,12 +662,16 @@ onBeforeUnmount(() => {
               :class="{ 'is-active': orbActive, 'is-dragging': dragMode === 'orb' }"
               :style="orbStyle"
               aria-label="Rotate cards"
-              @pointerdown="startOrbDrag"
+              @pointerdown="startOrbPointerDrag"
+              @mousedown="startOrbMouseDrag"
+              @touchstart="startOrbTouchDrag"
             >
               <span class="orb-aura"></span>
               <span class="orb-body"></span>
               <span class="orb-track"></span>
-              <span class="orb-progress"></span>
+              <svg class="orb-progress" viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="orb-progress-shape" cx="60" cy="60" r="58" pathLength="100"></circle>
+              </svg>
               <span class="orb-handle"></span>
             </button>
           </div>
@@ -563,6 +745,7 @@ onBeforeUnmount(() => {
     linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px),
     linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px);
   background-size: 100% 64px, 64px 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 75%) 20%, #000 100%);
   mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 75%) 20%, #000 100%);
 }
 
@@ -593,9 +776,12 @@ onBeforeUnmount(() => {
 
 .carousel-card {
   position: absolute;
+  top: 344px;
   top: clamp(324px, 38vh, 362px);
   left: 50%;
+  width: 212px;
   width: clamp(186px, 47vw, 236px);
+  height: 300px;
   height: clamp(266px, 69vw, 340px);
   overflow: hidden;
   border-radius: 27px;
@@ -618,7 +804,7 @@ onBeforeUnmount(() => {
 .carousel-card.is-current {
   box-shadow:
     0 36px 72px rgb(0 0 0 / 22%),
-    0 0 48px color-mix(in srgb, var(--card-accent) 42%, transparent),
+    0 0 42px var(--card-accent),
     inset 0 1px 0 rgb(255 255 255 / 52%),
     inset 0 0 0 1px rgb(255 255 255 / 18%);
 }
@@ -645,6 +831,7 @@ onBeforeUnmount(() => {
 }
 
 .card-kicker {
+  font-size: 20px;
   font-size: clamp(18px, 4.2vw, 22px);
   font-weight: 800;
   line-height: 1;
@@ -652,6 +839,7 @@ onBeforeUnmount(() => {
 
 .card-title {
   max-width: 92%;
+  font-size: 26px;
   font-size: clamp(20px, 5.2vw, 29px);
   font-weight: 800;
   line-height: 0.92;
@@ -675,7 +863,8 @@ onBeforeUnmount(() => {
 
 .sun .card-core {
   width: 68%;
-  aspect-ratio: 1;
+  height: 0;
+  padding-bottom: 68%;
   border-radius: 50%;
   background: radial-gradient(circle, var(--card-accent) 0%, rgb(255 215 54 / 90%) 56%, transparent 74%);
   filter: blur(6px);
@@ -691,7 +880,8 @@ onBeforeUnmount(() => {
 
 .slice .card-core {
   width: 64%;
-  aspect-ratio: 1;
+  height: 0;
+  padding-bottom: 64%;
   border-radius: 50%;
   background: rgb(255 214 255 / 64%);
 }
@@ -743,7 +933,8 @@ onBeforeUnmount(() => {
 
 .halo .card-core {
   width: 76%;
-  aspect-ratio: 1;
+  height: 0;
+  padding-bottom: 76%;
   border-radius: 50%;
   background:
     radial-gradient(circle, rgb(255 255 255 / 0%) 0 26%, rgb(255 236 255 / 72%) 26% 39%, transparent 39% 54%, rgb(255 255 255 / 36%) 54% 60%, transparent 60%);
@@ -777,6 +968,7 @@ onBeforeUnmount(() => {
   right: 16px;
   bottom: 14px;
   left: 16px;
+  font-size: 16px;
   font-size: clamp(14px, 3.5vw, 18px);
   line-height: 1;
   opacity: 0.54;
@@ -790,10 +982,11 @@ onBeforeUnmount(() => {
 }
 
 .control-orb {
+  --orb-size: 156px;
   --orb-size: clamp(136px, 34vw, 176px);
   position: relative;
   width: var(--orb-size);
-  aspect-ratio: 1;
+  height: var(--orb-size);
   border: 0;
   padding: 0;
   border-radius: 50%;
@@ -833,6 +1026,7 @@ onBeforeUnmount(() => {
     inset 0 0 0 1px rgb(255 255 255 / 10%),
     0 30px 70px rgb(0 0 0 / 24%);
   background: linear-gradient(180deg, rgb(255 255 255 / 22%), rgb(255 255 255 / 10%));
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
   backdrop-filter: blur(22px) saturate(1.2);
   will-change: transform, opacity;
   transition:
@@ -856,23 +1050,25 @@ onBeforeUnmount(() => {
 
 .orb-progress {
   inset: -16px;
+  width: calc(100% + 32px);
+  height: calc(100% + 32px);
   opacity: 0;
-  background:
-    conic-gradient(
-      from 0deg,
-      rgb(255 255 255 / 98%) 0deg,
-      rgb(255 255 255 / 98%) var(--orb-progress-angle),
-      transparent var(--orb-progress-angle),
-      transparent 360deg
-    );
-  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
-  box-shadow: 0 0 18px rgb(255 255 255 / 18%);
+  overflow: visible;
+  filter: drop-shadow(0 0 18px rgb(255 255 255 / 18%));
   will-change: transform, opacity;
   transition:
     opacity 220ms ease,
     transform 220ms ease;
-  transform: scale(0.92);
+  transform: scale(0.92) rotate(-90deg);
+}
+
+.orb-progress-shape {
+  fill: none;
+  stroke: rgb(255 255 255 / 98%);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: var(--orb-progress-offset);
 }
 
 .orb-handle {
