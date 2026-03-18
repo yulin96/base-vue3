@@ -10,28 +10,34 @@ export function showScan() {
     isScanning = true
 
     if (isWeChat()) {
-      const { wechatScan } = await import('@/utils/platform/wechat')
-      wechatScan()
-        .then((resultStr) => {
-          if (resultStr) resolve(resultStr as string)
-        })
-        .catch(() => {})
-        .finally(() => {
-          isScanning = false
-        })
-    } else if (isDingDing()) {
+      try {
+        const { wechatScan } = await import('@/utils/platform/wechat')
+        resolve((await wechatScan()) || '')
+      } catch {
+        resolve('')
+      } finally {
+        isScanning = false
+      }
+      return
+    }
+
+    if (isDingDing()) {
       biz.util
         .scan({ type: 'qrCode' })
         .then((res) => {
-          if (res.text) resolve(res.text)
+          resolve(res.text || '')
         })
-        .catch(() => {})
+        .catch(() => {
+          resolve('')
+        })
         .finally(() => {
           isScanning = false
         })
-    } else {
-      isScanning = false
-      myDialog({ message: '请在微信或钉钉中使用扫码功能' })
+      return
     }
+
+    isScanning = false
+    myDialog({ message: '请在微信或钉钉中使用扫码功能' })
+    resolve('')
   })
 }
