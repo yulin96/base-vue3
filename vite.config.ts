@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
+import { handleCheck } from './build/handleCheck'
 
 import legacy from '@vitejs/plugin-legacy'
 import vue from '@vitejs/plugin-vue'
@@ -40,7 +41,7 @@ export default defineConfig(({ command, mode }) => {
         name: 'build-check',
         apply: 'build',
         buildStart() {
-          handleCheck(env)
+          void handleCheck(env, mode)
         },
         closeBundle() {},
       },
@@ -87,13 +88,13 @@ export default defineConfig(({ command, mode }) => {
         additionalModernPolyfills: ['core-js/es/object/has-own'],
       }),
       vitePluginDeployOss({
-        open: !!env.VITE_OSS_ROOT_DIR && env.VITE_OSS_ROOT_DIR !== 'H5/zz/auto2/' && mode === 'deploy',
+        open: !!env.VITE_OSS_ROOT_DIR && mode === 'deploy',
         accessKeyId: process.env.zAccessKeyId || '',
         accessKeySecret: process.env.zAccessKeySecret || '',
         bucket: process.env.zBucket || '',
         region: 'oss-cn-beijing',
         alias: process.env.zBucketAlias || '',
-        uploadDir: `${env.VITE_OSS_ROOT_DIR}`,
+        uploadDir: `H5/zz/auto2/${env.VITE_OSS_ROOT_DIR}`,
         skip: ['**/*.html', '**/pluginWebUpdateNotice/**'],
         overwrite: true,
         autoDelete: true,
@@ -242,34 +243,3 @@ export default defineConfig(({ command, mode }) => {
     },
   }
 })
-
-function handleCheck(env: Record<string, string>) {
-  const {
-    VITE_APP_LOCALSTORAGE_NAME,
-    VITE_APP_API_URL,
-    VITE_APP_TITLE,
-    VITE_APP_HM_BAIDU,
-    VITE_APP_SHARE_TITLE,
-    VITE_APP_SHARE_DESC,
-    VITE_APP_SHARE_LINK,
-    VITE_APP_SHARE_IMGURL,
-  } = env
-
-  import('chalk').then(({ default: chalk }) => {
-    const { bgMagentaBright, red, green } = chalk
-
-    function logTips(name: string, nameSuccess: string, checkName: string) {
-      console.log(!checkName ? red(name) : green(nameSuccess) + green.underline.bold(checkName))
-    }
-
-    console.log(bgMagentaBright('Tips:'))
-    logTips('网站标题未定义', '网站标题', VITE_APP_TITLE)
-    logTips('接口地址未定义', '接口地址', VITE_APP_API_URL)
-    logTips('本地存储名称未定义', '本地存储名称', VITE_APP_LOCALSTORAGE_NAME)
-    logTips('百度统计ID未定义', '百度统计ID', VITE_APP_HM_BAIDU)
-    logTips('微信分享标题未定义', '微信分享标题', VITE_APP_SHARE_TITLE)
-    logTips('微信分享描述未定义', '微信分享描述', VITE_APP_SHARE_DESC)
-    logTips('微信分享链接未定义', '微信分享链接', VITE_APP_SHARE_LINK)
-    logTips('微信分享图片未定义', '微信分享图片', VITE_APP_SHARE_IMGURL)
-  })
-}
