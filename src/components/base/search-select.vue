@@ -15,12 +15,9 @@ const filteredList = computed(() => {
   return list.filter((item) => item.value.includes(keyword.value))
 })
 
-watch(
-  show,
-  (nv) => {
-    if (!nv) keyword.value = ''
-  },
-)
+watch(show, (nv) => {
+  if (!nv) keyword.value = ''
+})
 
 const choose = (item: string) => {
   selectValue.value = item
@@ -44,8 +41,8 @@ onMounted(() => {
 <template>
   <transition name="slide-down">
     <div
-      ref="panelRef"
       v-show="show"
+      ref="panelRef"
       data-search-select
       class="absolute top-full flex h-600 w-full flex-col overflow-hidden rounded-[6px] bg-white shadow-lg"
       @click.stop

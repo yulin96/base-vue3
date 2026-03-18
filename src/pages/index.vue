@@ -6,6 +6,7 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 type ArtType = 'sun' | 'slice' | 'bars' | 'beam' | 'halo' | 'wave'
 
 type CardItem = {
+  id: number
   eyebrow: string
   title: string
   host: string
@@ -18,6 +19,7 @@ type CardItem = {
 
 const cards: CardItem[] = [
   {
+    id: 101,
     eyebrow: 'Brief',
     title: 'Soft Pulse',
     host: 'Mina Hollow',
@@ -28,6 +30,7 @@ const cards: CardItem[] = [
     art: 'halo',
   },
   {
+    id: 102,
     eyebrow: 'Brief',
     title: 'Insight Pod',
     host: 'Arlo Gardner',
@@ -38,6 +41,7 @@ const cards: CardItem[] = [
     art: 'sun',
   },
   {
+    id: 103,
     eyebrow: 'Short',
     title: 'Chat Wisdom',
     host: 'Leslie McElroy',
@@ -48,6 +52,7 @@ const cards: CardItem[] = [
     art: 'slice',
   },
   {
+    id: 104,
     eyebrow: 'Short',
     title: 'Wisdom Talks',
     host: 'Bessie Alvarado',
@@ -58,6 +63,7 @@ const cards: CardItem[] = [
     art: 'bars',
   },
   {
+    id: 105,
     eyebrow: 'Brief',
     title: 'Glow Cast',
     host: 'Noah Hale',
@@ -68,6 +74,7 @@ const cards: CardItem[] = [
     art: 'beam',
   },
   {
+    id: 106,
     eyebrow: 'Brief',
     title: 'Blue Signal',
     host: 'Rhea Bloom',
@@ -78,6 +85,7 @@ const cards: CardItem[] = [
     art: 'wave',
   },
   {
+    id: 107,
     eyebrow: 'Short',
     title: 'Velvet Notes',
     host: 'Luca Vale',
@@ -88,6 +96,7 @@ const cards: CardItem[] = [
     art: 'sun',
   },
   {
+    id: 108,
     eyebrow: 'Brief',
     title: 'Night Current',
     host: 'Iris Kline',
@@ -110,12 +119,15 @@ const dragMode = ref<'idle' | 'carousel' | 'orb'>('idle')
 const activePointerId = ref<number | null>(null)
 const orbActive = ref(false)
 const startX = ref(0)
+const startY = ref(0)
 const startRotation = ref(0)
 const lastOrbAngle = ref(0)
 const startOrbTurn = ref(0)
 const dragTarget = ref<HTMLElement | null>(null)
+const suppressCardClickUntil = ref(0)
 let dragFrame = 0
 let frameResizeObserver: ResizeObserver | null = null
+let carouselMoved = false
 const pendingMotion = {
   rotation: baseRotation,
   orbTurn: 0,
@@ -205,6 +217,12 @@ const flushPendingDragMotion = () => {
   flushDragMotion()
 }
 
+const handleCardClick = (card: CardItem) => {
+  if (performance.now() < suppressCardClickUntil.value) return
+
+  console.log('card id:', card.id)
+}
+
 const setOrbActive = (active: boolean) => {
   if (orbActive.value === active) return
 
@@ -260,7 +278,9 @@ const startCarouselDrag = (event: PointerEvent) => {
   dragMode.value = 'carousel'
   dragTarget.value = event.currentTarget as HTMLElement
   startX.value = event.clientX
+  startY.value = event.clientY
   startRotation.value = motion.rotation
+  carouselMoved = false
   pendingMotion.rotation = motion.rotation
   pendingMotion.orbTurn = motion.orbTurn
   dragTarget.value?.setPointerCapture?.(event.pointerId)
@@ -291,7 +311,10 @@ const handlePointerMove = (event: PointerEvent) => {
   if (dragMode.value === 'carousel') {
     event.preventDefault()
     const deltaX = event.clientX - startX.value
+    const deltaY = event.clientY - startY.value
     const nextRotation = startRotation.value - deltaX / trackMetrics.value.dragDistance
+
+    if (!carouselMoved && Math.hypot(deltaX, deltaY) > 8) carouselMoved = true
 
     queueDragMotion({
       rotation: nextRotation,
@@ -319,6 +342,7 @@ const finishDrag = (event?: PointerEvent) => {
   if (dragMode.value === 'idle') return
 
   const wasOrb = dragMode.value === 'orb'
+  const wasCarousel = dragMode.value === 'carousel'
   const pointerId = activePointerId.value
 
   flushPendingDragMotion()
@@ -328,6 +352,7 @@ const finishDrag = (event?: PointerEvent) => {
   dragMode.value = 'idle'
   dragTarget.value = null
 
+  if (wasCarousel && carouselMoved) suppressCardClickUntil.value = performance.now() + 220
   if (wasOrb) setOrbActive(false)
   snapRotation()
 }
