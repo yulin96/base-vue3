@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useGsapContext } from '@/hooks/useGsapContext'
 
+defineOptions({ name: 'Index' })
+definePage({ meta: { index: 10 } })
+
 useGsapContext('.index', () => {
   gsap.timeline({ delay: 0.5 })
 })
@@ -13,7 +16,3 @@ useGsapContext('.index', () => {
     </section>
   </div>
 </template>
-
-<route lang="json">
-{ "meta": { "index": 10 } }
-</route>
