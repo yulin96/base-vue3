@@ -5,6 +5,9 @@ export function registerARMS() {
         endpoint: __ARMSEndpoint,
         env: 'prod',
         spaMode: 'hash',
+        app: {
+          package: document.title || 'unknown',
+        },
         user: {
           tags: document.title || 'unknown',
         },
