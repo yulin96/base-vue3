@@ -15,8 +15,8 @@ This repository is a mobile-first Vue 3 + Vite starter focused on H5 activity pa
 pnpm dev              # Start local dev server
 pnpm type-check       # Run vue-tsc
 pnpm lint             # Run eslint --fix
-pnpm build-only       # Build only
-pnpm build            # type-check + build-only
+pnpm build:only       # Build only
+pnpm build            # type-check + build:only
 ```
 
 ## Project Layout

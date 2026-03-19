@@ -6,7 +6,7 @@
 ## 项目分析（当前仓库）
 
 - 技术栈：Vue 3 + Vite 8 + TypeScript + Pinia + Vue Router（文件路由）+ Vant + Tailwind CSS v4。
-- 工程能力：ESLint + Prettier、GitHub Actions（type-check / lint / build-only）、自动生成路由与组件类型声明。
+- 工程能力：ESLint + Prettier、GitHub Actions（type-check / lint / build:only）、自动生成路由与组件类型声明。
 - 运行特征：默认 Hash 路由、移动端 rem 适配、支持 PC 预览模式（可生成扫码二维码）。
 - 平台集成：内置微信分享/JSSDK、钉钉能力封装、可选 ARMS 前端监控。
 - 构建与发布：图片优化、分包、产物整理；可按环境变量开关上传 OSS/FTP。
@@ -57,8 +57,9 @@ pnpm dev
 | `pnpm lint`       | ESLint 纯检查         |
 | `pnpm lint:fix`   | ESLint 检查并自动修复 |
 | `pnpm format`     | 格式化 `src/` 下文件   |
-| `pnpm build-only` | 仅打包（Vite build）   |
-| `pnpm build-only:deploy` | 使用 `deploy` 模式打包 |
+| `pnpm build:only` | 仅打包（Vite build）   |
+| `pnpm deploy:prod` | 使用 `deploy` 模式打包 |
+| `pnpm deploy:test` | 使用 `deploy-test` 模式打包 |
 | `pnpm build`      | 先 type-check 再 build |
 | `pnpm build:deploy` | 先 type-check 再以 `deploy` 模式打包 |
 | `pnpm preview`    | 预览构建产物           |
@@ -141,7 +142,7 @@ GitHub Actions 在 `main` 分支 push / PR 时自动执行：
 
 1. `pnpm type-check`
 2. `pnpm lint`
-3. `pnpm build-only`
+3. `pnpm build:only`
 
 此外，`main` 分支 push 后还会触发仓库镜像同步到 Gitea。
 

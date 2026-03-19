@@ -20,7 +20,7 @@ jobs:
           - name: lint
             cmd: pnpm lint
           - name: build
-            cmd: pnpm build-only
+            cmd: pnpm build:only
 
     steps:
       - name: Checkout code
