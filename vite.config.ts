@@ -31,6 +31,15 @@ const splitDependencies: Record<string, string> = {
 
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd())
+  const isTestDeploy = mode === 'deploy-test'
+  const isDeployMode = mode === 'deploy' || isTestDeploy
+  const resolveDeployDir = (dir: string) => {
+    const normalizedDir = dir.trim().replace(/\/+$/, '')
+    if (!normalizedDir) return ''
+    return isTestDeploy ? `${normalizedDir}/__test__` : normalizedDir
+  }
+  const ossRootDir = resolveDeployDir(env.VITE_OSS_ROOT_DIR)
+  const ftpDir = resolveDeployDir(env.VITE_FTP_DIRNAME)
 
   return {
     define: {
@@ -88,19 +97,18 @@ export default defineConfig(({ command, mode }) => {
         additionalModernPolyfills: ['core-js/es/object/has-own'],
       }),
       vitePluginDeployOss({
-        open: !!env.VITE_OSS_ROOT_DIR && mode === 'deploy',
+        open: !!ossRootDir && isDeployMode,
         accessKeyId: process.env.zAccessKeyId || '',
         accessKeySecret: process.env.zAccessKeySecret || '',
         bucket: process.env.zBucket || '',
         region: 'oss-cn-beijing',
         alias: process.env.zBucketAlias || '',
-        uploadDir: `H5/zz/auto2/${env.VITE_OSS_ROOT_DIR}`,
+        uploadDir: `H5/zz/auto2/${ossRootDir}`,
         skip: ['**/*.html', '**/pluginWebUpdateNotice/**'],
         overwrite: true,
         autoDelete: true,
 
-        // 修改打包后的资源路径
-        configBase: `${process.env.zBucketAlias || ''}${env.VITE_OSS_ROOT_DIR}`,
+        configBase: `${process.env.zBucketAlias || ''}${ossRootDir}`,
       }),
       vitePluginOrganize({
         config: {
@@ -108,8 +116,8 @@ export default defineConfig(({ command, mode }) => {
         },
       }),
       vitePluginDeployFtp({
-        open: !!env.VITE_FTP_DIRNAME && mode === 'deploy',
-        uploadPath: `${env.VITE_FTP_DIRNAME}`,
+        open: !!ftpDir && isDeployMode,
+        uploadPath: ftpDir,
         singleBack: true,
         // autoUpload: true,
         // defaultFtp: process.env.zH5FtpName,
