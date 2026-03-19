@@ -1,3 +1,70 @@
+type ArmsPropertyValue = string | number
+type ArmsExceptionPayload = {
+  name: string
+  message: string
+
+  file?: string
+  stack?: string
+  line?: number
+  column?: number
+  properties?: Record<string, unknown>
+}
+
+const truncateText = (value: string, maxLength = 2000) => value.slice(0, maxLength)
+
+const normalizeArmsPropertyValue = (value: unknown) => {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : undefined
+  }
+
+  if (typeof value === 'boolean') return Number(value)
+  if (value == null) return ''
+
+  return truncateText(String(value))
+}
+
+const normalizeArmsProperties = (properties?: Record<string, unknown>) => {
+  if (!properties) return undefined
+
+  const result: Record<string, ArmsPropertyValue> = {}
+  let count = 0
+
+  for (const [key, value] of Object.entries(properties)) {
+    if (count >= 20) break
+
+    const normalizedKey = key.slice(0, 50)
+    const normalizedValue = normalizeArmsPropertyValue(value)
+
+    if (!normalizedKey || normalizedValue === undefined) continue
+
+    result[normalizedKey] = normalizedValue
+    count += 1
+  }
+
+  return count ? result : undefined
+}
+
+const getArmsRum = () => window.RumSDK?.default
+
+export function reportArmsException(payload: ArmsExceptionPayload) {
+  try {
+    const armsRum = getArmsRum()
+
+    if (!armsRum?.sendException) return
+
+    armsRum.sendException({
+      ...payload,
+      name: payload.name || 'RequestException',
+      message: truncateText(payload.message || 'unknown error', 1000),
+      file: payload.file ? truncateText(payload.file, 1000) : undefined,
+      stack: payload.stack ? truncateText(payload.stack) : undefined,
+      properties: normalizeArmsProperties(payload.properties),
+    })
+  } catch (error) {
+    console.error('ARMS 异常上报失败:', error)
+  }
+}
+
 export function registerARMS() {
   try {
     ;(function () {

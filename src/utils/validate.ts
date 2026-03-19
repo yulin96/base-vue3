@@ -82,6 +82,25 @@ export function isFormData(formData: unknown): formData is FormData {
   return Object.prototype.toString.call(formData) === '[object FormData]'
 }
 
+export function isCanceledRequest(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+
+  const err = error as {
+    name?: string
+    code?: string
+    message?: string
+    __CANCEL__?: boolean
+  }
+
+  return (
+    err.name === 'CanceledError' ||
+    err.code === 'ERR_CANCELED' ||
+    err.message === 'canceled' ||
+    err.message === 'Request aborted' ||
+    err.__CANCEL__ === true
+  )
+}
+
 /**
  * 判断字符串是否为有效的 URL
  */

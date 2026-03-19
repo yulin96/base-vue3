@@ -1,27 +1,9 @@
 import { useLock } from '@/hooks/useLock'
 import { infoToast } from '@/plugins/vant/toast'
 import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/utils/request'
+import { isCanceledRequest } from '@/utils/validate'
 import type { AxiosRequestConfig } from 'axios'
 import { readonly } from 'vue'
-
-const isCanceledRequest = (error: unknown) => {
-  if (!error || typeof error !== 'object') return false
-
-  const err = error as {
-    name?: string
-    code?: string
-    message?: string
-    __CANCEL__?: boolean
-  }
-
-  return (
-    err.name === 'CanceledError' ||
-    err.code === 'ERR_CANCELED' ||
-    err.message === 'canceled' ||
-    err.message === 'Request aborted' ||
-    err.__CANCEL__ === true
-  )
-}
 
 export function useLockRequest(disableLock = false, delay = 500) {
   const [status, lock, unLock] = useLock()
