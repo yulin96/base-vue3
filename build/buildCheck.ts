@@ -1,3 +1,5 @@
+import type { PluginOption } from 'vite'
+
 type EnvCheckItem = {
   key: string
   label: string
@@ -63,7 +65,17 @@ const padItems = (items: RenderedCheckItem[], gap: string, cellWidth = getCellWi
 const getAlignedRowWidth = (count: number, cellWidth: number, gap: string) =>
   cellWidth * count + getWidth(gap) * Math.max(count - 1, 0)
 
-export async function handleCheck(env: Record<string, string>, mode: string) {
+export function buildCheck(env: Record<string, string>, mode: string): PluginOption {
+  return {
+    name: 'build-check',
+    apply: 'build',
+    buildStart() {
+      void handleCheck(env, mode)
+    },
+  }
+}
+
+async function handleCheck(env: Record<string, string>, mode: string) {
   const { default: chalk } = await import('chalk')
   const { bold, cyan, dim, green, yellow } = chalk
   const checks: EnvCheckItem[] = [

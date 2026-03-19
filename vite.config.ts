@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
-import { handleCheck } from './build/handleCheck'
+import { buildCheck } from './build/buildCheck'
 
 import legacy from '@vitejs/plugin-legacy'
 import vue from '@vitejs/plugin-vue'
@@ -46,14 +46,7 @@ export default defineConfig(({ command, mode }) => {
       __ARMSEndpoint: JSON.stringify(process.env.ARMSEndpoint),
     },
     plugins: [
-      {
-        name: 'build-check',
-        apply: 'build',
-        buildStart() {
-          void handleCheck(env, mode)
-        },
-        closeBundle() {},
-      },
+      buildCheck(env, mode),
       vitePluginMetaShare({
         enable: true,
         title: env.VITE_APP_SHARE_TITLE,
@@ -108,7 +101,7 @@ export default defineConfig(({ command, mode }) => {
         overwrite: true,
         autoDelete: true,
 
-        configBase: `${process.env.zBucketAlias || ''}${ossRootDir}`,
+        configBase: `${process.env.zBucketAlias || ''}/H5/zz/auto2/${ossRootDir}`,
       }),
       vitePluginOrganize({
         config: {
