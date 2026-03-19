@@ -29,6 +29,17 @@
   width: max(12vw, 160px);
   background-color: #fff;
   cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  transform-origin: bottom center;
+}
+
+.pc.code-tips:hover {
+  transform: translateY(calc(-50% - 6.5vh)) scale(1.02);
+  box-shadow:
+    #0000003f 0px 0.01vw 0.12vw,
+    #0000005d 0px 0.02vw 0.6vw;
 }
 
 .pc.code-tips img {
