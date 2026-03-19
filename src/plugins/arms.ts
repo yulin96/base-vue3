@@ -2,24 +2,15 @@ export function registerARMS() {
   try {
     ;(function () {
       const config = {
-        // 上报地址及服务标识
         endpoint: __ARMSEndpoint,
-
-        // 环境配置：'prod' | 'gray' | 'pre' | 'daily' | 'local'
         env: 'prod',
-
-        // 路由模式：'history' | 'hash'
         spaMode: 'hash',
-
         user: {
           tags: document.title || 'unknown',
         },
-
         parseViewName() {
           return location.origin + location.pathname + location.hash.split('?')?.[0]
         },
-
-        // 监控项配置
         collectors: {
           perf: true, // 页面性能指标
           webVitals: true, // WebVitals 指标
@@ -29,8 +20,6 @@ export function registerARMS() {
           consoleError: true, // 控制台 error 监听
           action: true, // 用户行为点击监听
         },
-
-        // 链路追踪开关
         tracing: false,
 
         evaluateApi: async (options, response, error) => {
