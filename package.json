@@ -58,7 +58,7 @@
     "vant": "^4.9.22",
     "vue": "^3.5.30",
     "vue-i18n": "^11.3.0",
-    "vue-router": "^5.0.3",
+    "vue-router": "^5.0.4",
     "vue-sonner": "^2.0.9",
     "weixin-js-sdk": "^1.6.5"
   },
@@ -104,6 +104,6 @@
     "vite-plugin-image-optimizer": "^2.0.3",
     "vite-plugin-meta-share": "^0.0.1",
     "vite-plugin-organize-resource": "^1.1.1",
-    "vue-tsc": "3.2.5"
+    "vue-tsc": "^3.2.5"
   }
 }
