@@ -25,7 +25,7 @@ window.addEventListener(
       clickRecord.set(target, now)
       target.style.pointerEvents = 'none'
       setTimeout(() => {
-        target.style.pointerEvents = 'auto'
+        target.style.removeProperty('pointer-events')
       }, delay)
     }
   },
