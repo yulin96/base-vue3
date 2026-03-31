@@ -9,245 +9,245 @@ importers:
   .:
     dependencies:
       '@iconify/vue':
-        specifier: 5.0.0
+        specifier: ^5.0.0
         version: 5.0.0(vue@3.5.31(typescript@5.9.3))
       '@number-flow/vue':
-        specifier: 0.5.0
+        specifier: ^0.5.0
         version: 0.5.0(vue@3.5.31(typescript@5.9.3))
       '@tsparticles/engine':
-        specifier: 3.9.1
+        specifier: ^3.9.1
         version: 3.9.1
       '@vant/area-data':
-        specifier: 2.1.0
+        specifier: ^2.1.0
         version: 2.1.0
       '@vant/auto-import-resolver':
-        specifier: 1.3.0
+        specifier: ^1.3.0
         version: 1.3.0
       '@vant/touch-emulator':
-        specifier: 1.5.0
+        specifier: ^1.5.0
         version: 1.5.0
       '@vueuse/core':
-        specifier: 14.2.1
+        specifier: ^14.2.1
         version: 14.2.1(vue@3.5.31(typescript@5.9.3))
       '@vueuse/sound':
-        specifier: 2.1.3
+        specifier: ^2.1.3
         version: 2.1.3(vue@3.5.31(typescript@5.9.3))
       '@zumer/snapdom':
-        specifier: 2.7.0
+        specifier: ^2.7.0
         version: 2.7.0
       animate.css:
-        specifier: 4.1.1
+        specifier: ^4.1.1
         version: 4.1.1
       axios:
-        specifier: 1.14.0
+        specifier: ^1.14.0
         version: 1.14.0
       canvas-confetti:
-        specifier: 1.9.4
+        specifier: ^1.9.4
         version: 1.9.4
       compressorjs:
-        specifier: 1.2.1
+        specifier: ^1.2.1
         version: 1.2.1
       copy-to-clipboard:
-        specifier: 3.3.3
+        specifier: ^3.3.3
         version: 3.3.3
       cos-js-sdk-v5:
-        specifier: 1.10.1
+        specifier: ^1.10.1
         version: 1.10.1
       crypto-js:
-        specifier: 4.2.0
+        specifier: ^4.2.0
         version: 4.2.0
       dayjs:
-        specifier: 1.11.20
+        specifier: ^1.11.20
         version: 1.11.20
       dingtalk-jsapi:
-        specifier: 3.2.8
+        specifier: ^3.2.8
         version: 3.2.8
       dotenv:
-        specifier: 17.3.1
+        specifier: ^17.3.1
         version: 17.3.1
       driver.js:
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0
       es-toolkit:
-        specifier: 1.45.1
+        specifier: ^1.45.1
         version: 1.45.1
       gsap:
-        specifier: 3.14.2
+        specifier: ^3.14.2
         version: 3.14.2
       html2canvas:
-        specifier: 1.4.1
+        specifier: ^1.4.1
         version: 1.4.1
       jsencrypt:
-        specifier: 3.5.4
+        specifier: ^3.5.4
         version: 3.5.4
       lottie-web:
-        specifier: 5.13.0
+        specifier: ^5.13.0
         version: 5.13.0
       lucky-canvas:
-        specifier: 1.7.27
+        specifier: ^1.7.27
         version: 1.7.27
       pinia:
-        specifier: 3.0.4
+        specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3))
       pinia-plugin-persistedstate:
-        specifier: 4.7.1
+        specifier: ^4.7.1
         version: 4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3)))
       qrcode:
-        specifier: 1.5.4
+        specifier: ^1.5.4
         version: 1.5.4
       rough-notation:
-        specifier: 0.5.1
+        specifier: ^0.5.1
         version: 0.5.1
       typed.js:
-        specifier: 3.0.0
+        specifier: ^3.0.0
         version: 3.0.0
       uuid:
-        specifier: 13.0.0
+        specifier: ^13.0.0
         version: 13.0.0
       vant:
-        specifier: 4.9.24
+        specifier: ^4.9.24
         version: 4.9.24(vue@3.5.31(typescript@5.9.3))
       vue:
-        specifier: 3.5.31
+        specifier: ^3.5.31
         version: 3.5.31(typescript@5.9.3)
       vue-i18n:
-        specifier: 11.3.0
+        specifier: ^11.3.0
         version: 11.3.0(vue@3.5.31(typescript@5.9.3))
       vue-router:
-        specifier: 5.0.4
+        specifier: ^5.0.4
         version: 5.0.4(@vue/compiler-sfc@3.5.31)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3)))(vue@3.5.31(typescript@5.9.3))
       vue-sonner:
-        specifier: 2.0.9
+        specifier: ^2.0.9
         version: 2.0.9
       weixin-js-sdk:
-        specifier: 1.6.5
+        specifier: ^1.6.5
         version: 1.6.5
     devDependencies:
       '@eslint/compat':
-        specifier: 2.0.3
+        specifier: ^2.0.3
         version: 2.0.3(eslint@10.1.0(jiti@2.6.1))
       '@inspira-ui/plugins':
-        specifier: 0.0.2
+        specifier: ^0.0.2
         version: 0.0.2
       '@minko-fe/postcss-pxtorem':
-        specifier: 1.5.0
+        specifier: ^1.5.0
         version: 1.5.0(postcss@8.5.8)
       '@tailwindcss/vite':
-        specifier: 4.2.2
+        specifier: ^4.2.2
         version: 4.2.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))
       '@tsconfig/node24':
-        specifier: 24.0.4
+        specifier: ^24.0.4
         version: 24.0.4
       '@types/canvas-confetti':
-        specifier: 1.9.0
+        specifier: ^1.9.0
         version: 1.9.0
       '@types/crypto-js':
-        specifier: 4.2.2
+        specifier: ^4.2.2
         version: 4.2.2
       '@types/node':
-        specifier: 24.12.0
+        specifier: ^24.12.0
         version: 24.12.0
       '@types/nprogress':
-        specifier: 0.2.3
+        specifier: ^0.2.3
         version: 0.2.3
       '@types/qrcode':
-        specifier: 1.5.6
+        specifier: ^1.5.6
         version: 1.5.6
       '@vitejs/plugin-legacy':
-        specifier: 8.0.1
+        specifier: ^8.0.1
         version: 8.0.1(terser@5.46.1)(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))
       '@vitejs/plugin-vue':
-        specifier: 6.0.5
+        specifier: ^6.0.5
         version: 6.0.5(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3))
       '@vue/eslint-config-prettier':
-        specifier: 10.2.0
+        specifier: ^10.2.0
         version: 10.2.0(eslint@10.1.0(jiti@2.6.1))(prettier@3.8.1)
       '@vue/eslint-config-typescript':
-        specifier: 14.7.0
+        specifier: ^14.7.0
         version: 14.7.0(eslint-plugin-vue@10.8.0(@typescript-eslint/parser@8.58.0(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.1.0(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@10.1.0(jiti@2.6.1))))(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3)
       '@vue/tsconfig':
-        specifier: 0.9.1
+        specifier: ^0.9.1
         version: 0.9.1(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3))
       chalk:
-        specifier: 5.6.2
+        specifier: ^5.6.2
         version: 5.6.2
       class-variance-authority:
-        specifier: 0.7.1
+        specifier: ^0.7.1
         version: 0.7.1
       clsx:
-        specifier: 2.1.1
+        specifier: ^2.1.1
         version: 2.1.1
       cross-env:
-        specifier: 10.1.0
+        specifier: ^10.1.0
         version: 10.1.0
       eslint:
-        specifier: 10.1.0
+        specifier: ^10.1.0
         version: 10.1.0(jiti@2.6.1)
       eslint-plugin-vue:
-        specifier: 10.8.0
+        specifier: ^10.8.0
         version: 10.8.0(@typescript-eslint/parser@8.58.0(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.1.0(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@10.1.0(jiti@2.6.1)))
       npm-run-all2:
-        specifier: 8.0.4
+        specifier: ^8.0.4
         version: 8.0.4
       postcss-preset-env:
-        specifier: 11.2.0
+        specifier: ^11.2.0
         version: 11.2.0(postcss@8.5.8)
       postcss-px-to-viewport-8-plugin:
-        specifier: 1.2.5
+        specifier: ^1.2.5
         version: 1.2.5
       prettier:
-        specifier: 3.8.1
+        specifier: ^3.8.1
         version: 3.8.1
       prettier-plugin-tailwindcss:
-        specifier: 0.7.2
+        specifier: ^0.7.2
         version: 0.7.2(prettier@3.8.1)
       rollup-plugin-visualizer:
-        specifier: 7.0.1
+        specifier: ^7.0.1
         version: 7.0.1(rolldown@1.0.0-rc.12(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1))
       sharp:
-        specifier: 0.34.5
+        specifier: ^0.34.5
         version: 0.34.5
       tailwind-merge:
-        specifier: 3.5.0
+        specifier: ^3.5.0
         version: 3.5.0
       tailwindcss:
-        specifier: 4.2.2
+        specifier: ^4.2.2
         version: 4.2.2
       tailwindcss-animate:
-        specifier: 1.0.7
+        specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.2.2)
       terser:
-        specifier: 5.46.1
+        specifier: ^5.46.1
         version: 5.46.1
       tw-animate-css:
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0
       unplugin-auto-import:
-        specifier: 21.0.0
+        specifier: ^21.0.0
         version: 21.0.0(@vueuse/core@14.2.1(vue@3.5.31(typescript@5.9.3)))
       unplugin-vue-components:
-        specifier: 32.0.0
+        specifier: ^32.0.0
         version: 32.0.0(vue@3.5.31(typescript@5.9.3))
       vite:
-        specifier: 8.0.3
+        specifier: ^8.0.3
         version: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3)
       vite-plugin-deploy-ftp:
-        specifier: 3.2.0
+        specifier: ^3.2.0
         version: 3.2.0(@types/node@24.12.0)(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))
       vite-plugin-deploy-oss:
-        specifier: 3.3.1
+        specifier: ^3.3.1
         version: 3.3.1(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))
       vite-plugin-image-optimizer:
-        specifier: 2.0.3
+        specifier: ^2.0.3
         version: 2.0.3(sharp@0.34.5)(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))
       vite-plugin-meta-share:
-        specifier: 0.0.1
+        specifier: ^0.0.1
         version: 0.0.1
       vite-plugin-organize-resource:
-        specifier: 1.1.1
+        specifier: ^1.1.1
         version: 1.1.1(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))
       vue-tsc:
-        specifier: 3.2.6
+        specifier: ^3.2.6
         version: 3.2.6(typescript@5.9.3)
 
 packages:
