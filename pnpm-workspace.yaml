@@ -1,3 +1,9 @@
+minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - vite-plugin-deploy-ftp
+  - vite-plugin-deploy-oss
+
 ignoredBuiltDependencies:
   - '@tsparticles/engine'
   - cos-js-sdk-v5
