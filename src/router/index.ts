@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { routes, type RouteNamedMap } from 'vue-router/auto-routes'
 
@@ -31,16 +30,16 @@ router.beforeEach((to, from) => {
   // if (!openid && to.path !== '/') return { path: '/' }
 })
 
-export const routeHistory = ref({
-  list: [] as (keyof RouteNamedMap)[],
+export const routeHistory = {
+  list: [] as (keyof RouteNamedMap | (string & {}))[],
   maxLimit: 10,
-})
+}
 
 router.afterEach((to, from) => {
-  routeHistory.value.list.unshift(to.name)
+  routeHistory.list.unshift(to.fullPath)
 
-  if (routeHistory.value.list.length > routeHistory.value.maxLimit) {
-    routeHistory.value.list.pop()
+  if (routeHistory.list.length > routeHistory.maxLimit) {
+    routeHistory.list.pop()
   }
 
   if (typeof window._hmt !== 'undefined') {
