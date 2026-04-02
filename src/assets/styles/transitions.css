@@ -297,6 +297,34 @@
   opacity: 1;
   transition: transform 0.45s ease;
   position: absolute;
+
+  .fade-top-enter-active {
+    transition:
+      opacity 0.5s ease 0.06s,
+      transform 0.5s ease 0.06s,
+      filter 0.5s ease 0.06s !important;
+    transform-origin: bottom center !important;
+  }
+
+  .fade-top-leave-active {
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease,
+      filter 0.5s ease !important;
+    transform-origin: bottom center !important;
+  }
+
+  .fade-top-enter-from {
+    opacity: 0 !important;
+    transform: translateX(360px) rotate(20deg) scale(1.26) !important;
+    filter: blur(6px) !important;
+  }
+
+  .fade-top-leave-to {
+    opacity: 0 !important;
+    transform: translateX(-360px) rotate(-20deg) scale(1.26) !important;
+    filter: blur(6px) !important;
+  }
   top: 0;
 }
 
@@ -349,4 +377,32 @@
 .zoom-left-enter-from {
   opacity: 0;
   transform: scale(0.9);
+}
+
+.fade-top-enter-active {
+  transition:
+    opacity 0.5s ease 0.06s,
+    transform 0.5s ease 0.06s,
+    filter 0.5s ease 0.06s !important;
+  transform-origin: bottom center !important;
+}
+
+.fade-top-leave-active {
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease,
+    filter 0.5s ease !important;
+  transform-origin: bottom center !important;
+}
+
+.fade-top-enter-from {
+  opacity: 0 !important;
+  transform: translateX(360px) rotate(20deg) scale(1.26) !important;
+  filter: blur(6px) !important;
+}
+
+.fade-top-leave-to {
+  opacity: 0 !important;
+  transform: translateX(-360px) rotate(-20deg) scale(1.26) !important;
+  filter: blur(6px) !important;
 }
