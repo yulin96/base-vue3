@@ -121,6 +121,7 @@ export function registerARMS() {
         spaMode: 'hash',
         app: {
           package: document.title || 'unknown',
+          version: document.title || 'unknown',
         },
         user: {
           tags: document.title || 'unknown',
