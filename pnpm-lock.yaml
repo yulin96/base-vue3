@@ -63,8 +63,8 @@ importers:
         specifier: ^3.2.8
         version: 3.2.8
       dotenv:
-        specifier: ^17.4.0
-        version: 17.4.0
+        specifier: ^17.4.1
+        version: 17.4.1
       driver.js:
         specifier: ^1.4.0
         version: 1.4.0
@@ -2348,8 +2348,8 @@ packages:
   dingtalk-jsapi@3.2.8:
     resolution: {integrity: sha512-FAoTXIEwtlz0U3wpo+Y0VouBoRHPhS3SlRvKrsCL5NZgIihj6PL1xPzqLQEhzyVz7SoIA9rqAMo5UsRsj3uL8g==}
 
-  dotenv@17.4.0:
-    resolution: {integrity: sha512-kCKF62fwtzwYm0IGBNjRUjtJgMfGapII+FslMHIjMR5KTnwEmBmWLDRSnc3XSNP8bNy34tekgQyDT0hr7pERRQ==}
+  dotenv@17.4.1:
+    resolution: {integrity: sha512-k8DaKGP6r1G30Lx8V4+pCsLzKr8vLmV2paqEj1Y55GdAgJuIqpRp5FfajGF8KtwMxCz9qJc6wUIJnm053d/WCw==}
     engines: {node: '>=12'}
 
   driver.js@1.4.0:
@@ -6342,7 +6342,7 @@ snapshots:
     dependencies:
       promise-polyfill: 7.1.2
 
-  dotenv@17.4.0: {}
+  dotenv@17.4.1: {}
 
   driver.js@1.4.0: {}
 
