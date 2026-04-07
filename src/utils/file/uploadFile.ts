@@ -7,7 +7,6 @@ import { toast } from 'vue-sonner'
 type IUploadOption = {
   id: string
   file: File
-  type?: string
   start?: string
   loading?: boolean
   test?: boolean
@@ -15,7 +14,7 @@ type IUploadOption = {
 
 export async function uploadFile(option: IUploadOption): Promise<[null, string] | [unknown, null]> {
   return new Promise<[null, string] | [unknown, null]>(async (resolve) => {
-    const { id, file, type = 'jpg', start = 'zh', loading = false, test = true } = option
+    const { id, file, start = 'zh', loading = false, test = true } = option
 
     let toastId: string | number | undefined = undefined
     let _updateTimer: number | undefined = undefined
@@ -49,7 +48,7 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
         },
       })
 
-      const Key = `${dir}/${start}-${v4()}.${type.toLowerCase()}`
+      const Key = `${dir}/${start}-${v4()}.${getExtension(file)}`
 
       cos.uploadFile(
         {
@@ -106,6 +105,12 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
       }
     }
   })
+}
+
+export function getExtension(file: File) {
+  const nameParts = file.name.split('.')
+  if (nameParts.length > 1) return nameParts.pop()?.toLowerCase()
+  return file.type.split('/')[1]?.split('+')[0] || 'png'
 }
 
 export async function isResourceAvailable(url: string): Promise<boolean> {
