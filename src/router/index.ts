@@ -1,3 +1,4 @@
+import { historyStack } from '@/router/history'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { routes, type RouteNamedMap } from 'vue-router/auto-routes'
 
@@ -30,17 +31,8 @@ router.beforeEach((to, from) => {
   // if (!openid && to.path !== '/') return { path: '/' }
 })
 
-export const routeHistory = {
-  list: [] as (keyof RouteNamedMap | (string & {}))[],
-  maxLimit: 10,
-}
-
 router.afterEach((to, from) => {
-  routeHistory.list.unshift(to.fullPath)
-
-  if (routeHistory.list.length > routeHistory.maxLimit) {
-    routeHistory.list.pop()
-  }
+  historyStack.record(to.fullPath)
 
   if (typeof window._hmt !== 'undefined') {
     window._hmt.push(['_trackPageview', `${location.pathname}#${to.fullPath}`])
@@ -55,6 +47,8 @@ declare module 'vue-router' {
     [x: string]: string | number | boolean | undefined
   }
 }
+
+export type RouterNameOrPath = keyof RouteNamedMap | (string & {})
 
 export default router
 
