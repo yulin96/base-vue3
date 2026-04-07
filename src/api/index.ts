@@ -1,8 +1,8 @@
 import type { ResData } from '@/api/types'
 import { toUrl } from '@/config/urls'
 import { useLockRequest } from '@/hooks/useLockRequest'
-import { replaceTo } from '@/plugins/replaceTo'
 import { infoToast } from '@/plugins/vant/toast'
+import { replaceTo } from '@/router'
 import { isUrl } from '@/utils/validate'
 import type { RouteNamedMap } from 'vue-router/auto-routes'
 

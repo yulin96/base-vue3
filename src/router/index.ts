@@ -1,5 +1,5 @@
 import { historyStack } from '@/router/history'
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, type RouteLocationRaw } from 'vue-router'
 import { routes, type RouteNamedMap } from 'vue-router/auto-routes'
 
 const router = createRouter({
@@ -49,6 +49,14 @@ declare module 'vue-router' {
 }
 
 export type RouterNameOrPath = keyof RouteNamedMap | (string & {})
+
+export const replaceTo = (path: RouteLocationRaw) => {
+  historyStack.goTo(path)
+}
+
+export const goBack = (path?: RouteLocationRaw) => {
+  historyStack.goBack(path)
+}
 
 export default router
 
