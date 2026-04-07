@@ -3,14 +3,16 @@ import { toUrl } from '@/config/urls'
 import { getOpenId } from '@/utils/platform/getOpenId'
 import { onMounted, ref } from 'vue'
 
-const { url, auto = false } = defineProps<{ url: string; auto?: boolean }>()
+const { url, auto = false } = defineProps<{ url?: string; auto?: boolean }>()
 
 const show = ref(false)
 
 const openLink = () => {
   if (!url) return console.error('url is required')
 
-  toUrl(`https://wechat.event1.cn/api/getCode?name=hudongweipingtai&action=${auto ? 2 : 1}&cUrl=${encodeURIComponent(url)}`)
+  toUrl(
+    `https://wechat.event1.cn/api/getCode?name=hudongweipingtai&action=${auto ? 2 : 1}&cUrl=${encodeURIComponent(url ?? window.location.origin + window.location.pathname)}`,
+  )
 }
 
 onMounted(async () => {
