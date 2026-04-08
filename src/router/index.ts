@@ -51,11 +51,11 @@ declare module 'vue-router' {
 export type RouterNameOrPath = keyof RouteNamedMap | (string & {})
 
 export const replaceTo = (path: RouteLocationRaw) => {
-  historyStack.goTo(path)
+  return historyStack.goTo(path)
 }
 
 export const goBack = (path?: RouteLocationRaw) => {
-  historyStack.goBack(path)
+  return historyStack.goBack(path)
 }
 
 export default router

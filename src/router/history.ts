@@ -27,23 +27,18 @@ export const historyStack = {
     return null
   },
 
-  goTo(path: RouteLocationRaw) {
-    import('@/router').then(({ default: router }) => router.replace(path))
-    return
+  async goTo(path: RouteLocationRaw) {
+    const { default: router } = await import('@/router')
+    return router.replace(path)
   },
 
   async goBack(path?: RouteLocationRaw) {
     const { default: router } = await import('@/router')
     if (path) {
       this.isBack = true
-      router.replace(path)
-      return
+      return router.replace(path)
     }
     const prev = this.getPrevPath()
-    if (prev) {
-      router.replace(prev)
-    } else {
-      router.replace('/')
-    }
+    return router.replace(prev || '/')
   },
 }
