@@ -6,11 +6,11 @@
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* word-break: break-all; */
-  word-wrap: break-word;
+  word-break: break-all;
+  /* word-wrap: break-word; */
   white-space: pre-line;
-  line-height: 1.5;
-  font-size: calc(var(--base-scale, 1) * 28 * 1px);
+  /* line-height: 1.5; */
+  /* font-size: calc(var(--base-scale, 1) * 28 * 1px); */
 }
 
 input,
