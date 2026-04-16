@@ -56,6 +56,7 @@ code {
 
 img {
   object-fit: contain;
+  -webkit-user-drag: none;
 }
 
 img,
