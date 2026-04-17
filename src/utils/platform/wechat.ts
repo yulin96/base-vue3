@@ -110,6 +110,18 @@ export async function wechatShare(data: IWxShare) {
           resolve(false)
         },
       })
+
+      wx.updateTimelineShareData({
+        title: title || document.title,
+        link: link || location.href.split('#')[0] || '',
+        imgUrl: imgUrl || '',
+        success() {
+          resolve(true)
+        },
+        fail() {
+          resolve(false)
+        },
+      })
     })
   } catch (err) {
     console.log(err)
