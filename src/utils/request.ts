@@ -1,7 +1,8 @@
-import { formDataToObj } from '@/utils/convert'
 import { reportArmsException } from '@/plugins/arms'
+import { formDataToObj } from '@/utils/convert'
 import { isCanceledRequest, isFormData } from '@/utils/validate'
 import axios, { isAxiosError, toFormData, type AxiosRequestConfig } from 'axios'
+import { enc, HmacSHA256 } from 'crypto-js'
 
 export type IFormDataOrJSON = 'FormData' | 'JSON'
 type Dict = Record<string, unknown>
@@ -133,3 +134,21 @@ function truncateText(value: string, maxLength = 2000) {
 }
 
 const BODY_REQUEST_METHODS = ['post', 'put', 'patch', 'delete']
+
+export function createApiSignature(data: Record<string, string>, action: string) {
+  const APPID = 'APPID123456'
+  const APPSECRET = 'APPSECRET123456'
+
+  const timestamp = Date.now().toString()
+  const nonce = Math.random().toString(36).substring(2, 15)
+
+  return {
+    query: encodeURIComponent(JSON.stringify({ ...data, action })),
+    headers: {
+      appid: APPID,
+      timestamp: timestamp,
+      noncestr: nonce,
+      sign: HmacSHA256(`${APPID}${timestamp}${nonce}${action}`, APPSECRET).toString(enc.Hex),
+    },
+  }
+}
