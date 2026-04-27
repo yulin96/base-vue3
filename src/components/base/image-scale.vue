@@ -299,6 +299,9 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  // 清理可能残留的 window 级事件监听器（拖动中组件销毁时）
+  window.removeEventListener('mousemove', onMouseMove)
+  window.removeEventListener('mouseup', onMouseUp)
   resizeObserver?.disconnect()
   resizeObserver = null
 })

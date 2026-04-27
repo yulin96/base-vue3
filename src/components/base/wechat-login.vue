@@ -19,10 +19,12 @@ onMounted(async () => {
   if (!(await getOpenId())) {
     show.value = true
     if (auto) {
-      const body = document.querySelector('body')
-      body && (body.style.display = 'none')
-
+      document.body.style.visibility = 'hidden'
       openLink()
+      // 兜底：如果跳转被拦截，3秒后恢复可见性
+      setTimeout(() => {
+        document.body.style.visibility = ''
+      }, 3000)
     }
   }
 })

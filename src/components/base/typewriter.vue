@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { sleep } from '@/utils/common'
 import { randomInt } from 'es-toolkit'
-import { nextTick, onMounted, ref, useTemplateRef } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -18,6 +18,7 @@ const lineWidth: number[] = []
 
 const lines = ref<string[]>([])
 const currentIndex = ref(0)
+let disposed = false
 
 // 使用 canvas measureText 优化文本宽度计算
 const measureTextWidth = (text: string): number => {
@@ -34,6 +35,8 @@ const measureTextWidth = (text: string): number => {
 }
 
 const writeText = async () => {
+  if (disposed) return
+
   const idx = currentIndex.value
   if (idx >= props.texts.length) return
 
@@ -53,6 +56,7 @@ const writeText = async () => {
   const time = Array.isArray(props.speed) ? randomInt(props.speed[0], props.speed[1]) : props.speed
 
   await sleep(time)
+  if (disposed) return
   writeText()
 }
 
@@ -64,6 +68,10 @@ onMounted(async () => {
 
   await nextTick()
   writeText()
+})
+
+onUnmounted(() => {
+  disposed = true
 })
 // <com-typewriter
 //     :texts="['别急', '月亮总会在云后升起', '就算黑夜漫长', '也挡不住清晨那一缕微光']"

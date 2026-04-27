@@ -54,6 +54,7 @@ const createBubbles = async () => {
             buttonRef.value.removeChild(bubble)
           }
           bubbles.delete(position)
+          animations.delete(timeline)
         },
       })
       .to(bubble, { y: -buttonRef.value.offsetHeight / 1.2, duration: duration, ease: 'easeInOut' })

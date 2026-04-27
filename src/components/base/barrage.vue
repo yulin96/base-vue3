@@ -44,14 +44,18 @@ const createCard = async (id: number, gap: number) => {
   }
   if (!el) return console.error('card box is null')
 
-  if (!conveyorList.length) conveyorList = [...toRaw(barrageList.value)]
-  const card = conveyorList.pop()!
-  if (!card) {
-    await sleep(1200)
-    if (disposed) return
-    createCard(id, gap)
-    return
+  // 等待列表有数据，最多重试 10 次
+  let retries = 0
+  while (!conveyorList.length && retries++ < 10) {
+    conveyorList = [...toRaw(barrageList.value)]
+    if (!conveyorList.length) {
+      await sleep(1200)
+      if (disposed) return
+    }
   }
+
+  const card = conveyorList.pop()
+  if (!card) return
 
   const div = document.createElement('div')
   div.classList.add(`card-item-${card.id}`)

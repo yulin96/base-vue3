@@ -52,9 +52,12 @@ const setHistoryStack = (stack: string[]) => {
   sessionStorage.setItem(HISTORY_KEY, JSON.stringify(stack))
 }
 
+const MAX_HISTORY = 50
+
 export const replaceTo = (path: RouteLocationRaw) => {
   const stack = getHistoryStack()
   stack.push(router.currentRoute.value.fullPath)
+  if (stack.length > MAX_HISTORY) stack.shift()
   setHistoryStack(stack)
   return router.replace(path)
 }

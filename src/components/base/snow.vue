@@ -13,10 +13,14 @@ onMounted(() => {
   autoCreateSnow(document.getElementById(id) as HTMLDivElement)
 })
 
-let snowTimer: NodeJS.Timeout | undefined
+let snowTimer: ReturnType<typeof setTimeout> | undefined
+const runningAnimations = new Set<Animation>()
 
 onUnmounted(() => {
   clearTimeout(snowTimer)
+  // 取消所有正在运行的动画
+  runningAnimations.forEach((a) => a.cancel())
+  runningAnimations.clear()
 })
 
 let activated = true
@@ -29,7 +33,7 @@ onDeactivated(() => {
   activated = false
 })
 
-const snowList = new Set<string>()
+let snowCount = 0
 function autoCreateSnow(wrapper: HTMLDivElement) {
   if (document.visibilityState === 'visible' && activated) createSnow(wrapper)
 
@@ -37,7 +41,7 @@ function autoCreateSnow(wrapper: HTMLDivElement) {
     () => {
       autoCreateSnow(wrapper)
     },
-    snowList.size < 30 ? randomNum(400, 1000) : randomNum(800, 1600),
+    snowCount < 30 ? randomNum(400, 1000) : randomNum(800, 1600),
   )
 }
 
@@ -50,10 +54,11 @@ function createSnow(wrapper: HTMLDivElement) {
   snowImg.src = img
 
   snow.appendChild(snowImg)
-  snowImg.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
+  const rotateAnim = snowImg.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
     duration: randomNum(30000, 60000),
     iterations: Infinity,
   })
+  runningAnimations.add(rotateAnim)
 
   const width = randomNum(10, 26)
   snow.style.position = 'absolute'
@@ -64,11 +69,10 @@ function createSnow(wrapper: HTMLDivElement) {
   snow.style.pointerEvents = 'none'
   snow.style.opacity = String(randomNum(8, 10) / 10)
 
-  const snowId = v4()
   wrapper.appendChild(snow)
-  snowList.add(snowId)
+  snowCount++
 
-  snow.animate(
+  const moveAnim = snow.animate(
     [
       { transform: 'translateY(0) translateZ(0) translateX(0)' },
       {
@@ -79,10 +83,16 @@ function createSnow(wrapper: HTMLDivElement) {
       duration: randomNum(12000, 20000),
       easing: 'cubic-bezier(0.2, 0, 0.8, 0.8)',
     },
-  ).onfinish = () => {
+  )
+  runningAnimations.add(moveAnim)
+
+  moveAnim.onfinish = () => {
+    runningAnimations.delete(rotateAnim)
+    runningAnimations.delete(moveAnim)
+    rotateAnim.cancel()
     snowImg.remove()
     snow.remove()
-    snowList.delete(snowId)
+    snowCount--
   }
 }
 </script>

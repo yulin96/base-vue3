@@ -56,22 +56,27 @@ function initLottery() {
   ctx = lotteryCanvas.value.getContext('2d', { willReadFrequently: true })!
   if (!ctx) return
 
-  lotteryCanvas.value.width = +getComputedStyle(lotteryCanvas.value).width.replace('px', '') * DPR
-  lotteryCanvas.value.height = +getComputedStyle(lotteryCanvas.value).height.replace('px', '') * DPR
+  // CSS 像素尺寸（用于所有绘图坐标，因为已 ctx.scale(DPR)）
+  const cssWidth = +getComputedStyle(lotteryCanvas.value).width.replace('px', '')
+  const cssHeight = +getComputedStyle(lotteryCanvas.value).height.replace('px', '')
+
+  // 物理像素尺寸（仅用于 canvas buffer 分辨率）
+  lotteryCanvas.value.width = cssWidth * DPR
+  lotteryCanvas.value.height = cssHeight * DPR
   ctx.scale(DPR, DPR)
 
   clearCanvas(lotteryCanvas.value, ctx)
 
   ctx.globalCompositeOperation = 'source-over'
   ctx.fillStyle = '#757575'
-  ctx.fillRect(0, 0, lotteryCanvas.value.width, lotteryCanvas.value.height)
+  ctx.fillRect(0, 0, cssWidth, cssHeight)
 
   ctx.font = '12px cjd'
   ctx.fillStyle = '#fff'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.letterSpacing = '2px'
-  ctx.fillText(text, lotteryCanvas.value.width / (2 * DPR), lotteryCanvas.value.height / (2 * DPR))
+  ctx.fillText(text, cssWidth / 2, cssHeight / 2)
 }
 
 function clearCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
