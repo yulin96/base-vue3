@@ -20,15 +20,191 @@ const getErrorLikeValue = (error: unknown, key: 'name' | 'code' | 'message') => 
   return value == null ? '' : String(value)
 }
 
-const getApiErrorCategory = (response?: Response | Record<string, unknown> | null, error?: unknown) => {
+/**
+ * 细粒度诊断网络/请求错误类型
+ *
+ * 返回值含义：
+ * - timeout          请求超时（含连接超时和读取超时）
+ * - offline          设备无网络连接
+ * - dns_error        DNS 解析失败
+ * - connection_refused 连接被服务器拒绝
+ * - connection_reset   连接被重置
+ * - ssl_error        SSL/TLS 握手或证书错误
+ * - cors_error       CORS 跨域策略拦截
+ * - network_change   网络切换导致中断
+ * - abort            请求被中止（非主动取消）
+ * - body_parse_error 响应体解析失败
+ * - http_4xx         客户端错误（400-499）
+ * - http_5xx         服务端错误（500+）
+ * - network_error    其他网络层错误（兜底）
+ * - canceled         主动取消
+ * - unknown          无法归类
+ * - success          请求成功
+ */
+const diagnoseNetworkError = (
+  response?: Response | Record<string, unknown> | null,
+  error?: unknown,
+): string => {
   if (isCanceledRequest(error)) return 'canceled'
 
-  const status = typeof response?.status === 'number' ? response.status : undefined
-  if (typeof status === 'number' && status >= 500) return 'server_error'
-  if (typeof status === 'number' && status >= 400) return 'request_error'
-  if (error) return 'network_error'
+  if (error && typeof error === 'object') {
+    const err = error as { name?: string; code?: string; message?: string; type?: string }
+    const code = (err.code || '').toLowerCase()
+    const message = (err.message || '').toLowerCase()
+    const name = (err.name || '').toLowerCase()
 
+    // 超时
+    if (
+      code === 'econnaborted' ||
+      code === 'etimedout' ||
+      code === 'timeout' ||
+      name === 'timeouterror' ||
+      message.includes('timeout') ||
+      message.includes('timed out')
+    ) {
+      return 'timeout'
+    }
+
+    // 设备离线
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      return 'offline'
+    }
+
+    // DNS 解析失败
+    if (
+      code === 'enotfound' ||
+      message.includes('dns') ||
+      message.includes('getaddrinfo') ||
+      message.includes('name not resolved') ||
+      message.includes('nodename nor servname')
+    ) {
+      return 'dns_error'
+    }
+
+    // 连接被拒绝
+    if (code === 'econnrefused' || message.includes('connection refused')) {
+      return 'connection_refused'
+    }
+
+    // 连接被重置
+    if (
+      code === 'econnreset' ||
+      code === 'epipe' ||
+      message.includes('connection reset') ||
+      message.includes('socket hang up')
+    ) {
+      return 'connection_reset'
+    }
+
+    // SSL/TLS 错误
+    if (
+      message.includes('ssl') ||
+      message.includes('tls') ||
+      message.includes('certificate') ||
+      message.includes('cert') ||
+      message.includes('self signed') ||
+      message.includes('unable to verify') ||
+      code.includes('cert')
+    ) {
+      return 'ssl_error'
+    }
+
+    // CORS 错误 —— 浏览器 fetch/XHR 跨域失败时 status=0 且 type='opaque'/'error'
+    if (
+      message.includes('cors') ||
+      message.includes('cross-origin') ||
+      message.includes('access-control-allow-origin') ||
+      (err.type === 'error' && response && (response as Response).type === 'opaque')
+    ) {
+      return 'cors_error'
+    }
+
+    // 网络切换 / 中断（移动端常见）
+    if (
+      message.includes('network changed') ||
+      message.includes('network request failed') ||
+      message.includes('the internet connection appears to be offline') ||
+      message.includes('a server with the specified hostname could not be found') ||
+      message.includes('the network connection was lost') ||
+      code === 'err_internet_disconnected' ||
+      code === 'err_network_changed'
+    ) {
+      return 'network_change'
+    }
+
+    // Abort（非主动取消的 abort）
+    if (name === 'aborterror' || message.includes('aborted')) {
+      return 'abort'
+    }
+
+    // 响应体解析错误
+    if (
+      message.includes('json') ||
+      message.includes('unexpected token') ||
+      message.includes('unexpected end of') ||
+      message.includes('not valid json') ||
+      name === 'syntaxerror'
+    ) {
+      return 'body_parse_error'
+    }
+
+    // 网络错误（fetch 在 network failure 时 status=0，message='Network Error' / 'Failed to fetch'）
+    if (
+      code === 'err_network' ||
+      message.includes('network error') ||
+      message.includes('failed to fetch') ||
+      message.includes('load failed') ||
+      message.includes('networkerror')
+    ) {
+      // 再次确认是否离线
+      if (typeof navigator !== 'undefined' && !navigator.onLine) return 'offline'
+      return 'network_error'
+    }
+  }
+
+  // HTTP 状态码级别
+  const status = typeof response?.status === 'number' ? response.status : undefined
+  if (typeof status === 'number') {
+    if (status === 0) return 'network_error'
+    if (status >= 500) return 'http_5xx'
+    if (status >= 400) return 'http_4xx'
+  }
+
+  if (error) return 'unknown'
   return 'success'
+}
+
+/**
+ * 采集当前网络质量信息（Network Information API）
+ * 返回一个对象，用于附加到 ARMS properties
+ */
+export const getNetworkQualityInfo = (): Record<string, string | number> => {
+  const info: Record<string, string | number> = {}
+
+  info.is_online = typeof navigator !== 'undefined' ? (navigator.onLine ? 'yes' : 'no') : 'unknown'
+
+  // Navigator.connection (Network Information API)
+  const conn = (navigator as any)?.connection || (navigator as any)?.mozConnection || (navigator as any)?.webkitConnection
+  if (conn) {
+    if (conn.effectiveType) info.net_effective_type = conn.effectiveType // 'slow-2g' | '2g' | '3g' | '4g'
+    if (typeof conn.downlink === 'number') info.net_downlink = conn.downlink // Mbps
+    if (typeof conn.rtt === 'number') info.net_rtt = conn.rtt // ms
+    if (typeof conn.saveData === 'boolean') info.net_save_data = conn.saveData ? 'yes' : 'no'
+    if (conn.type) info.net_type = conn.type // 'wifi' | 'cellular' | 'ethernet' | 'none' ...
+  }
+
+  return info
+}
+
+/**
+ * 针对 AxiosError 的诊断包装
+ * 从 AxiosError 结构中提取 response 和原始 error，调用 diagnoseNetworkError
+ */
+export const diagnoseAxiosError = (error: unknown): string => {
+  if (!error || typeof error !== 'object') return 'unknown'
+
+  const err = error as { response?: { status?: number; statusText?: string }; code?: string; message?: string }
+  return diagnoseNetworkError(err.response as any, error)
 }
 
 const getApiErrorMessage = (
@@ -215,12 +391,13 @@ export function registerARMS() {
             requestData = '解析出错'
           }
 
-          const apiErrorCategory = getApiErrorCategory(response, error)
+          const apiErrorCategory = diagnoseNetworkError(response, error)
           const apiErrorMessage = getApiErrorMessage(responseText, response, error)
           const apiStatus = typeof response?.status === 'number' ? response.status : -1
           const apiStatusText = response?.statusText == null ? '' : String(response.statusText)
           const apiErrorName = getErrorLikeValue(error, 'name')
           const apiErrorCode = getErrorLikeValue(error, 'code')
+          const networkInfo = apiErrorCategory !== 'success' ? getNetworkQualityInfo() : {}
 
           return {
             success: error || (response && response.status >= 400) ? 0 : 1,
@@ -239,6 +416,7 @@ export function registerARMS() {
               api_error_message: apiErrorMessage,
               request_data: requestData.substring(0, 2000),
               response: responseText.substring(0, 2000),
+              ...networkInfo,
             },
           }
         },

@@ -1,4 +1,4 @@
-import { reportArmsException } from '@/plugins/arms'
+import { diagnoseAxiosError, getNetworkQualityInfo, reportArmsException } from '@/plugins/arms'
 import { formDataToObj } from '@/utils/convert'
 import { isCanceledRequest, isFormData } from '@/utils/validate'
 import axios, { isAxiosError, toFormData, type AxiosRequestConfig } from 'axios'
@@ -58,6 +58,9 @@ function reportRequestError(error: unknown) {
         ? responseData.msg
         : error.message || 'request failed'
 
+  const errorCategory = diagnoseAxiosError(error)
+  const networkInfo = errorCategory !== 'success' ? getNetworkQualityInfo() : {}
+
   reportArmsException({
     name: 'APIRequestException',
     message: responseMessage,
@@ -75,11 +78,13 @@ function reportRequestError(error: unknown) {
       api_error_code: error.code || '',
       api_error_name: error.name || 'AxiosError',
       api_error_message: error.message || '',
+      api_error_category: errorCategory,
       api_request_id:
         getResponseHeaderValue(response?.headers, 'x-request-id') ||
         getResponseHeaderValue(response?.headers, 'request-id') ||
         getResponseHeaderValue(response?.headers, 'trace-id'),
       page_url: location.href,
+      ...networkInfo,
     },
   })
 }
