@@ -46,13 +46,23 @@ export default class LineCanvas {
     this.cxt.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
+  // 将触摸坐标转换为 canvas 内部坐标
+  private getCanvasPoint(touch: Touch) {
+    const rect = this.canvas.getBoundingClientRect()
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    }
+  }
+
   // 绘制开始
   private touchstart = (e: TouchEvent) => {
     e.preventDefault()
     const touch = e.changedTouches[0]
     if (touch) {
+      const { x, y } = this.getCanvasPoint(touch)
       this.cxt.beginPath()
-      this.cxt.moveTo(touch.pageX, touch.pageY)
+      this.cxt.moveTo(x, y)
     }
   }
 
@@ -60,8 +70,9 @@ export default class LineCanvas {
   private touchmove = (e: TouchEvent) => {
     const touch = e.changedTouches[0]
     if (touch) {
+      const { x, y } = this.getCanvasPoint(touch)
       this.signing = true
-      this.cxt.lineTo(touch.pageX, touch.pageY)
+      this.cxt.lineTo(x, y)
       this.cxt.stroke()
     }
   }
@@ -96,5 +107,8 @@ export default class LineCanvas {
   }
 
   public getColor = () => this.color
-  public setColor = (color: string) => (this.color = color)
+  public setColor = (color: string) => {
+    this.color = color
+    this.cxt.strokeStyle = color
+  }
 }

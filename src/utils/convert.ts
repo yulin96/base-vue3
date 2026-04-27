@@ -345,25 +345,26 @@ export function deepClone<T>(obj: T, maxDepth = 100, visited = new WeakMap()): T
     return visited.get(obj) as T
   }
 
-  // 标记当前对象为已访问
-  const cloned = Array.isArray(obj) ? [] : ({} as any)
-  visited.set(obj, cloned)
-
-  // 处理日期
+  // 处理日期 —— 在 visited.set 之前处理，确保缓存正确类型
   if (obj instanceof Date) {
-    return new Date(obj.getTime()) as unknown as T
+    const cloned = new Date(obj.getTime()) as unknown as T
+    visited.set(obj, cloned)
+    return cloned
   }
 
   // 处理正则表达式
   if (obj instanceof RegExp) {
-    return new RegExp(obj.source, obj.flags) as unknown as T
+    const cloned = new RegExp(obj.source, obj.flags) as unknown as T
+    visited.set(obj, cloned)
+    return cloned
   }
 
   // 处理 Map
   if (obj instanceof Map) {
     const map = new Map()
+    visited.set(obj, map)
     obj.forEach((value, key) => {
-      map.set(deepClone(key, maxDepth - 1), deepClone(value, maxDepth - 1))
+      map.set(deepClone(key, maxDepth - 1, visited), deepClone(value, maxDepth - 1, visited))
     })
     return map as unknown as T
   }
@@ -371,15 +372,22 @@ export function deepClone<T>(obj: T, maxDepth = 100, visited = new WeakMap()): T
   // 处理 Set
   if (obj instanceof Set) {
     const set = new Set()
+    visited.set(obj, set)
     obj.forEach((value) => {
-      set.add(deepClone(value, maxDepth - 1))
+      set.add(deepClone(value, maxDepth - 1, visited))
     })
     return set as unknown as T
   }
 
-  // 处理数组
+  // 处理数组和普通对象
+  const cloned = Array.isArray(obj) ? [] : ({} as any)
+  visited.set(obj, cloned)
+
   if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item, maxDepth - 1)) as unknown as T
+    for (let i = 0; i < obj.length; i++) {
+      cloned[i] = deepClone(obj[i], maxDepth - 1, visited)
+    }
+    return cloned
   }
 
   // 处理普通对象

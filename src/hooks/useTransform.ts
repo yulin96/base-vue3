@@ -377,6 +377,16 @@ export function useTransform(options: TransformOptions) {
   })
 
   onBeforeUnmount(() => {
+    // 清理 preventClick 计时器
+    if (preventClickTimer !== null) {
+      clearTimeout(preventClickTimer)
+      preventClickTimer = null
+    }
+
+    // 清理 document 级的事件监听器（拖动过程中销毁时可能残留）
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.removeEventListener('mouseup', handleMouseUp)
+
     if (!moveElement.value) return
 
     moveElement.value.removeEventListener('touchstart', handleTouchStart)

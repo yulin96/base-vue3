@@ -25,7 +25,8 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
 
   const onMove = (t: any) => {
     const pageY = t?.changedTouches?.[0]?.pageY || t.pageY
-    if (arrivedState.top || arrivedState.bottom || ele.value!.scrollTop < 0) {
+    if (!ele.value) return
+    if (arrivedState.top || arrivedState.bottom || ele.value.scrollTop < 0) {
       if (startMove.value.once) {
         startMove.value.pageY = pageY
         startMove.value.once = false
@@ -71,39 +72,36 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
     }
   }
 
-  onMounted(() => {
+  const bindEvents = () => {
     if (!ele.value) return
     ele.value.addEventListener('touchstart', onStart)
     ele.value.addEventListener('touchmove', onMove)
     ele.value.addEventListener('touchend', onEnd)
     ele.value.addEventListener('wheel', eleEffect)
-  })
+  }
 
-  onActivated(() => {
-    if (!ele.value) return
-    ele.value.addEventListener('touchstart', onStart)
-    ele.value.addEventListener('touchmove', onMove)
-    ele.value.addEventListener('touchend', onEnd)
-    ele.value.addEventListener('wheel', eleEffect)
-  })
-
-  onBeforeUnmount(() => {
+  const unbindEvents = () => {
     if (!ele.value) return
     ele.value.removeEventListener('touchstart', onStart)
     ele.value.removeEventListener('touchmove', onMove)
     ele.value.removeEventListener('touchend', onEnd)
     ele.value.removeEventListener('wheel', eleEffect)
+  }
+
+  onMounted(bindEvents)
+
+  onActivated(() => {
+    unbindEvents()
+    bindEvents()
   })
 
+  onBeforeUnmount(unbindEvents)
+
   onDeactivated(() => {
-    if (!ele.value) return
     startMove.value.pageY = 0
     startMove.value.once = true
     lock = false
-    ele.value.removeEventListener('touchstart', onStart)
-    ele.value.removeEventListener('touchmove', onMove)
-    ele.value.removeEventListener('touchend', onEnd)
-    ele.value.removeEventListener('wheel', eleEffect)
+    unbindEvents()
   })
 
   return { key }
