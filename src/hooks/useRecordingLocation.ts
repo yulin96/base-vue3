@@ -1,5 +1,5 @@
 import { v4 } from 'uuid'
-import { onActivated, onDeactivated, useTemplateRef } from 'vue'
+import { nextTick, onActivated, onDeactivated, useTemplateRef } from 'vue'
 
 export function useRecordingLocation(initialKey?: string) {
   const key = initialKey || v4()
@@ -7,9 +7,21 @@ export function useRecordingLocation(initialKey?: string) {
 
   let top = 0
 
+  const restoreTop = () => {
+    if (!moveRef.value) return
+    moveRef.value.scrollTop = top
+  }
+
   onActivated(() => {
-    requestAnimationFrame(() => {
-      moveRef.value && (moveRef.value!.scrollTop = top)
+    void nextTick(() => {
+      restoreTop()
+
+      requestAnimationFrame(() => {
+        restoreTop()
+        requestAnimationFrame(() => {
+          restoreTop()
+        })
+      })
     })
   })
 
