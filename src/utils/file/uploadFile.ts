@@ -1,6 +1,6 @@
 import { sleep } from '@/utils/common'
+import OSS from 'ali-oss'
 import axios, { toFormData } from 'axios'
-import COS from 'cos-js-sdk-v5'
 import { v4 } from 'uuid'
 import { toast } from 'vue-sonner'
 
@@ -14,7 +14,7 @@ type IUploadOption = {
 
 export async function uploadFile(option: IUploadOption): Promise<[null, string] | [unknown, null]> {
   return new Promise<[null, string] | [unknown, null]>(async (resolve) => {
-    const { id, file, start = 'zh', loading = false, test = true } = option
+    const { id, file, start = 'zh', loading = false, test = false } = option
 
     let toastId: string | number | undefined = undefined
     let _updateTimer: number | undefined = undefined
@@ -31,65 +31,72 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
     try {
       const {
         data: { data },
-      } = await axios.post('https://rally.event1.cn/bn9z/sts', toFormData({ puid: id, type: 'sts' }))
+      } = await axios.post('https://rally.event1.cn/bn9z/sts/oss', toFormData({ puid: id }))
 
-      const { startTime, expiredTime, bucket, region, dir } = data
-      const { sessionToken, tmpSecretId, tmpSecretKey } = data.credentials
+      const { bucket, region, uploadDir, accessKeyId, accessKeySecret, stsToken } = data
 
-      const cos = new COS({
-        getAuthorization: function (_, callback) {
-          callback({
-            TmpSecretId: tmpSecretId,
-            TmpSecretKey: tmpSecretKey,
-            SecurityToken: sessionToken,
-            StartTime: startTime,
-            ExpiredTime: expiredTime,
-          })
+      const client = new OSS({
+        region: region.includes('oss-') ? region : `oss-${region}`,
+        bucket,
+        endpoint: 'https://up.eventnet.cn',
+        cname: true,
+        authorizationV4: true,
+        accessKeyId,
+        accessKeySecret,
+        stsToken,
+        refreshSTSToken: async () => {
+          const {
+            data: { data: refreshData },
+          } = await axios.post('https://rally.event1.cn/bn9z/sts/oss', toFormData({ puid: id }))
+          return {
+            accessKeyId: refreshData.accessKeyId,
+            accessKeySecret: refreshData.accessKeySecret,
+            stsToken: refreshData.stsToken,
+          }
         },
       })
 
-      const Key = `${dir}/${start}-${v4()}.${getExtension(file)}`
+      const Key = `${uploadDir}${start}-${v4()}.${getExtension(file)}`
 
-      cos.uploadFile(
-        {
-          Bucket: bucket,
-          Region: region,
-          Key,
-          Body: file,
-          SliceSize: 1024 * 1024,
-          onProgress: function (progressData) {
-            const process = Math.floor(progressData.percent * 50)
+      try {
+        await client.multipartUpload(Key, file, {
+          progress: async function (p) {
+            const process = Math.floor(p * 50)
             if (loading) updateLoadingToast(toastId, process)
           },
-        },
-        async (err, data) => {
-          if (err) return (showError('上传失败'), resolve([err, null]))
+        })
+      } catch (err) {
+        showError('上传失败')
+        return resolve([err, null])
+      }
 
-          let process = 50
-          _updateTimer = window.setInterval(() => {
-            if (loading) updateLoadingToast(toastId, (process += 5))
-          }, 500)
-          await sleep(3000)
-          const url = `https://oss.1ycloud.com/${Key}`
-          if (test) {
-            const available = await isResourceAvailable(url)
-            if (!available) {
-              return (showError('上传文件不符合规范，请更换文件重试'), resolve([err, null]))
-            }
-          }
+      let process = 50
+      _updateTimer = window.setInterval(() => {
+        if (loading) updateLoadingToast(toastId, (process += 5))
+      }, 500)
 
-          resolve([null, url])
+      await sleep(2000)
+      const url = `https://up.eventnet.cn/${Key}`
 
-          if (loading) {
-            clearInterval(_updateTimer)
-            updateLoadingToast(toastId, 100)
-            toast.success('上传成功', { id: toastId })
-            setTimeout(() => {
-              toast.dismiss(toastId)
-            }, 2000)
-          }
-        },
-      )
+      if (test) {
+        const available = await isResourceAvailable(url)
+        if (!available) {
+          clearInterval(_updateTimer)
+          showError('上传文件不符合规范，请更换文件重试')
+          return resolve([new Error('File upload verify failed'), null])
+        }
+      }
+
+      resolve([null, url])
+
+      if (loading) {
+        clearInterval(_updateTimer)
+        updateLoadingToast(toastId, 100)
+        toast.success('上传成功', { id: toastId })
+        setTimeout(() => {
+          toast.dismiss(toastId)
+        }, 2000)
+      }
     } catch (error) {
       ;(showError('上传失败'), resolve([error, null]))
     }

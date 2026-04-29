@@ -1,7 +1,7 @@
 import { infoToast } from '@/plugins/vant/toast'
 import { blobToFile } from '@/utils/convert'
 import { compressPhoto } from '@/utils/file/compressImage'
-import { v1 } from 'uuid'
+import { v4 } from 'uuid'
 
 /**
  * 获取用户图片
@@ -26,7 +26,7 @@ export function getUserImage(option?: Compressor.Options) {
       if (file) {
         compressPhoto(file, option)
           .then((f) => {
-            resolve(blobToFile(f, `${v1()}.jpg`))
+            resolve(blobToFile(f, `${v4()}.jpg`))
           })
           .catch((err) => {
             infoToast('请上传有效的图片文件')
