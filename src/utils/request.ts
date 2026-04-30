@@ -1,14 +1,32 @@
 import { diagnoseAxiosError, getNetworkQualityInfo, reportArmsException } from '@/plugins/arms'
 import { formDataToObj } from '@/utils/convert'
+import { createApiSignature, isPostEncryptEnabled } from '@/utils/request-signature'
 import { isCanceledRequest, isFormData } from '@/utils/validate'
-import axios, { isAxiosError, toFormData, type AxiosRequestConfig } from 'axios'
-import { enc, HmacSHA256 } from 'crypto-js'
+import axios, {
+  AxiosHeaders,
+  isAxiosError,
+  toFormData,
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+} from 'axios'
 
 export type IFormDataOrJSON = 'FormData' | 'JSON'
 type Dict = Record<string, unknown>
+type PostRequestConfig = InternalAxiosRequestConfig & {
+  postDataType?: IFormDataOrJSON
+  postEncryptAction?: string
+}
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_APP_API_URL,
+})
+
+instance.interceptors.request.use((config) => {
+  const requestConfig = config as PostRequestConfig
+
+  if (String(requestConfig.method || '').toLowerCase() !== 'post') return config
+
+  return normalizePostRequest(requestConfig)
 })
 
 instance.interceptors.response.use(undefined, (error) => {
@@ -35,12 +53,70 @@ export const axiosPost = <T = any>(
   dataType: IFormDataOrJSON = 'FormData',
 ): Promise<T> => {
   return instance
-    .post(url, data && (dataType === 'FormData' ? toFormData(data) : data), {
-      ...config,
-    })
+    .post(url, data, {
+      ...(config ?? {}),
+      postDataType: dataType,
+    } as PostRequestConfig)
     .then((response) => {
       return response.data as T
     })
+}
+
+function normalizePostRequest(config: PostRequestConfig) {
+  return isPostEncryptEnabled ? encryptPostRequest(config) : buildPlainPostRequest(config)
+}
+
+function encryptPostRequest(config: PostRequestConfig) {
+  const dataType = config.postDataType ?? 'FormData'
+  const requestData = getRequestDataSource(config.data)
+  const { query, headers } = createApiSignature(
+    requestData && typeof requestData === 'object' ? (requestData as Dict) : {},
+    getRequestAction(config),
+  )
+
+  config.headers = mergeRequestHeaders(config.headers, headers)
+  config.data = dataType === 'FormData' ? toFormData({ query }) : { query }
+  return config
+}
+
+function buildPlainPostRequest(config: PostRequestConfig) {
+  if ((config.postDataType ?? 'FormData') === 'FormData' && config.data && !isFormData(config.data)) {
+    config.data = toFormData(config.data as Dict)
+  }
+
+  return config
+}
+
+function getRequestDataSource(data: unknown) {
+  return isFormData(data) ? formDataToObj(data) : data
+}
+
+function mergeRequestHeaders(headers: AxiosRequestConfig['headers'], signatureHeaders: Record<string, string>) {
+  const requestHeaders = AxiosHeaders.from((headers ?? {}) as any)
+
+  Object.entries(signatureHeaders).forEach(([key, value]) => {
+    requestHeaders.set(key, value)
+  })
+
+  return requestHeaders
+}
+
+function getRequestAction(config?: AxiosRequestConfig) {
+  const customAction = (config as PostRequestConfig | undefined)?.postEncryptAction
+  if (customAction) return customAction
+
+  const url = config?.url || ''
+
+  try {
+    const baseUrl = config?.baseURL || location.origin
+    const pathname = new URL(url, baseUrl).pathname
+    const segments = pathname.split('/').filter(Boolean)
+    return segments.at(-1) || ''
+  } catch {
+    const pathname = url.split('?')[0]
+    const segments = pathname.split('/').filter(Boolean)
+    return segments.at(-1) || ''
+  }
 }
 
 function reportRequestError(error: unknown) {
@@ -139,21 +215,3 @@ function truncateText(value: string, maxLength = 2000) {
 }
 
 const BODY_REQUEST_METHODS = ['post', 'put', 'patch', 'delete']
-
-export function createApiSignature(data: Record<string, string>, action: string) {
-  const APPID = 'APPID123456'
-  const APPSECRET = 'APPSECRET123456'
-
-  const timestamp = Date.now().toString()
-  const nonce = Math.random().toString(36).substring(2, 15)
-
-  return {
-    query: encodeURIComponent(JSON.stringify({ ...data, action })),
-    headers: {
-      appid: APPID,
-      timestamp: timestamp,
-      noncestr: nonce,
-      sign: HmacSHA256(`${APPID}${timestamp}${nonce}${action}`, APPSECRET).toString(enc.Hex),
-    },
-  }
-}

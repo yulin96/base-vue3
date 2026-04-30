@@ -1,7 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="@plugin-web-update-notification/vite" />
 
-
 declare const __ARMSEndpoint: string
 
 interface ImportMetaEnv {
@@ -21,6 +20,8 @@ interface ImportMetaEnv {
   readonly VITE_APP_COMPANY: string
   readonly VITE_APP_COMPANY_LINK: string
   readonly VITE_APP_ARMS: string
+  readonly VITE_APP_APPID: string
+  readonly VITE_APP_APPSECRET: string
 }
 
 declare const WeixinJSBridge: any
