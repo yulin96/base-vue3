@@ -1,6 +1,5 @@
 import '@/assets/styles/pc.css'
 import { createQRCode, removeQRCode } from '@/plugins/createQRCode'
-import { isPcMode } from '@/utils/platform/ua'
 import { debounce } from 'es-toolkit'
 
 function setRem() {
@@ -8,7 +7,7 @@ function setRem() {
   const designWidth = 750
   let deviceWidth = innerWidth
 
-  if (isPcMode()) {
+  if (innerWidth > 700) {
     const calcHeight = innerHeight
     const calcWidth = (375 / 720) * calcHeight
 
