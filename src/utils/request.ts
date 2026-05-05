@@ -126,13 +126,8 @@ function reportRequestError(error: unknown) {
   const { config, response } = error
   const responseData = response?.data as Dict | undefined
   const requestUrl = getRequestUrl(config)
-  const responseStatus = response?.status
-  const responseMessage =
-    typeof responseData?.message === 'string'
-      ? responseData.message
-      : typeof responseData?.msg === 'string'
-        ? responseData.msg
-        : error.message || 'request failed'
+  const responseStatus = error.status ?? response?.status ?? -1
+  const responseMessage = getResponseMessage(responseData, error.message)
 
   const errorCategory = diagnoseAxiosError(error)
   const networkInfo = errorCategory !== 'success' ? getNetworkQualityInfo() : {}
@@ -145,7 +140,7 @@ function reportRequestError(error: unknown) {
     properties: {
       api_url: requestUrl,
       api_method: String(config?.method || '').toUpperCase(),
-      api_status: responseStatus ?? -1,
+      api_status: responseStatus,
       api_code: typeof responseData?.code === 'number' ? responseData.code : String(responseData?.code || ''),
       api_business_status:
         typeof responseData?.status === 'number' ? responseData.status : String(responseData?.status || ''),
@@ -197,21 +192,21 @@ function getRequestUrl(config?: AxiosRequestConfig) {
 }
 
 function getResponseHeaderValue(headers: unknown, key: string) {
-  if (!headers || typeof headers !== 'object') return ''
+  if (!headers) return ''
 
-  const targetKey = key.toLowerCase()
-
-  for (const [headerKey, headerValue] of Object.entries(headers)) {
-    if (headerKey.toLowerCase() !== targetKey) continue
-    if (Array.isArray(headerValue)) return headerValue.join(',')
-    return headerValue == null ? '' : String(headerValue)
-  }
-
-  return ''
+  const headerValue = AxiosHeaders.from(headers as any).get(key)
+  if (Array.isArray(headerValue)) return headerValue.join(',')
+  return headerValue == null ? '' : String(headerValue)
 }
 
 function truncateText(value: string, maxLength = 2000) {
   return value.slice(0, maxLength)
+}
+
+function getResponseMessage(responseData: Dict | undefined, fallbackMessage: string) {
+  if (typeof responseData?.message === 'string' && responseData.message) return responseData.message
+  if (typeof responseData?.msg === 'string' && responseData.msg) return responseData.msg
+  return fallbackMessage || 'request failed'
 }
 
 const BODY_REQUEST_METHODS = ['post', 'put', 'patch', 'delete']
