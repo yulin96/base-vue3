@@ -2,6 +2,7 @@
 @import './base.css';
 @import './plugins.css';
 @import './transitions.css';
+@import './animate/popup.css';
 
 #app {
   -webkit-font-smoothing: antialiased;

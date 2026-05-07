@@ -41,8 +41,8 @@
 
 .scale-enter-active {
   transition:
-    opacity 0.28s cubic-bezier(0.18, 0.9, 0.3, 1.2),
-    transform 0.3s cubic-bezier(0.18, 0.9, 0.3, 1.2);
+    opacity 0.28s var(--ease-out-back),
+    transform 0.3s var(--ease-out-back);
   position: absolute;
 }
 
@@ -53,8 +53,8 @@
 
 .scale-leave-active {
   transition:
-    opacity 0.25s cubic-bezier(0.6, -0.28, 0.735, 0.045),
-    transform 0.26s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    opacity 0.25s var(--ease-in-back),
+    transform 0.26s var(--ease-in-back);
   position: absolute;
 }
 

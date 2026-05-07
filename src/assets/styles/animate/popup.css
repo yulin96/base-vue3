@@ -1,0 +1,142 @@
+/* 默认弹出：中间位置轻微放大回弹进入 */
+.popup-enter-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s var(--ease-out-back) !important;
+}
+
+/* 默认收起：中间位置缩小淡出离场 */
+.popup-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s ease !important;
+}
+
+.popup-enter-from {
+  opacity: 0 !important;
+  transform: translateY(-50%) scale(0.8) !important;
+}
+
+.popup-leave-to {
+  opacity: 0 !important;
+  transform: translateY(-50%) scale(0.6) !important;
+}
+
+/* 底部弹出：从下方上移进入 */
+.popup-bottom-enter-active,
+.popup-bottom-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s ease !important;
+}
+
+.popup-bottom-enter-from,
+.popup-bottom-leave-to {
+  opacity: 0 !important;
+  transform: translateY(calc(-50% + 120px)) !important;
+}
+
+/* 顶部弹出：从上方下移进入 */
+.popup-top-enter-active,
+.popup-top-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s ease !important;
+}
+
+.popup-top-enter-from,
+.popup-top-leave-to {
+  opacity: 0 !important;
+  transform: translateY(calc(-50% - 120px)) !important;
+}
+
+/* 上下双向：进入和离开方向相反，适合切换型弹层 */
+.popup-top-bottom-enter-active,
+.popup-top-bottom-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s ease !important;
+}
+
+.popup-top-bottom-enter-from {
+  opacity: 0 !important;
+  transform: translateY(calc(-50% - 120px)) !important;
+}
+
+.popup-top-bottom-leave-to {
+  opacity: 0 !important;
+  transform: translateY(calc(-50% + 120px)) !important;
+}
+
+/* 缩放翻转：带轻微 3D 倾斜的弹出 */
+.popup-scale-enter-active,
+.popup-scale-leave-active {
+  transition:
+    opacity 0.36s ease,
+    transform 0.36s ease !important;
+}
+
+.popup-scale-enter-from {
+  opacity: 0 !important;
+  transform: translateY(calc(-50%)) rotateX(36deg) !important;
+}
+
+.popup-scale-leave-to {
+  opacity: 0 !important;
+  transform: translateY(calc(-50%)) rotateX(36deg) !important;
+}
+
+/* 反向缩放翻转：与上一个方向相反的 3D 弹出 */
+.popup-scale-to-enter-active,
+.popup-scale-to-leave-active {
+  transition:
+    opacity 0.36s ease,
+    transform 0.36s ease !important;
+}
+
+.popup-scale-to-enter-from {
+  opacity: 0 !important;
+  transform: translateY(calc(-50%)) rotateX(-36deg) !important;
+}
+
+.popup-scale-to-leave-to {
+  opacity: 0 !important;
+  transform: translateY(calc(-50%)) rotateX(-36deg) !important;
+}
+
+/* 摆动弹出：顶部支点回弹，像挂着晃出来 */
+.popup-swing-enter-active {
+  transform-origin: top center !important;
+  transition:
+    opacity 0.36s ease,
+    transform 0.36s var(--ease-out-back) !important;
+}
+.popup-swing-leave-active {
+  transform-origin: top center !important;
+  transition:
+    opacity 0.36s ease,
+    transform 0.36s ease !important;
+}
+
+.popup-swing-enter-from,
+.popup-swing-leave-to {
+  opacity: 0 !important;
+  transform: translateY(-56%) rotateX(-50deg) !important;
+}
+
+/* 缩放模糊：放大 + 模糊进入，适合强调层 */
+.popup-scale-blur-enter-active,
+.popup-scale-blur-leave-active {
+  transform-origin: top center !important;
+  transition:
+    opacity 0.36s ease,
+    transform 0.36s ease,
+    filter 0.36s ease !important;
+}
+
+.popup-scale-blur-enter-from,
+.popup-scale-blur-leave-to {
+  opacity: 0 !important;
+  transform: translateY(-56%) scale(1.1) !important;
+  filter: blur(6px) !important;
+}

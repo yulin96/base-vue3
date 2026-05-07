@@ -146,6 +146,41 @@
   --animate-fruit-swing: fruit-swing 2s ease-in-out infinite;
 }
 
+@theme {
+  /* 回弹进入：适合弹窗、按钮、卡片放大 */
+  --ease-out-back: cubic-bezier(0.18, 0.9, 0.3, 1.2);
+
+  /* 回弹收尾：适合收起、退出、缩回 */
+  --ease-in-back: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+
+  /* 柔和减速：适合通用过渡，比较稳 */
+  --ease-out-sine: cubic-bezier(0.39, 0.575, 0.565, 1);
+
+  /* 先快后慢：适合轻量进入，节奏更干净 */
+  --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* 标准进入：适合大多数通用过渡 */
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+
+  /* 标准退出：适合轻量回收、收起 */
+  --ease-in-cubic: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+
+  /* 平衡进出：适合列表、弹层、状态切换 */
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  /* 强收尾：适合更有力度的收缩和淡出 */
+  --ease-in-quart: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+
+  /* 强进入：适合强调性入场 */
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* 快速冲刺：适合短距离位移和快速显现 */
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+
+  /* 快速收束：适合突然收回或结束 */
+  --ease-in-expo: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+}
+
 @keyframes handle {
   0%,
   30%,
