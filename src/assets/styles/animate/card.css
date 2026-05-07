@@ -1,0 +1,260 @@
+/* 呼吸：轻微缩放，适合状态提示、在线指示、卡片待机感 */
+@utility card-breathe {
+  animation: card-breathe 2.4s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* 强调：更强一点的脉冲，适合提醒用户注意 */
+@utility card-emphasis {
+  animation: card-emphasis 1.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  will-change: transform, opacity;
+}
+
+/* 摆动：围绕顶部轻摆，适合挂件、标签、提示卡 */
+@utility card-swing {
+  transform-origin: top center;
+  animation: card-swing 1.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* 漂浮：轻微上下浮动，适合空状态或装饰元素 */
+@utility card-float {
+  animation: card-float 2.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* 脉冲：轻微放大缩小，适合提示、强调、待办状态 */
+@utility card-pulse {
+  animation: card-pulse 1.8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* 摇摆：左右轻晃，适合挂件、标签、提醒点 */
+@utility card-wobble {
+  animation: card-wobble 2.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* 漂移：更慢一点的上下位移，适合背景装饰 */
+@utility card-drift {
+  animation: card-drift 4.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* 轻旋：缓慢旋转，适合图标、徽章、装饰卡片 */
+@utility card-rotate-slow {
+  animation: card-rotate-slow 10s linear infinite;
+  will-change: transform;
+}
+
+/* 悬浮感：持续轻轻上提，适合按钮、卡片、提示面板 */
+@utility card-hover-lift {
+  animation: card-hover-lift 2.6s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+/* 轻微倾斜：来回小幅转动，适合插画、徽章、装饰卡片 */
+@utility card-tilt {
+  transform-origin: center center;
+  animation: card-tilt 3.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes card-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes card-emphasis {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.06);
+    opacity: 0.96;
+  }
+}
+
+@keyframes card-swing {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-4deg);
+  }
+
+  50% {
+    transform: rotate(3deg);
+  }
+
+  75% {
+    transform: rotate(-2deg);
+  }
+}
+
+@keyframes card-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes card-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.94;
+  }
+}
+
+@keyframes card-wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  20% {
+    transform: rotate(-2deg);
+  }
+
+  40% {
+    transform: rotate(2deg);
+  }
+
+  60% {
+    transform: rotate(-1.5deg);
+  }
+
+  80% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes card-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes card-rotate-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes card-glow {
+  0%,
+  100% {
+    opacity: 0.38;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 0.82;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes card-shine {
+  0% {
+    transform: translateX(-140%) skewX(-18deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateX(140%) skewX(-18deg);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateX(140%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@keyframes card-hover-lift {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-6px) scale(1.01);
+  }
+}
+
+@keyframes card-tilt {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-2.5deg);
+  }
+
+  50% {
+    transform: rotate(0.5deg);
+  }
+
+  75% {
+    transform: rotate(2.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-breathe,
+  .card-emphasis,
+  .card-swing,
+  .card-float,
+  .card-pulse,
+  .card-wobble,
+  .card-drift,
+  .card-rotate-slow,
+  .card-glow,
+  .card-shine,
+  .card-hover-lift,
+  .card-tilt {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .card-glow::after,
+  .card-shine::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
