@@ -11,7 +11,7 @@ useGsapContext('.index', () => {
 
 const test = () => {
   animate('[t1]', {
-    innerHTML: scrambleText({ text: '山外青山楼外楼，' }),
+    innerHTML: scrambleText({ text: '山外青山楼外楼，', chars: 'blocks' }),
   })
   animate('[t2]', {
     innerHTML: scrambleText({
@@ -38,7 +38,7 @@ const test = () => {
       override: '',
       chars: 'blocks',
       text: '交交桑扈，有莺其羽。君子乐胥，受天之祜。',
-      revealRate: 50,
+      revealRate: 1,
       perturbation: 1,
       duration: 1000,
     }),
