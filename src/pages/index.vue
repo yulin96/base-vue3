@@ -18,6 +18,7 @@ const test = () => {
       text: '西湖歌舞几时休？西湖歌舞几时休？西湖歌舞几时休？',
       chars: 'blocks',
       revealRate: 100,
+      override: true,
     }),
   })
   animate('[t3]', {
