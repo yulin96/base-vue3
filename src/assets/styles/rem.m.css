@@ -1,0 +1,44 @@
+html.cover,
+.cover body {
+  position: relative;
+  /* width: 750px; */
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+#app {
+  font-size: calc(var(--base-scale, 1) * 28 * 1px);
+}
+
+.cover #app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.scroll-box {
+  width: 100%;
+  height: 100%;
+  /* overscroll-behavior: none; */
+}
+
+.cover .scroll-box {
+  width: 100%;
+  height: 100%;
+  min-height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.content {
+  width: 100%;
+  min-height: 100vh;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  z-index: 0;
+
+  /* overscroll-behavior: none; */
+}

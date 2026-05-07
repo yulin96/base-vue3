@@ -31,15 +31,6 @@ body {
   text-autospace: normal;
 }
 
-html.cover,
-.cover body {
-  position: relative;
-  /* width: 750px; */
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: hidden;
-}
-
 select option {
   background: #fff;
   color: #000;
