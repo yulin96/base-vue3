@@ -11,6 +11,9 @@ importers:
       '@iconify/vue':
         specifier: ^5.0.1
         version: 5.0.1(vue@3.5.34(typescript@5.9.3))
+      '@lucide/vue':
+        specifier: ^1.14.0
+        version: 1.14.0(vue@3.5.34(typescript@5.9.3))
       '@number-flow/vue':
         specifier: ^0.5.0
         version: 0.5.0(vue@3.5.34(typescript@5.9.3))
@@ -1470,6 +1473,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lucide/vue@1.14.0':
+    resolution: {integrity: sha512-0s2fsXJGXYqcuyigsRtoTPqbeGGFOiLTYMDFfYvWO4rQNOongaJe1XDiExOLiybbI9+uQPBr5aGoiCdQNlSfQg==}
+    peerDependencies:
+      vue: '>=3.0.1'
 
   '@minko-fe/lodash-pro@0.3.3':
     resolution: {integrity: sha512-vK9JXI0THoB4myxhJAahqjP84PCmzdaXJgnb1+NfxLEAHClqPrOnUY2rh5RqU1+BAfsFaj3F4ErVw3h1kzzWeA==}
@@ -5454,6 +5462,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lucide/vue@1.14.0(vue@3.5.34(typescript@5.9.3))':
+    dependencies:
+      vue: 3.5.34(typescript@5.9.3)
 
   '@minko-fe/lodash-pro@0.3.3':
     dependencies:
