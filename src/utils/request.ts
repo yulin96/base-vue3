@@ -50,7 +50,7 @@ export const axiosPost = <T = any>(
   url: string,
   data?: Dict,
   config?: AxiosRequestConfig,
-  dataType: IFormDataOrJSON = 'FormData',
+  dataType: IFormDataOrJSON = 'JSON',
 ): Promise<T> => {
   return instance
     .post(url, data, {

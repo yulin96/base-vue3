@@ -75,7 +75,7 @@ export const goBack = (fallbackPath?: RouteLocationRaw) => {
     return router.replace(fallbackPath)
   }
 
-  return router.replace('/home')
+  return router.replace({ name: '/' })
 }
 
 declare module 'vue-router' {
