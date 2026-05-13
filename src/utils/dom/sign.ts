@@ -29,9 +29,9 @@ export default class LineCanvas {
     this.cxt = ctx
     this.ctxInit()
 
-    this.canvas.addEventListener('touchstart', (e) => this.touchstart(e), false)
-    this.canvas.addEventListener('touchmove', (e) => this.touchmove(e), false)
-    this.canvas.addEventListener('touchend', () => this.touchend(), false)
+    this.canvas.addEventListener('touchstart', this.touchstart, false)
+    this.canvas.addEventListener('touchmove', this.touchmove, false)
+    this.canvas.addEventListener('touchend', this.touchend, false)
   }
 
   // 初始化绘画的线条
@@ -93,7 +93,7 @@ export default class LineCanvas {
     this.canvas.removeEventListener('touchstart', this.touchstart, false)
     this.canvas.removeEventListener('touchmove', this.touchmove, false)
     this.canvas.removeEventListener('touchend', this.touchend, false)
-    this.el.removeChild(this.canvas)
+    this.canvas.remove()
   }
 
   // 保存为图片

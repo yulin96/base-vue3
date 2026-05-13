@@ -1,17 +1,22 @@
 import Lottie from 'lottie-web'
 
-fetch('https://oss.eventnet.cn/H5/zz/public/lotties/btn/btn3.json')
+const LOTTIE_URL = 'https://oss.eventnet.cn/H5/zz/public/lotties/btn/btn3.json'
+let bodyRegistered = false
+
+fetch(LOTTIE_URL)
   .then((res) => res.json())
   .then((res) => {
     window['loadingLottieJson'] = res
   })
 
-const registerBody = () => {
+export const registerBodyLottie = () => {
+  if (bodyRegistered) return
+  bodyRegistered = true
+
   document.body.addEventListener('click', (e) => {
     const target = e.target
-    target instanceof HTMLElement &&
-      (target.hasAttribute('effect') || target?.parentElement?.hasAttribute('effect')) &&
-      showLottie(e)
+    if (!(target instanceof HTMLElement) || !target.closest('[effect]')) return
+    showLottie(e)
   })
 }
 
@@ -36,13 +41,11 @@ export function showLottie(e: MouseEvent) {
     renderer: 'canvas',
     ...(window['loadingLottieJson']
       ? { animationData: window['loadingLottieJson'] }
-      : { path: 'https://oss.eventnet.cn/H5/zz/public/lotties/btn/btn3.json' }),
+      : { path: LOTTIE_URL }),
   })
   animation.setSpeed(1.6)
 
   animation.addEventListener('complete', () => {
-    document.body.removeChild(div)
+    div.remove()
   })
-
-  registerBody()
 }

@@ -9,8 +9,14 @@ import { v4 } from 'uuid'
  * @returns 返回一个 Promise，该 Promise 在用户选择图片后解析为 File 对象
  */
 export function getUserImage(option?: Compressor.Options) {
-  return new Promise<File | void>((resolve, reject) => {
+  return new Promise<File | void>((resolve) => {
     const input = document.createElement('input')
+    const cleanup = () => {
+      input.onchange = null
+      input.oncancel = null
+      input.remove()
+    }
+
     document.body.appendChild(input)
     input.type = 'file'
     input.accept = 'image/*'
@@ -22,25 +28,24 @@ export function getUserImage(option?: Compressor.Options) {
 
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
-      if (!file) return
-      if (file) {
-        compressPhoto(file, option)
-          .then((f) => {
-            resolve(blobToFile(f, `${v4()}.jpg`))
-          })
-          .catch((err) => {
-            infoToast('请上传有效的图片文件')
-            resolve()
-          })
-          .finally(() => {
-            document.body.removeChild(input)
-          })
-      } else {
-        document.body.removeChild(input)
-        reject(new Error('No file selected'))
+      if (!file) {
+        cleanup()
+        resolve()
+        return
       }
+
+      compressPhoto(file, option)
+        .then((f) => {
+          resolve(blobToFile(f, `${v4()}.jpg`))
+        })
+        .catch(() => {
+          infoToast('请上传有效的图片文件')
+          resolve()
+        })
+        .finally(cleanup)
     }
-    input.oncancel = (e) => {
+    input.oncancel = () => {
+      cleanup()
       resolve()
     }
     input.click()
@@ -50,6 +55,12 @@ export function getUserImage(option?: Compressor.Options) {
 export function getUserVideo() {
   return new Promise<File | void>((resolve) => {
     const input = document.createElement('input')
+    const cleanup = () => {
+      input.onchange = null
+      input.oncancel = null
+      input.remove()
+    }
+
     document.body.appendChild(input)
     input.type = 'file'
     input.accept = 'video/*'
@@ -57,9 +68,16 @@ export function getUserVideo() {
 
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
-      if (!file) return resolve()
+      cleanup()
+      if (!file) {
+        resolve()
+        return
+      }
       resolve(file)
-      document.body.removeChild(input)
+    }
+    input.oncancel = () => {
+      cleanup()
+      resolve()
     }
     input.click()
   })
@@ -68,6 +86,12 @@ export function getUserVideo() {
 export function getUserFile(accept = '*') {
   return new Promise<File | void>((resolve) => {
     const input = document.createElement('input')
+    const cleanup = () => {
+      input.onchange = null
+      input.oncancel = null
+      input.remove()
+    }
+
     document.body.appendChild(input)
     input.type = 'file'
     input.accept = accept
@@ -75,10 +99,16 @@ export function getUserFile(accept = '*') {
 
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
-      if (!file) return resolve()
+      cleanup()
+      if (!file) {
+        resolve()
+        return
+      }
       resolve(file)
-
-      document.body.removeChild(input)
+    }
+    input.oncancel = () => {
+      cleanup()
+      resolve()
     }
     input.click()
   })

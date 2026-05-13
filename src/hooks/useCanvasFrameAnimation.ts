@@ -56,6 +56,10 @@ interface DrawParams {
 }
 
 export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
+  if (!options.frames?.length) {
+    throw new Error('frames must contain at least one item')
+  }
+
   const {
     frames,
     fps = 30,
@@ -70,13 +74,24 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     loadConcurrency = 6,
   } = options
 
-  // 验证并修正循环参数
   const maxFrameIndex = frames.length - 1
-  const validLoopStart = Math.max(0, Math.min(loopStart, maxFrameIndex))
-  const validLoopEnd = Math.max(0, Math.min(loopEnd, maxFrameIndex))
+  const validCoverFrame = Math.max(0, Math.min(coverFrame, maxFrameIndex))
+  const validStartFrame = Math.max(0, Math.min(startFrame, maxFrameIndex))
+  const boundedLoopStart = Math.max(0, Math.min(loopStart, maxFrameIndex))
+  const boundedLoopEnd = Math.max(0, Math.min(loopEnd, maxFrameIndex))
+  const validLoopStart = Math.min(boundedLoopStart, boundedLoopEnd)
+  const validLoopEnd = Math.max(boundedLoopStart, boundedLoopEnd)
+  const validLoadConcurrency = Math.max(1, loadConcurrency)
 
-  // 如果用户设置的循环范围超出了图片范围，给出警告
-  if (loopStart > maxFrameIndex || loopEnd > maxFrameIndex) {
+  if (coverFrame !== validCoverFrame) {
+    console.warn(`封面帧超出图片数量范围。图片数量: ${frames.length}, 已修正为: ${validCoverFrame}`)
+  }
+
+  if (startFrame !== validStartFrame) {
+    console.warn(`起始帧超出图片数量范围。图片数量: ${frames.length}, 已修正为: ${validStartFrame}`)
+  }
+
+  if (loopStart !== validLoopStart || loopEnd !== validLoopEnd) {
     console.warn(`循环范围超出图片数量范围。图片数量: ${frames.length}, 有效索引: 0-${maxFrameIndex}`)
     console.warn(`原始设置: loopStart=${loopStart}, loopEnd=${loopEnd}`)
     console.warn(`修正后: loopStart=${validLoopStart}, loopEnd=${validLoopEnd}`)
@@ -87,7 +102,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   // 状态管理
   const state = reactive<FrameAnimationState>({
-    currentFrame: coverFrame,
+    currentFrame: validCoverFrame,
     isPlaying: false,
     isLoaded: false,
     loadProgress: 0,
@@ -264,9 +279,9 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
             failedFrames.delete(index)
             markFrameProcessed()
 
-            if (index === coverFrame) {
+            if (index === validCoverFrame) {
               images[index] = img
-              nextTick(() => drawFrame(coverFrame))
+              nextTick(() => drawFrame(validCoverFrame))
             }
 
             resolve(img)
@@ -281,12 +296,12 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
             failedFrames.add(index)
             markFrameProcessed()
 
-            const fallback = images[index - 1] ?? images[coverFrame] ?? null
+            const fallback = images[index - 1] ?? images[validCoverFrame] ?? null
             console.warn(`Failed to load frame ${index}: ${frame}`)
 
-            if (index === coverFrame) {
+            if (index === validCoverFrame) {
               images[index] = fallback
-              nextTick(() => drawFrame(coverFrame))
+              nextTick(() => drawFrame(validCoverFrame))
             }
 
             resolve(fallback)
@@ -305,9 +320,9 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
           if (frame instanceof HTMLImageElement) {
             failedFrames.delete(index)
             markFrameProcessed()
-            if (index === coverFrame) {
+            if (index === validCoverFrame) {
               images[index] = frame
-              nextTick(() => drawFrame(coverFrame))
+              nextTick(() => drawFrame(validCoverFrame))
             }
             resolve(frame)
             return
@@ -324,19 +339,19 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       const frameList = frames.map((frame, index) => ({ frame, index }))
 
       // 优先单独加载封面帧，保证首屏快速显示
-      const coverItem = frameList[coverFrame]
-      const otherItems = frameList.filter((_, i) => i !== coverFrame)
+      const coverItem = frameList[validCoverFrame]
+      const otherItems = frameList.filter((_, i) => i !== validCoverFrame)
 
       // 先加载封面帧
       const [coverImg] = await loadBatch([coverItem])
-      images[coverFrame] = coverImg
+      images[validCoverFrame] = coverImg
 
       // 再分批并发加载其余帧
       const results: Array<HTMLImageElement | null> = new Array(frames.length).fill(null)
-      results[coverFrame] = coverImg
+      results[validCoverFrame] = coverImg
 
-      for (let i = 0; i < otherItems.length; i += loadConcurrency) {
-        const batch = otherItems.slice(i, i + loadConcurrency)
+      for (let i = 0; i < otherItems.length; i += validLoadConcurrency) {
+        const batch = otherItems.slice(i, i + validLoadConcurrency)
         const batchResults = await loadBatch(batch)
         batchResults.forEach((img, batchIdx) => {
           results[otherItems[i + batchIdx].index] = img
@@ -348,7 +363,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       images = results
 
       if (autoplay && !state.isPlaying && !suppressAutoplay) {
-        play(startFrame)
+        play(validStartFrame)
       }
 
       return results
@@ -444,7 +459,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
         if (nextFrame > validLoopEnd) {
           if (loop) {
             if (loopCount > 0 && state.completedLoops >= loopCount) {
-              state.currentFrame = coverFrame
+              state.currentFrame = validCoverFrame
               state.completedLoops = 0
               drawFrame(state.currentFrame)
               finishPlayback(true)
@@ -453,7 +468,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
             nextFrame = validLoopStart
             state.completedLoops++
           } else {
-            state.currentFrame = coverFrame
+            state.currentFrame = validCoverFrame
             state.completedLoops = 0
             drawFrame(state.currentFrame)
             finishPlayback(true)
@@ -516,7 +531,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   const stop = () => {
     finishPlayback(false)
-    state.currentFrame = coverFrame
+    state.currentFrame = validCoverFrame
     state.completedLoops = 0
     drawFrame(state.currentFrame)
   }
@@ -588,7 +603,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   const reset = () => {
     stop()
     state.completedLoops = 0
-    goToFrame(coverFrame)
+    goToFrame(validCoverFrame)
   }
 
   // 🔴 优化1：setFps 同步更新缓存的帧间隔
@@ -631,14 +646,14 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       preloadImages().catch(console.error)
 
       // 如果封面帧已经是 HTMLImageElement，立即绘制
-      if (frames[coverFrame] instanceof HTMLImageElement) {
-        images[coverFrame] = frames[coverFrame] as HTMLImageElement
+      if (frames[validCoverFrame] instanceof HTMLImageElement) {
+        images[validCoverFrame] = frames[validCoverFrame] as HTMLImageElement
         await nextTick()
-        drawFrame(coverFrame)
+        drawFrame(validCoverFrame)
       }
 
       if (state.isLoaded && autoplay) {
-        play(startFrame)
+        play(validStartFrame)
       }
     } catch (error) {
       console.error('Failed to initialize frame animation:', error)
