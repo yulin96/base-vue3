@@ -10,7 +10,7 @@ const {
   search = false,
 } = defineProps<{
   title?: string
-  columns?: PickerOption[]
+  columns: PickerOption[]
   search?: boolean
 }>()
 

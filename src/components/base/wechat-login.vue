@@ -3,7 +3,7 @@ import { toUrl } from '@/config/urls'
 import { getOpenId } from '@/utils/platform/getOpenId'
 import { onMounted, ref } from 'vue'
 
-const { url, auto = false } = defineProps<{ url?: string; auto?: boolean }>()
+const { url, auto = false } = defineProps<{ url: string; auto?: boolean }>()
 
 const show = ref(false)
 
