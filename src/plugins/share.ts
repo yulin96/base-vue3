@@ -10,5 +10,22 @@ export async function registerWechatShare() {
 
   const { wechatShare } = await import('@/utils/platform/wechat')
 
-  wechatShare({ title, desc, link, imgUrl })
+  wechatShare({ title, desc, link: getShareLinkWithTimestamp(link), imgUrl })
+}
+
+function getShareLinkWithTimestamp(link?: string): string {
+  const rawLink = link || location.href.split('#')[0] || ''
+  if (!rawLink) return ''
+
+  try {
+    const url = new URL(rawLink, location.origin)
+    url.searchParams.set('t', Date.now().toString())
+    return url.toString()
+  } catch {
+    const [urlWithoutHash, hash = ''] = rawLink.split('#')
+    const separator = urlWithoutHash.includes('?') ? '&' : '?'
+    const nextUrl = `${urlWithoutHash}${separator}t=${Date.now()}`
+
+    return hash ? `${nextUrl}#${hash}` : nextUrl
+  }
 }
