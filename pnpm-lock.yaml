@@ -18,8 +18,8 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0(vue@3.5.34(typescript@5.9.3))
       '@tsparticles/engine':
-        specifier: ^3.9.1
-        version: 3.9.1
+        specifier: ^4.0.1
+        version: 4.0.1
       '@vant/area-data':
         specifier: ^2.1.0
         version: 2.1.0
@@ -1748,8 +1748,8 @@ packages:
   '@tsconfig/node24@24.0.4':
     resolution: {integrity: sha512-2A933l5P5oCbv6qSxHs7ckKwobs8BDAe9SJ/Xr2Hy+nDlwmLE1GhFh/g/vXGRZWgxBg9nX/5piDtHR9Dkw/XuA==}
 
-  '@tsparticles/engine@3.9.1':
-    resolution: {integrity: sha512-DpdgAhWMZ3Eh2gyxik8FXS6BKZ8vyea+Eu5BC4epsahqTGY9V3JGGJcXC6lRJx6cPMAx1A0FaQAojPF3v6rkmQ==}
+  '@tsparticles/engine@4.0.1':
+    resolution: {integrity: sha512-QshPLBIaxt4kenOtyK6X8fFKYxP4gHLGVeNMMrHgvhZMZxbpRympon4j/GfoPMdoq0FDEmp8xhqaceL5UIUGAg==}
 
   '@tybys/wasm-util@0.10.2':
     resolution: {integrity: sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg==}
@@ -5706,7 +5706,7 @@ snapshots:
 
   '@tsconfig/node24@24.0.4': {}
 
-  '@tsparticles/engine@3.9.1': {}
+  '@tsparticles/engine@4.0.1': {}
 
   '@tybys/wasm-util@0.10.2':
     dependencies:
