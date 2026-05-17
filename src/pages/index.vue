@@ -28,15 +28,20 @@ const cards = [
 ]
 
 const activeIndex = ref(-1)
+const contentRef = ref<HTMLElement>()
 const dragOffset = ref(0)
 const touchStartY = ref(0)
 const isDragging = ref(false)
+const activePointerId = ref<number>()
+const suppressClickUntil = ref(0)
 const wheelLocked = ref(false)
 const visualScale = ref(1)
-const topZoneHeight = 392
+const topZoneHeight = 300
+let resizeObserver: ResizeObserver | null = null
 
 const updateVisualScale = () => {
-  visualScale.value = Math.min(window.innerWidth, 750) / 750
+  const width = contentRef.value?.getBoundingClientRect().width || Math.min(window.innerWidth, 750)
+  visualScale.value = width / 750
 }
 
 const clampIndex = (index: number) => Math.max(0, Math.min(cards.length - 1, index))
@@ -46,10 +51,14 @@ const showCard = (index: number) => {
 }
 
 const resetCards = () => {
+  if (Date.now() < suppressClickUntil.value) return
+
   activeIndex.value = -1
 }
 
 const onCardClick = (index: number) => {
+  if (Date.now() < suppressClickUntil.value) return
+
   if (activeIndex.value === index) {
     infoToast(`点击了${cards[index].title}`)
     return
@@ -101,27 +110,38 @@ const onPointerDown = (event: PointerEvent) => {
   if (event.pointerType === 'mouse' && event.button !== 0) return
 
   isDragging.value = true
+  activePointerId.value = event.pointerId
   touchStartY.value = event.clientY
   dragOffset.value = 0
 }
 
 const onPointerMove = (event: PointerEvent) => {
-  if (!isDragging.value) return
+  if (!isDragging.value || event.pointerId !== activePointerId.value) return
 
   const deltaY = event.clientY - touchStartY.value
   dragOffset.value = Math.max(-42, Math.min(42, deltaY * 0.22))
 }
 
 const onPointerUp = (event: PointerEvent) => {
-  if (!isDragging.value) return
+  if (!isDragging.value || event.pointerId !== activePointerId.value) return
 
   const deltaY = event.clientY - touchStartY.value
   isDragging.value = false
+  activePointerId.value = undefined
   dragOffset.value = 0
 
-  if (Math.abs(deltaY) < 42) return
+  if (Math.abs(deltaY) < 28) return
 
+  suppressClickUntil.value = Date.now() + 220
   moveCard(deltaY < 0 ? 1 : -1)
+}
+
+const onPointerCancel = (event: PointerEvent) => {
+  if (event.pointerId !== activePointerId.value) return
+
+  isDragging.value = false
+  activePointerId.value = undefined
+  dragOffset.value = 0
 }
 
 const onWheel = (event: WheelEvent) => {
@@ -139,11 +159,22 @@ const onWheel = (event: WheelEvent) => {
 
 onMounted(() => {
   updateVisualScale()
+  if (contentRef.value) {
+    resizeObserver = new ResizeObserver(updateVisualScale)
+    resizeObserver.observe(contentRef.value)
+  }
   window.addEventListener('resize', updateVisualScale)
+  window.addEventListener('pointermove', onPointerMove)
+  window.addEventListener('pointerup', onPointerUp)
+  window.addEventListener('pointercancel', onPointerCancel)
 })
 
 onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
   window.removeEventListener('resize', updateVisualScale)
+  window.removeEventListener('pointermove', onPointerMove)
+  window.removeEventListener('pointerup', onPointerUp)
+  window.removeEventListener('pointercancel', onPointerCancel)
 })
 </script>
 
@@ -153,11 +184,11 @@ onBeforeUnmount(() => {
       class="scroll-box index"
       @pointerdown="onPointerDown"
       @pointermove="onPointerMove"
-      @pointercancel="onPointerUp"
+      @pointercancel="onPointerCancel"
       @pointerup="onPointerUp"
       @wheel="onWheel"
     >
-      <main class="content">
+      <main ref="contentRef" class="content">
         <div class="top-zone center" @click="resetCards">
           <img class="h-180" src="../assets/images/kv.png" />
         </div>
