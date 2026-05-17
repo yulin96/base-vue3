@@ -1,18 +1,299 @@
 <script setup lang="ts">
-import { useGsapContext } from '@/hooks/useGsapContext'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+
+import cardWhitePaper from '@/assets/images/download-1.png'
+import cardLivePhotos from '@/assets/images/download-2.png'
+import cardTips from '@/assets/images/download-3.png'
+import cardGuide from '@/assets/images/download-4.png'
+import cardAgenda from '@/assets/images/download-5.png'
+import cardQuestion from '@/assets/images/download.png'
 
 defineOptions({ name: 'Index' })
 definePage({ meta: { index: 10 } })
 
-useGsapContext('.index', () => {
-  gsap.timeline({ delay: 0.5 })
+const cards = [
+  { title: 'QUESTION NAIRE', image: cardQuestion },
+  { title: 'WHITE PAPER', image: cardWhitePaper },
+  { title: 'LIVE PHOTOS', image: cardLivePhotos },
+  { title: 'TIPS', image: cardTips },
+  { title: 'EXHIBITION GUIDE', image: cardGuide },
+  { title: 'AGENDA', image: cardAgenda },
+]
+
+const activeIndex = ref(-1)
+const dragOffset = ref(0)
+const touchStartY = ref(0)
+const isDragging = ref(false)
+const wheelLocked = ref(false)
+const visualScale = ref(1)
+const topZoneHeight = 392
+
+const updateVisualScale = () => {
+  visualScale.value = Math.min(window.innerWidth, 750) / 750
+}
+
+const clampIndex = (index: number) => Math.max(0, Math.min(cards.length - 1, index))
+
+const showCard = (index: number) => {
+  activeIndex.value = clampIndex(index)
+}
+
+const moveCard = (direction: 1 | -1) => {
+  if (activeIndex.value === -1) {
+    showCard(0)
+    return
+  }
+
+  showCard(activeIndex.value + direction)
+}
+
+const getCardY = (index: number) => {
+  if (activeIndex.value === -1) {
+    return 430 - topZoneHeight + index * 165
+  }
+
+  const firstVisibleBefore = Math.max(activeIndex.value - 2, 0)
+  const activeY = 450 - topZoneHeight + (activeIndex.value - firstVisibleBefore) * 185
+
+  if (index <= activeIndex.value) {
+    return 450 - topZoneHeight + (index - firstVisibleBefore) * 185
+  }
+
+  return activeY + 500 + (index - activeIndex.value - 1) * 165
+}
+
+const cardStyles = computed(() =>
+  cards.map((_, index) => {
+    const isActive = index === activeIndex.value
+    const isHidden = activeIndex.value > 1 && index < activeIndex.value - 2
+    const drag = isActive ? dragOffset.value : dragOffset.value * 0.18
+    const scale = isHidden ? 0.88 : isActive ? 1.12 : 1
+
+    return {
+      zIndex: 20 + index,
+      opacity: isHidden ? 0 : 1,
+      transform: `translate3d(0, ${(getCardY(index) + drag) * visualScale.value}px, 0) scale(${scale})`,
+    }
+  }),
+)
+
+const onPointerDown = (event: PointerEvent) => {
+  if (event.pointerType === 'mouse' && event.button !== 0) return
+
+  isDragging.value = true
+  touchStartY.value = event.clientY
+  dragOffset.value = 0
+}
+
+const onPointerMove = (event: PointerEvent) => {
+  if (!isDragging.value) return
+
+  const deltaY = event.clientY - touchStartY.value
+  dragOffset.value = Math.max(-42, Math.min(42, deltaY * 0.22))
+}
+
+const onPointerUp = (event: PointerEvent) => {
+  if (!isDragging.value) return
+
+  const deltaY = event.clientY - touchStartY.value
+  isDragging.value = false
+  dragOffset.value = 0
+
+  if (Math.abs(deltaY) < 42) return
+
+  moveCard(deltaY < 0 ? 1 : -1)
+}
+
+const onWheel = (event: WheelEvent) => {
+  event.preventDefault()
+
+  if (wheelLocked.value || Math.abs(event.deltaY) < 8) return
+
+  wheelLocked.value = true
+  moveCard(event.deltaY > 0 ? 1 : -1)
+
+  window.setTimeout(() => {
+    wheelLocked.value = false
+  }, 640)
+}
+
+onMounted(() => {
+  updateVisualScale()
+  window.addEventListener('resize', updateVisualScale)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateVisualScale)
 })
 </script>
 
 <template>
   <div class="size-full">
-    <section class="scroll-box index">
-      <main class="content"></main>
+    <section
+      class="scroll-box index"
+      @pointerdown="onPointerDown"
+      @pointermove="onPointerMove"
+      @pointercancel="onPointerUp"
+      @pointerup="onPointerUp"
+      @wheel="onWheel"
+    >
+      <main class="content">
+        <div class="top-zone">
+          <header class="brand">
+            <div class="brand-main">ECO<br />· NEXUS³</div>
+            <div class="brand-side">
+              <span>小红书</span>
+              <strong>TE-CHIC<br />潮数码</strong>
+            </div>
+            <p>小红书TE-CHIC潮数码行业高层私享会</p>
+          </header>
+        </div>
+
+        <div class="bottom-zone">
+          <div class="card-stage" :class="{ 'is-dragging': isDragging }">
+            <button
+              v-for="(card, index) in cards"
+              :key="card.title"
+              class="nexus-card"
+              :class="{ 'is-active': index === activeIndex }"
+              :style="cardStyles[index]"
+              type="button"
+              @click.stop="showCard(index)"
+            >
+              <img :alt="card.title" draggable="false" :src="card.image" />
+            </button>
+          </div>
+        </div>
+      </main>
     </section>
   </div>
 </template>
+
+<style scoped>
+.index {
+  overflow: hidden;
+  background: #020202;
+  color: #fff;
+  touch-action: none;
+  user-select: none;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.top-zone {
+  position: relative;
+  z-index: 80;
+  height: 300px;
+  flex: 0 0 auto;
+}
+
+.brand {
+  position: relative;
+  padding-top: 92px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.brand-main {
+  display: inline-block;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 78px;
+  font-weight: 900;
+  line-height: 0.78;
+  letter-spacing: 0;
+  text-align: left;
+  transform: skewX(-3deg);
+}
+
+.brand-side {
+  position: absolute;
+  top: 104px;
+  right: 108px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 24px;
+  line-height: 0.92;
+  text-align: left;
+}
+
+.brand-side span {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #ff3047;
+  font-family: sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.brand-side strong {
+  font-size: 25px;
+  letter-spacing: 0;
+}
+
+.brand p {
+  margin-top: 12px;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 10px;
+  opacity: 0.86;
+}
+
+.bottom-zone {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.card-stage {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+}
+
+.nexus-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  transform-origin: 50% 18%;
+  transition:
+    transform 680ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 460ms ease,
+    filter 680ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card-stage.is-dragging .nexus-card {
+  transition-duration: 0ms;
+}
+
+.nexus-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 -3px 16px rgba(255, 255, 255, 0.3));
+}
+
+.nexus-card.is-active img {
+  filter: drop-shadow(0 -4px 24px rgba(255, 255, 255, 0.38));
+}
+</style>
