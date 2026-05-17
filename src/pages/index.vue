@@ -45,6 +45,10 @@ const showCard = (index: number) => {
   activeIndex.value = clampIndex(index)
 }
 
+const resetCards = () => {
+  activeIndex.value = -1
+}
+
 const onCardClick = (index: number) => {
   if (activeIndex.value === index) {
     infoToast(`点击了${cards[index].title}`)
@@ -154,11 +158,11 @@ onBeforeUnmount(() => {
       @wheel="onWheel"
     >
       <main class="content">
-        <div class="top-zone center">
+        <div class="top-zone center" @click="resetCards">
           <img class="h-180" src="../assets/images/kv.png" />
         </div>
 
-        <div class="bottom-zone">
+        <div class="bottom-zone" @click="resetCards">
           <div class="card-stage" :class="{ 'is-dragging': isDragging }">
             <button
               v-for="(card, index) in cards"
