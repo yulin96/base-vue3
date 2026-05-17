@@ -2,22 +2,29 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import cardWhitePaper from '@/assets/images/download-1.png'
+import cardWhitePaperActive from '@/assets/images/download-1s.png'
 import cardLivePhotos from '@/assets/images/download-2.png'
+import cardLivePhotosActive from '@/assets/images/download-2s.png'
 import cardTips from '@/assets/images/download-3.png'
+import cardTipsActive from '@/assets/images/download-3s.png'
 import cardGuide from '@/assets/images/download-4.png'
+import cardGuideActive from '@/assets/images/download-4s.png'
 import cardAgenda from '@/assets/images/download-5.png'
+import cardAgendaActive from '@/assets/images/download-5s.png'
 import cardQuestion from '@/assets/images/download.png'
+import cardQuestionActive from '@/assets/images/downloads.png'
+import { infoToast } from '@/plugins/vant/toast'
 
 defineOptions({ name: 'Index' })
 definePage({ meta: { index: 10 } })
 
 const cards = [
-  { title: 'QUESTION NAIRE', image: cardQuestion },
-  { title: 'WHITE PAPER', image: cardWhitePaper },
-  { title: 'LIVE PHOTOS', image: cardLivePhotos },
-  { title: 'TIPS', image: cardTips },
-  { title: 'EXHIBITION GUIDE', image: cardGuide },
-  { title: 'AGENDA', image: cardAgenda },
+  { title: 'QUESTION NAIRE', image: cardQuestion, activeImage: cardQuestionActive },
+  { title: 'WHITE PAPER', image: cardWhitePaper, activeImage: cardWhitePaperActive },
+  { title: 'LIVE PHOTOS', image: cardLivePhotos, activeImage: cardLivePhotosActive },
+  { title: 'TIPS', image: cardTips, activeImage: cardTipsActive },
+  { title: 'EXHIBITION GUIDE', image: cardGuide, activeImage: cardGuideActive },
+  { title: 'AGENDA', image: cardAgenda, activeImage: cardAgendaActive },
 ]
 
 const activeIndex = ref(-1)
@@ -36,6 +43,15 @@ const clampIndex = (index: number) => Math.max(0, Math.min(cards.length - 1, ind
 
 const showCard = (index: number) => {
   activeIndex.value = clampIndex(index)
+}
+
+const onCardClick = (index: number) => {
+  if (activeIndex.value === index) {
+    infoToast(`点击了${cards[index].title}`)
+    return
+  }
+
+  showCard(index)
 }
 
 const moveCard = (direction: 1 | -1) => {
@@ -67,7 +83,7 @@ const cardStyles = computed(() =>
     const isActive = index === activeIndex.value
     const isHidden = activeIndex.value > 1 && index < activeIndex.value - 2
     const drag = isActive ? dragOffset.value : dragOffset.value * 0.18
-    const scale = isHidden ? 0.88 : isActive ? 1.12 : 1
+    const scale = isHidden ? 0.88 : isActive ? 1.04 : 1
 
     return {
       zIndex: 20 + index,
@@ -138,15 +154,8 @@ onBeforeUnmount(() => {
       @wheel="onWheel"
     >
       <main class="content">
-        <div class="top-zone">
-          <header class="brand">
-            <div class="brand-main">ECO<br />· NEXUS³</div>
-            <div class="brand-side">
-              <span>小红书</span>
-              <strong>TE-CHIC<br />潮数码</strong>
-            </div>
-            <p>小红书TE-CHIC潮数码行业高层私享会</p>
-          </header>
+        <div class="top-zone center">
+          <img class="h-180" src="../assets/images/kv.png" />
         </div>
 
         <div class="bottom-zone">
@@ -158,9 +167,16 @@ onBeforeUnmount(() => {
               :class="{ 'is-active': index === activeIndex }"
               :style="cardStyles[index]"
               type="button"
-              @click.stop="showCard(index)"
+              @click.stop="onCardClick(index)"
             >
-              <img :alt="card.title" draggable="false" :src="card.image" />
+              <img class="card-img" :alt="card.title" draggable="false" :src="card.image" />
+              <img
+                class="card-img active-img"
+                :class="{ 'is-visible': index === activeIndex }"
+                :alt="`${card.title}展开`"
+                draggable="false"
+                :src="card.activeImage"
+              />
             </button>
           </div>
         </div>
@@ -285,15 +301,28 @@ onBeforeUnmount(() => {
   transition-duration: 0ms;
 }
 
-.nexus-card img {
+.card-img {
   display: block;
   width: 100%;
   height: auto;
   pointer-events: none;
   filter: drop-shadow(0 -3px 16px rgba(255, 255, 255, 0.3));
+  transition:
+    opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 680ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.nexus-card.is-active img {
+.active-img {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.active-img.is-visible {
+  opacity: 1;
+}
+
+.nexus-card.is-active .card-img {
   filter: drop-shadow(0 -4px 24px rgba(255, 255, 255, 0.38));
 }
 </style>
