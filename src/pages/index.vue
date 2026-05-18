@@ -102,7 +102,7 @@ const animateStack = async (immediate = false) => {
       rotate: layout.rotate,
       opacity: layout.opacity,
       zIndex: cards.length - position,
-      duration: immediate ? 0 : 0.66,
+      duration: immediate ? 0 : 1.28,
       ease: immediate ? 'none' : 'elastic.out(0.82, 0.62)',
       overwrite: true,
     })
@@ -127,16 +127,16 @@ const activateCard = async (id: number) => {
       y: toScreen(stackLayout[index].y + 88),
       rotate: index % 2 === 0 ? -7 : 7,
       scale: 0.88,
-      duration: 0.22,
+      duration: 0.52,
       ease: 'power2.in',
       overwrite: true,
     })
   })
 
-  await new Promise((resolve) => window.setTimeout(resolve, 120))
+  await new Promise((resolve) => window.setTimeout(resolve, 320))
   stackOrder.value = nextOrder
   await animateStack()
-  await new Promise((resolve) => window.setTimeout(resolve, 560))
+  await new Promise((resolve) => window.setTimeout(resolve, 1100))
   isAnimating.value = false
 }
 
