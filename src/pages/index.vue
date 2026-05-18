@@ -29,14 +29,23 @@ const cards = [
 
 const activeIndex = ref(-1)
 const contentRef = ref<HTMLElement>()
-const dragOffset = ref(0)
+const visualIndex = ref(-1)
 const touchStartY = ref(0)
+const dragStartIndex = ref(0)
 const isDragging = ref(false)
 const activePointerId = ref<number>()
 const suppressClickUntil = ref(0)
 const wheelLocked = ref(false)
 const visualScale = ref(1)
 const topZoneHeight = 300
+const cardSwipeStep = 200
+const cardInitialTop = 430 - topZoneHeight
+const cardInitialGap = 165
+const cardActiveTop = 450 - topZoneHeight
+const cardBelowActiveGap = 500
+const cardBelowGap = 165
+const cardFoldGap = 120
+const cardFoldMinScale = 0.64
 let resizeObserver: ResizeObserver | null = null
 
 const updateVisualScale = () => {
@@ -47,13 +56,16 @@ const updateVisualScale = () => {
 const clampIndex = (index: number) => Math.max(0, Math.min(cards.length - 1, index))
 
 const showCard = (index: number) => {
-  activeIndex.value = clampIndex(index)
+  const nextIndex = clampIndex(index)
+  activeIndex.value = nextIndex
+  visualIndex.value = nextIndex
 }
 
 const resetCards = () => {
   if (Date.now() < suppressClickUntil.value) return
 
   activeIndex.value = -1
+  visualIndex.value = -1
 }
 
 const onCardClick = (index: number) => {
@@ -76,35 +88,55 @@ const moveCard = (direction: 1 | -1) => {
   showCard(activeIndex.value + direction)
 }
 
-const getCardY = (index: number) => {
-  if (activeIndex.value === -1) {
-    return 430 - topZoneHeight + index * 165
+const getRoundedVisualIndex = () => {
+  if (visualIndex.value === -1) return -1
+
+  return clampIndex(Math.round(visualIndex.value))
+}
+
+const getCardState = (index: number) => {
+  if (visualIndex.value === -1) {
+    return {
+      y: cardInitialTop + index * cardInitialGap,
+      scale: 1,
+      opacity: 1,
+    }
   }
 
-  const firstVisibleBefore = Math.max(activeIndex.value - 2, 0)
-  const activeY = 450 - topZoneHeight + (activeIndex.value - firstVisibleBefore) * 185
+  const distance = index - visualIndex.value
 
-  if (index <= activeIndex.value) {
-    return 450 - topZoneHeight + (index - firstVisibleBefore) * 185
+  if (distance <= 0) {
+    const foldDistance = Math.abs(distance)
+    return {
+      y: cardActiveTop - foldDistance * cardFoldGap,
+      scale: Math.max(cardFoldMinScale, 1.04 - foldDistance * 0.09),
+      opacity: Math.max(0.42, 1 - foldDistance * 0.1),
+    }
   }
 
-  return activeY + 500 + (index - activeIndex.value - 1) * 165
+  const firstBelowProgress = Math.min(distance, 1)
+  const y = cardActiveTop + firstBelowProgress * cardBelowActiveGap + Math.max(distance - 1, 0) * cardBelowGap
+
+  return {
+    y,
+    scale: 1 + (1 - firstBelowProgress) * 0.04,
+    opacity: 1,
+  }
 }
 
 const cardStyles = computed(() =>
   cards.map((_, index) => {
-    const isActive = index === activeIndex.value
-    const isHidden = activeIndex.value > 1 && index < activeIndex.value - 2
-    const drag = isActive ? dragOffset.value : dragOffset.value * 0.18
-    const scale = isHidden ? 0.88 : isActive ? 1.04 : 1
+    const state = getCardState(index)
 
     return {
       zIndex: 20 + index,
-      opacity: isHidden ? 0 : 1,
-      transform: `translate3d(0, ${(getCardY(index) + drag) * visualScale.value}px, 0) scale(${scale})`,
+      opacity: state.opacity,
+      transform: `translate3d(0, ${state.y * visualScale.value}px, 0) scale(${state.scale})`,
     }
   }),
 )
+
+const activeVisualIndex = computed(() => getRoundedVisualIndex())
 
 const onPointerDown = (event: PointerEvent) => {
   if (event.pointerType === 'mouse' && event.button !== 0) return
@@ -112,28 +144,31 @@ const onPointerDown = (event: PointerEvent) => {
   isDragging.value = true
   activePointerId.value = event.pointerId
   touchStartY.value = event.clientY
-  dragOffset.value = 0
+  dragStartIndex.value = visualIndex.value === -1 ? 0 : visualIndex.value
 }
 
 const onPointerMove = (event: PointerEvent) => {
   if (!isDragging.value || event.pointerId !== activePointerId.value) return
 
-  const deltaY = event.clientY - touchStartY.value
-  dragOffset.value = Math.max(-42, Math.min(42, deltaY * 0.22))
+  const deltaY = (event.clientY - touchStartY.value) / visualScale.value
+  visualIndex.value = clampIndex(dragStartIndex.value - deltaY / cardSwipeStep)
 }
 
 const onPointerUp = (event: PointerEvent) => {
   if (!isDragging.value || event.pointerId !== activePointerId.value) return
 
-  const deltaY = event.clientY - touchStartY.value
+  const deltaY = (event.clientY - touchStartY.value) / visualScale.value
   isDragging.value = false
   activePointerId.value = undefined
-  dragOffset.value = 0
 
-  if (Math.abs(deltaY) < 28) return
+  if (Math.abs(deltaY) < 8) {
+    visualIndex.value = activeIndex.value
+    return
+  }
 
+  const nextIndex = clampIndex(Math.round(visualIndex.value))
   suppressClickUntil.value = Date.now() + 220
-  moveCard(deltaY < 0 ? 1 : -1)
+  showCard(nextIndex)
 }
 
 const onPointerCancel = (event: PointerEvent) => {
@@ -141,7 +176,7 @@ const onPointerCancel = (event: PointerEvent) => {
 
   isDragging.value = false
   activePointerId.value = undefined
-  dragOffset.value = 0
+  visualIndex.value = activeIndex.value
 }
 
 const onWheel = (event: WheelEvent) => {
@@ -199,7 +234,7 @@ onBeforeUnmount(() => {
               v-for="(card, index) in cards"
               :key="card.title"
               class="nexus-card"
-              :class="{ 'is-active': index === activeIndex }"
+              :class="{ 'is-active': index === activeVisualIndex }"
               :style="cardStyles[index]"
               type="button"
               @click.stop="onCardClick(index)"
@@ -207,7 +242,7 @@ onBeforeUnmount(() => {
               <img class="card-img" :alt="card.title" draggable="false" :src="card.image" />
               <img
                 class="card-img active-img"
-                :class="{ 'is-visible': index === activeIndex }"
+                :class="{ 'is-visible': index === activeVisualIndex }"
                 :alt="`${card.title}展开`"
                 draggable="false"
                 :src="card.activeImage"
