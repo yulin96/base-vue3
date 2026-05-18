@@ -64,6 +64,7 @@ const cardBelowActiveGap = 500
 const cardBelowGap = 165
 const cardFoldGap = 120
 const cardFoldMinScale = 0.64
+const cardVisibleRadius = 4
 let resizeObserver: ResizeObserver | null = null
 
 const updateVisualScale = () => {
@@ -112,6 +113,14 @@ const getRoundedVisualIndex = () => {
   return clampIndex(Math.round(visualIndex.value))
 }
 
+const isCardVisible = (index: number) => {
+  const centerIndex = getRoundedVisualIndex()
+
+  if (centerIndex === -1) return index < cardVisibleRadius * 2 + 1
+
+  return Math.abs(index - centerIndex) <= cardVisibleRadius
+}
+
 const getCardState = (index: number) => {
   if (visualIndex.value === -1) {
     return {
@@ -144,11 +153,13 @@ const getCardState = (index: number) => {
 
 const cardStyles = computed(() =>
   cards.map((_, index) => {
+    const isVisible = isCardVisible(index)
     const state = getCardState(index)
-
     return {
       zIndex: 20 + index,
-      opacity: state.opacity,
+      opacity: isVisible ? state.opacity : 0,
+      visibility: isVisible ? ('visible' as const) : ('hidden' as const),
+      pointerEvents: isVisible ? ('auto' as const) : ('none' as const),
       transform: `translate3d(0, ${state.y * visualScale.value}px, 0) scale(${state.scale})`,
     }
   }),
@@ -259,8 +270,9 @@ onBeforeUnmount(() => {
             >
               <img class="card-img" :alt="card.title" draggable="false" :src="card.image" />
               <img
+                v-if="index === activeVisualIndex"
                 class="card-img active-img"
-                :class="{ 'is-visible': index === activeVisualIndex }"
+                :class="{ 'is-visible': !isDragging }"
                 :alt="`${card.title}展开`"
                 draggable="false"
                 :src="card.activeImage"
@@ -380,7 +392,7 @@ onBeforeUnmount(() => {
   transition:
     transform 680ms cubic-bezier(0.16, 1, 0.3, 1),
     opacity 460ms ease,
-    filter 680ms cubic-bezier(0.16, 1, 0.3, 1);
+    visibility 460ms ease;
   will-change: transform;
   -webkit-tap-highlight-color: transparent;
 }
@@ -394,10 +406,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: auto;
   pointer-events: none;
-  filter: drop-shadow(0 -3px 16px rgba(255, 255, 255, 0.3));
-  transition:
-    opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
-    filter 680ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 520ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .active-img {
@@ -408,9 +417,5 @@ onBeforeUnmount(() => {
 
 .active-img.is-visible {
   opacity: 1;
-}
-
-.nexus-card.is-active .card-img {
-  filter: drop-shadow(0 -4px 24px rgba(255, 255, 255, 0.38));
 }
 </style>
