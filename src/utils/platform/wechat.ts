@@ -100,7 +100,7 @@ export async function wechatShare(data: IWxShare) {
     return await new Promise<boolean>((resolve) => {
       wx.updateAppMessageShareData({
         title: title || document.title,
-        desc: desc || document.title,
+        desc: desc || '',
         link: link || location.href.split('#')[0] || '',
         imgUrl: imgUrl || '',
         success() {
