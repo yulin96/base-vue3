@@ -2,9 +2,6 @@
 import { gsap } from 'gsap'
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 
-import kvImage from '@/assets/images/kv.png'
-import cardClosed0 from '@/assets/images/download.png'
-import cardOpened0 from '@/assets/images/downloads.png'
 import cardClosed1 from '@/assets/images/download-1.png'
 import cardOpened1 from '@/assets/images/download-1s.png'
 import cardClosed2 from '@/assets/images/download-2.png'
@@ -15,6 +12,9 @@ import cardClosed4 from '@/assets/images/download-4.png'
 import cardOpened4 from '@/assets/images/download-4s.png'
 import cardClosed5 from '@/assets/images/download-5.png'
 import cardOpened5 from '@/assets/images/download-5s.png'
+import cardClosed0 from '@/assets/images/download.png'
+import cardOpened0 from '@/assets/images/downloads.png'
+import kvImage from '@/assets/images/kv.png'
 
 defineOptions({ name: 'Index' })
 definePage({ meta: { index: 10 } })
@@ -52,12 +52,12 @@ const dragState = ref<DragState | null>(null)
 const layoutRatio = ref(0.5)
 
 const stackLayout = [
-  { y: 720, scale: 1.08, rotate: 0, opacity: 1 },
-  { y: 556, scale: 1.02, rotate: -0.35, opacity: 1 },
-  { y: 406, scale: 0.99, rotate: 0.3, opacity: 1 },
-  { y: 260, scale: 0.96, rotate: -0.25, opacity: 1 },
-  { y: 120, scale: 0.93, rotate: 0.2, opacity: 1 },
-  { y: 52, scale: 0.9, rotate: -0.15, opacity: 0 },
+  { y: 740, scale: 1.12, rotate: 0, opacity: 1 },
+  { y: 548, scale: 0.98, rotate: -0.28, opacity: 1 },
+  { y: 396, scale: 0.91, rotate: 0.22, opacity: 1 },
+  { y: 254, scale: 0.85, rotate: -0.18, opacity: 1 },
+  { y: 118, scale: 0.79, rotate: 0.14, opacity: 1 },
+  { y: 52, scale: 0.73, rotate: -0.1, opacity: 0 },
 ]
 
 const toScreen = (value: number) => value * layoutRatio.value
