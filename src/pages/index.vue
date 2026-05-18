@@ -45,9 +45,9 @@ const cards = [
   // { title: 'AGENDA', image: cardAgenda, activeImage: cardAgendaActive },
 ]
 
-const activeIndex = ref(-1)
+const activeIndex = ref<number | null>(null)
 const contentRef = ref<HTMLElement>()
-const visualIndex = ref(-1)
+const visualIndex = ref<number | null>(null)
 const touchStartY = ref(0)
 const dragStartIndex = ref(0)
 const isDragging = ref(false)
@@ -72,34 +72,40 @@ const updateVisualScale = () => {
   visualScale.value = width / 750
 }
 
-const clampIndex = (index: number) => Math.max(0, Math.min(cards.length - 1, index))
-
 const showCard = (index: number) => {
-  const nextIndex = clampIndex(index)
-  activeIndex.value = nextIndex
-  visualIndex.value = nextIndex
+  activeIndex.value = index
+  visualIndex.value = index
 }
 
 const resetCards = () => {
   if (Date.now() < suppressClickUntil.value) return
 
-  activeIndex.value = -1
-  visualIndex.value = -1
+  activeIndex.value = null
+  visualIndex.value = null
 }
 
 const onCardClick = (index: number) => {
   if (Date.now() < suppressClickUntil.value) return
 
-  if (activeIndex.value === index) {
+  if (activeVisualIndex.value === index) {
     infoToast(`点击了${cards[index].title}`)
     return
   }
 
-  showCard(index)
+  // When clicking a card, we need to know the closest loop index equivalent to target 'index'
+  if (activeIndex.value !== null) {
+    const N = cards.length
+    let distance = (index - activeIndex.value) % N
+    if (distance > N / 2) distance -= N
+    if (distance < -N / 2) distance += N
+    showCard(activeIndex.value + distance)
+  } else {
+    showCard(index)
+  }
 }
 
 const moveCard = (direction: 1 | -1) => {
-  if (activeIndex.value === -1) {
+  if (activeIndex.value === null) {
     showCard(0)
     return
   }
@@ -108,29 +114,33 @@ const moveCard = (direction: 1 | -1) => {
 }
 
 const getRoundedVisualIndex = () => {
-  if (visualIndex.value === -1) return -1
+  if (visualIndex.value === null) return null
 
-  return clampIndex(Math.round(visualIndex.value))
+  return Math.round(visualIndex.value)
 }
 
 const isCardVisible = (index: number) => {
   const centerIndex = getRoundedVisualIndex()
 
-  if (centerIndex === -1) return index < cardVisibleRadius * 2 + 1
+  if (centerIndex === null) return index < cardVisibleRadius * 2 + 1
 
-  return Math.abs(index - centerIndex) <= cardVisibleRadius
+  return true // All cards are visible in a loop if N is small, or we can use distance. Let's return true for now and handle distance logic in getCardState
 }
 
 const getCardState = (index: number) => {
-  if (visualIndex.value === -1) {
+  if (visualIndex.value === null) {
     return {
       y: cardInitialTop + index * cardInitialGap,
       scale: 1,
       opacity: 1,
+      zIndex: 20 + index,
     }
   }
 
-  const distance = index - visualIndex.value
+  const N = cards.length
+  let distance = (index - visualIndex.value) % N
+  if (distance > N / 2) distance -= N
+  if (distance < -N / 2) distance += N
 
   if (distance <= 0) {
     const foldDistance = Math.abs(distance)
@@ -138,6 +148,7 @@ const getCardState = (index: number) => {
       y: cardActiveTop - foldDistance * cardFoldGap,
       scale: Math.max(cardFoldMinScale, 1.04 - foldDistance * 0.09),
       opacity: Math.max(0.42, 1 - foldDistance * 0.1),
+      zIndex: 20 + Math.round(distance * 10),
     }
   }
 
@@ -148,6 +159,7 @@ const getCardState = (index: number) => {
     y,
     scale: 1 + (1 - firstBelowProgress) * 0.04,
     opacity: 1,
+    zIndex: 20 + Math.round(distance * 10),
   }
 }
 
@@ -156,7 +168,7 @@ const cardStyles = computed(() =>
     const isVisible = isCardVisible(index)
     const state = getCardState(index)
     return {
-      zIndex: 20 + index,
+      zIndex: state.zIndex,
       opacity: isVisible ? state.opacity : 0,
       visibility: isVisible ? ('visible' as const) : ('hidden' as const),
       pointerEvents: isVisible ? ('auto' as const) : ('none' as const),
@@ -165,12 +177,21 @@ const cardStyles = computed(() =>
   }),
 )
 
-const activeVisualIndex = computed(() => getRoundedVisualIndex())
+const activeVisualIndex = computed(() => {
+  const index = getRoundedVisualIndex()
+  if (index === null) return null
+  return ((index % cards.length) + cards.length) % cards.length
+})
 
 const getActiveImageOpacity = (index: number) => {
-  if (visualIndex.value === -1 || !isCardVisible(index)) return 0
+  if (visualIndex.value === null || !isCardVisible(index)) return 0
 
-  return Math.max(0, 1 - Math.abs(index - visualIndex.value) * 2)
+  const N = cards.length
+  let distance = (index - visualIndex.value) % N
+  if (distance > N / 2) distance -= N
+  if (distance < -N / 2) distance += N
+
+  return Math.max(0, 1 - Math.abs(distance) * 2)
 }
 
 const onPointerDown = (event: PointerEvent) => {
@@ -179,14 +200,14 @@ const onPointerDown = (event: PointerEvent) => {
   isDragging.value = true
   activePointerId.value = event.pointerId
   touchStartY.value = event.clientY
-  dragStartIndex.value = visualIndex.value === -1 ? 0 : visualIndex.value
+  dragStartIndex.value = visualIndex.value === null ? 0 : visualIndex.value
 }
 
 const onPointerMove = (event: PointerEvent) => {
   if (!isDragging.value || event.pointerId !== activePointerId.value) return
 
   const deltaY = (event.clientY - touchStartY.value) / visualScale.value
-  visualIndex.value = clampIndex(dragStartIndex.value - deltaY / cardSwipeStep)
+  visualIndex.value = dragStartIndex.value - deltaY / cardSwipeStep
 }
 
 const onPointerUp = (event: PointerEvent) => {
@@ -196,12 +217,12 @@ const onPointerUp = (event: PointerEvent) => {
   isDragging.value = false
   activePointerId.value = undefined
 
-  if (Math.abs(deltaY) < 8) {
+  if (Math.abs(deltaY) < 8 || visualIndex.value === null) {
     visualIndex.value = activeIndex.value
     return
   }
 
-  const nextIndex = clampIndex(Math.round(visualIndex.value))
+  const nextIndex = Math.round(visualIndex.value)
   suppressClickUntil.value = Date.now() + 220
   showCard(nextIndex)
 }
