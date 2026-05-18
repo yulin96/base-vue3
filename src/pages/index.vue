@@ -151,6 +151,7 @@ const flyActiveCard = async (offsetX: number, offsetY: number) => {
   const directionY = offsetY / distance
   const flyDistance = toScreen(1100)
 
+  gsap.killTweensOf(element)
   await gsap.to(element, {
     xPercent: -50,
     x: directionX * flyDistance,
@@ -158,8 +159,8 @@ const flyActiveCard = async (offsetX: number, offsetY: number) => {
     rotate: directionX * 18,
     scale: 0.92,
     opacity: 0,
-    duration: 0.52,
-    ease: 'back.in(1.15)',
+    duration: 0.42,
+    ease: 'power3.in',
     overwrite: true,
   })
 
@@ -237,24 +238,11 @@ const onPointerUp = (event: PointerEvent) => {
   }
 
   dragState.value = null
-  const distance = Math.hypot(drag.x, drag.y)
 
-  if (distance > 72) {
+  if (drag.moved) {
     void flyActiveCard(drag.x, drag.y)
     return
   }
-
-  if (!element) return
-
-  gsap.to(element, {
-    xPercent: -50,
-    x: 0,
-    y: toScreen(stackLayout[0].y),
-    rotate: 0,
-    duration: 0.58,
-    ease: 'elastic.out(0.75, 0.58)',
-    overwrite: true,
-  })
 }
 
 const onCardClick = (id: number, position: number) => {
