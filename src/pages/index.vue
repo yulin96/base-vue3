@@ -167,12 +167,22 @@ const cardStyles = computed(() =>
   cards.map((_, index) => {
     const isVisible = isCardVisible(index)
     const state = getCardState(index)
+    // disable transition when wrapping to prevent flying across screen
+    const N = cards.length
+    let rawDist = (index - (visualIndex.value || 0)) % N
+    if (rawDist > N / 2) rawDist -= N
+    if (rawDist < -N / 2) rawDist += N
+
+    // threshold slightly less than N/2
+    const isWrapping = Math.abs(rawDist) >= N / 2 - 0.1
+
     return {
       zIndex: state.zIndex,
       opacity: isVisible ? state.opacity : 0,
       visibility: isVisible ? ('visible' as const) : ('hidden' as const),
       pointerEvents: isVisible ? ('auto' as const) : ('none' as const),
       transform: `translate3d(0, ${state.y * visualScale.value}px, 0) scale(${state.scale})`,
+      transitionDuration: isDragging.value || isWrapping ? '0ms' : '',
     }
   }),
 )
