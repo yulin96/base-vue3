@@ -25,24 +25,24 @@ const cards = [
   { title: 'TIPS', image: cardTips, activeImage: cardTipsActive },
   { title: 'EXHIBITION GUIDE', image: cardGuide, activeImage: cardGuideActive },
   { title: 'AGENDA', image: cardAgenda, activeImage: cardAgendaActive },
-  { title: 'QUESTION NAIRE', image: cardQuestion, activeImage: cardQuestionActive },
-  { title: 'WHITE PAPER', image: cardWhitePaper, activeImage: cardWhitePaperActive },
-  { title: 'LIVE PHOTOS', image: cardLivePhotos, activeImage: cardLivePhotosActive },
-  { title: 'TIPS', image: cardTips, activeImage: cardTipsActive },
-  { title: 'EXHIBITION GUIDE', image: cardGuide, activeImage: cardGuideActive },
-  { title: 'AGENDA', image: cardAgenda, activeImage: cardAgendaActive },
-  { title: 'QUESTION NAIRE', image: cardQuestion, activeImage: cardQuestionActive },
-  { title: 'WHITE PAPER', image: cardWhitePaper, activeImage: cardWhitePaperActive },
-  { title: 'LIVE PHOTOS', image: cardLivePhotos, activeImage: cardLivePhotosActive },
-  { title: 'TIPS', image: cardTips, activeImage: cardTipsActive },
-  { title: 'EXHIBITION GUIDE', image: cardGuide, activeImage: cardGuideActive },
-  { title: 'AGENDA', image: cardAgenda, activeImage: cardAgendaActive },
-  { title: 'QUESTION NAIRE', image: cardQuestion, activeImage: cardQuestionActive },
-  { title: 'WHITE PAPER', image: cardWhitePaper, activeImage: cardWhitePaperActive },
-  { title: 'LIVE PHOTOS', image: cardLivePhotos, activeImage: cardLivePhotosActive },
-  { title: 'TIPS', image: cardTips, activeImage: cardTipsActive },
-  { title: 'EXHIBITION GUIDE', image: cardGuide, activeImage: cardGuideActive },
-  { title: 'AGENDA', image: cardAgenda, activeImage: cardAgendaActive },
+  // { title: 'QUESTION NAIRE', image: cardQuestion, activeImage: cardQuestionActive },
+  // { title: 'WHITE PAPER', image: cardWhitePaper, activeImage: cardWhitePaperActive },
+  // { title: 'LIVE PHOTOS', image: cardLivePhotos, activeImage: cardLivePhotosActive },
+  // { title: 'TIPS', image: cardTips, activeImage: cardTipsActive },
+  // { title: 'EXHIBITION GUIDE', image: cardGuide, activeImage: cardGuideActive },
+  // { title: 'AGENDA', image: cardAgenda, activeImage: cardAgendaActive },
+  // { title: 'QUESTION NAIRE', image: cardQuestion, activeImage: cardQuestionActive },
+  // { title: 'WHITE PAPER', image: cardWhitePaper, activeImage: cardWhitePaperActive },
+  // { title: 'LIVE PHOTOS', image: cardLivePhotos, activeImage: cardLivePhotosActive },
+  // { title: 'TIPS', image: cardTips, activeImage: cardTipsActive },
+  // { title: 'EXHIBITION GUIDE', image: cardGuide, activeImage: cardGuideActive },
+  // { title: 'AGENDA', image: cardAgenda, activeImage: cardAgendaActive },
+  // { title: 'QUESTION NAIRE', image: cardQuestion, activeImage: cardQuestionActive },
+  // { title: 'WHITE PAPER', image: cardWhitePaper, activeImage: cardWhitePaperActive },
+  // { title: 'LIVE PHOTOS', image: cardLivePhotos, activeImage: cardLivePhotosActive },
+  // { title: 'TIPS', image: cardTips, activeImage: cardTipsActive },
+  // { title: 'EXHIBITION GUIDE', image: cardGuide, activeImage: cardGuideActive },
+  // { title: 'AGENDA', image: cardAgenda, activeImage: cardAgendaActive },
 ]
 
 const activeIndex = ref(-1)
@@ -62,9 +62,9 @@ const cardInitialGap = 165
 const cardActiveTop = 450 - topZoneHeight
 const cardBelowActiveGap = 500
 const cardBelowGap = 165
-const cardFoldGap = 120
+const cardFoldGap = 60
 const cardFoldMinScale = 0.64
-const cardVisibleRadius = 4
+const cardVisibleRadius = 5
 let resizeObserver: ResizeObserver | null = null
 
 const updateVisualScale = () => {
@@ -166,6 +166,12 @@ const cardStyles = computed(() =>
 )
 
 const activeVisualIndex = computed(() => getRoundedVisualIndex())
+
+const getActiveImageOpacity = (index: number) => {
+  if (visualIndex.value === -1 || !isCardVisible(index)) return 0
+
+  return Math.max(0, 1 - Math.abs(index - visualIndex.value) * 2)
+}
 
 const onPointerDown = (event: PointerEvent) => {
   if (event.pointerType === 'mouse' && event.button !== 0) return
@@ -270,9 +276,8 @@ onBeforeUnmount(() => {
             >
               <img class="card-img" :alt="card.title" draggable="false" :src="card.image" />
               <img
-                v-if="index === activeVisualIndex"
                 class="card-img active-img"
-                :class="{ 'is-visible': !isDragging }"
+                :style="{ opacity: getActiveImageOpacity(index) }"
                 :alt="`${card.title}展开`"
                 draggable="false"
                 :src="card.activeImage"
