@@ -172,34 +172,31 @@ const activateCard = async (id: number) => {
   })
 
   ghosts.forEach((ghost, index) => {
-    const duration = 0.74
+    const duration = 0.8
     const delay = index * 0.08
-    const targetLayout = index === 0 ? stackLayout[0] : stackLayout[index - 1]
-    const pushedOut = index === 0
-    const targetY = toScreen(targetLayout.y + (pushedOut ? 190 : 0))
+    const originalLayout = stackLayout[index]
+    if (!originalLayout) return
 
-    gsap
-      .timeline({
-        delay,
-        onComplete: () => removeCardGhost(ghost),
-      })
-      .to(ghost, {
-        x: toScreen(pushedOut ? -22 : 0),
-        y: targetY,
-        rotate: pushedOut ? -2 : targetLayout.rotate,
-        scale: targetLayout.scale + (pushedOut ? 0.18 : 0),
-        opacity: 1,
-        duration: duration * 0.72,
-        ease: 'power3.out',
-        overwrite: true,
-      })
-      .to(ghost, {
-        y: targetY + toScreen(48),
-        scale: targetLayout.scale + (pushedOut ? 0.26 : 0.08),
-        opacity: 0,
-        duration: duration * 0.28,
-        ease: 'power2.out',
-      })
+    // 优雅地向下方并稍微偏左滑动退出，伴随缩放和旋转，并平滑淡出，实现连贯且富有层次感的飞出效果
+    const targetX = toScreen(-40 - index * 20)
+    const targetY = toScreen(originalLayout.y + 320)
+    const targetRotate = -8 - index * 3
+    const targetScale = originalLayout.scale * 1.08
+
+    gsap.to(ghost, {
+      xPercent: -50,
+      x: targetX,
+      y: targetY,
+      rotate: targetRotate,
+      scale: targetScale,
+      opacity: 0,
+      duration: duration,
+      delay: delay,
+      ease: 'power3.out',
+      overwrite: true,
+      onComplete: () => removeCardGhost(ghost),
+    })
+
     window.setTimeout(() => removeCardGhost(ghost), (duration + delay) * 1000 + 80)
   })
 
