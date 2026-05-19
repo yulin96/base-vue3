@@ -157,10 +157,10 @@ const flyActiveCard = async (offsetX: number, offsetY: number) => {
     x: directionX * flyDistance,
     y: toScreen(stackLayout[0].y) + directionY * flyDistance,
     rotate: directionX * 18,
-    scale: 0.92,
+    scale: 0.8,
     opacity: 0,
-    duration: 0.42,
-    ease: 'power3.in',
+    duration: 0.4,
+    ease: 'power2.out',
     overwrite: true,
   })
 
