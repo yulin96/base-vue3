@@ -53,11 +53,11 @@ const layoutRatio = ref(0.5)
 
 const stackLayout = [
   { y: 740, scale: 1.12, rotate: 0, opacity: 1 },
-  { y: 548, scale: 0.98, rotate: -0.28, opacity: 1 },
-  { y: 396, scale: 0.91, rotate: 0.22, opacity: 1 },
-  { y: 254, scale: 0.85, rotate: -0.18, opacity: 1 },
-  { y: 118, scale: 0.79, rotate: 0.14, opacity: 1 },
-  { y: 52, scale: 0.73, rotate: -0.1, opacity: 0 },
+  { y: 548, scale: 0.98, rotate: 0, opacity: 1 },
+  { y: 396, scale: 0.91, rotate: 0, opacity: 1 },
+  { y: 254, scale: 0.85, rotate: 0, opacity: 1 },
+  { y: 118, scale: 0.79, rotate: 0, opacity: 1 },
+  { y: 52, scale: 0.73, rotate: 0, opacity: 0 },
 ]
 
 const toScreen = (value: number) => value * layoutRatio.value
@@ -86,7 +86,34 @@ const setCardElement = (id: number, element: unknown) => {
 
 const getCardPosition = (id: number) => stackOrder.value.findIndex((cardId) => cardId === id)
 
-const animateStack = async (immediate = false) => {
+const createCardGhost = (element: HTMLElement) => {
+  const parent = element.parentElement
+  if (!parent) return null
+
+  const ghost = element.cloneNode(true) as HTMLElement
+  ghost.setAttribute('aria-hidden', 'true')
+  ghost.style.pointerEvents = 'none'
+  parent.appendChild(ghost)
+
+  gsap.set(ghost, {
+    xPercent: -50,
+    x: gsap.getProperty(element, 'x'),
+    y: gsap.getProperty(element, 'y'),
+    scale: gsap.getProperty(element, 'scale'),
+    rotate: gsap.getProperty(element, 'rotate'),
+    opacity: gsap.getProperty(element, 'opacity'),
+    zIndex: gsap.getProperty(element, 'zIndex'),
+  })
+
+  return ghost
+}
+
+const removeCardGhost = (ghost: HTMLElement) => {
+  if (!ghost.isConnected) return
+  ghost.remove()
+}
+
+const animateStack = async (immediate = false, duration = 0.66, ease = 'elastic.out(0.82, 0.62)') => {
   await nextTick()
 
   stackOrder.value.forEach((id, position) => {
@@ -102,8 +129,8 @@ const animateStack = async (immediate = false) => {
       rotate: layout.rotate,
       opacity: layout.opacity,
       zIndex: cards.length - position,
-      duration: immediate ? 0 : 0.66,
-      ease: immediate ? 'none' : 'elastic.out(0.82, 0.62)',
+      duration: immediate ? 0 : duration,
+      ease: immediate ? 'none' : ease,
       overwrite: true,
     })
   })
@@ -116,27 +143,68 @@ const activateCard = async (id: number) => {
   isAnimating.value = true
   const nextOrder = [...stackOrder.value.slice(position), ...stackOrder.value.slice(0, position)]
   const pushedIds = stackOrder.value.slice(0, position)
+  const ghosts = pushedIds
+    .map((cardId) => {
+      const element = cardElements.get(cardId)
+      if (!element) return null
 
-  pushedIds.forEach((cardId, index) => {
+      gsap.killTweensOf(element)
+      return createCardGhost(element)
+    })
+    .filter((ghost): ghost is HTMLElement => Boolean(ghost))
+
+  stackOrder.value = nextOrder
+  await nextTick()
+
+  pushedIds.forEach((cardId) => {
     const element = cardElements.get(cardId)
     if (!element) return
 
-    gsap.to(element, {
+    const lastLayout = stackLayout[stackLayout.length - 1]
+    gsap.set(element, {
       xPercent: -50,
-      x: toScreen(index % 2 === 0 ? -64 : 64),
-      y: toScreen(stackLayout[index].y + 88),
-      rotate: index % 2 === 0 ? -7 : 7,
-      scale: 0.88,
-      duration: 0.22,
-      ease: 'power2.in',
-      overwrite: true,
+      x: 0,
+      y: toScreen(lastLayout.y),
+      rotate: lastLayout.rotate,
+      scale: lastLayout.scale,
+      opacity: 0,
     })
   })
 
-  await new Promise((resolve) => window.setTimeout(resolve, 120))
-  stackOrder.value = nextOrder
-  await animateStack()
-  await new Promise((resolve) => window.setTimeout(resolve, 560))
+  ghosts.forEach((ghost, index) => {
+    const duration = 0.74
+    const delay = index * 0.08
+    const targetLayout = index === 0 ? stackLayout[0] : stackLayout[index - 1]
+    const pushedOut = index === 0
+    const targetY = toScreen(targetLayout.y + (pushedOut ? 190 : 0))
+
+    gsap
+      .timeline({
+        delay,
+        onComplete: () => removeCardGhost(ghost),
+      })
+      .to(ghost, {
+        x: toScreen(pushedOut ? -22 : 0),
+        y: targetY,
+        rotate: pushedOut ? -2 : targetLayout.rotate,
+        scale: targetLayout.scale + (pushedOut ? 0.18 : 0),
+        opacity: 1,
+        duration: duration * 0.72,
+        ease: 'power3.out',
+        overwrite: true,
+      })
+      .to(ghost, {
+        y: targetY + toScreen(48),
+        scale: targetLayout.scale + (pushedOut ? 0.26 : 0.08),
+        opacity: 0,
+        duration: duration * 0.28,
+        ease: 'power2.out',
+      })
+    window.setTimeout(() => removeCardGhost(ghost), (duration + delay) * 1000 + 80)
+  })
+
+  await animateStack(false, 0.96, 'power3.out')
+  await new Promise((resolve) => window.setTimeout(resolve, 960 + ghosts.length * 120))
   isAnimating.value = false
 }
 
@@ -150,20 +218,9 @@ const flyActiveCard = async (offsetX: number, offsetY: number) => {
   const directionX = offsetX / distance
   const directionY = offsetY / distance
   const flyDistance = toScreen(1100)
+  const ghost = createCardGhost(element)
 
   gsap.killTweensOf(element)
-  await gsap.to(element, {
-    xPercent: -50,
-    x: directionX * flyDistance,
-    y: toScreen(stackLayout[0].y) + directionY * flyDistance,
-    rotate: directionX * 18,
-    scale: 0.8,
-    opacity: 0,
-    duration: 0.4,
-    ease: 'power2.out',
-    overwrite: true,
-  })
-
   stackOrder.value = [...stackOrder.value.slice(1), currentId]
   await nextTick()
 
@@ -174,6 +231,22 @@ const flyActiveCard = async (offsetX: number, offsetY: number) => {
     opacity: 0,
     scale: stackLayout[cards.length - 1].scale,
   })
+
+  if (ghost) {
+    gsap.to(ghost, {
+      xPercent: -50,
+      x: directionX * flyDistance,
+      y: toScreen(stackLayout[0].y) + directionY * flyDistance,
+      rotate: directionX * 18,
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.36,
+      ease: 'power3.out',
+      overwrite: true,
+      onComplete: () => removeCardGhost(ghost),
+    })
+    window.setTimeout(() => removeCardGhost(ghost), 440)
+  }
 
   await animateStack()
   await new Promise((resolve) => window.setTimeout(resolve, 560))
