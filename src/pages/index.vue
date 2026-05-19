@@ -177,19 +177,33 @@ const removeCardGhost = (ghost: HTMLElement) => {
   ghost.remove()
 }
 
-const wait = (time: number) => new Promise<void>((resolve) => window.setTimeout(resolve, time))
-
 const animateStack = async (immediate = false, duration = 0.66, ease = 'elastic.out(0.82, 0.62)') => {
   await nextTick()
 
-  stackCards.value.forEach((card, position) => {
-    const element = cardElements.get(card.uid)
-    if (!element) return
+  return new Promise<void>((resolve) => {
+    const visibleCards = stackCards.value
+      .map((card, position) => ({ card, position, element: cardElements.get(card.uid) }))
+      .filter((item): item is { card: CardInstance; position: number; element: HTMLElement } => Boolean(item.element))
 
-    applyLayout(element, position, {
-      duration: immediate ? 0 : duration,
-      ease: immediate ? 'none' : ease,
-      overwrite: true,
+    if (!visibleCards.length) {
+      resolve()
+      return
+    }
+
+    let pending = visibleCards.length
+    const done = () => {
+      pending -= 1
+      if (pending <= 0) resolve()
+    }
+
+    visibleCards.forEach(({ element, position }) => {
+      applyLayout(element, position, {
+        duration: immediate ? 0 : duration,
+        ease: immediate ? 'none' : ease,
+        overwrite: true,
+        onComplete: done,
+        onInterrupt: done,
+      })
     })
   })
 }
@@ -261,7 +275,7 @@ const activateCard = async (id: number) => {
     timeline.add(applyLayout(element, nextPosition, { overwrite: true }), 0)
   })
 
-  await timeline
+  timeline.play()
 }
 
 const flyActiveCard = async (offsetX: number, offsetY: number) => {
@@ -313,8 +327,7 @@ const flyActiveCard = async (offsetX: number, offsetY: number) => {
     })
   }
 
-  await animateStack()
-  await wait(560)
+  await animateStack(false, 0.56, 'power3.out')
   isAnimating.value = false
 }
 
