@@ -50,6 +50,7 @@ const activeId = computed(() => stackOrder.value[0])
 const isAnimating = ref(false)
 const dragState = ref<DragState | null>(null)
 const layoutRatio = ref(0.5)
+const visualActiveId = ref<number | null>(null)
 
 const stackLayout = [
   { y: 740, scale: 1.12, rotate: 0, opacity: 1 },
@@ -62,6 +63,30 @@ const stackLayout = [
 
 const toScreen = (value: number) => value * layoutRatio.value
 
+const getLayoutVars = (position: number) => {
+  const layout = stackLayout[position]
+
+  return {
+    xPercent: -50,
+    x: 0,
+    y: toScreen(layout.y),
+    scale: layout.scale,
+    rotate: layout.rotate,
+    opacity: layout.opacity,
+    zIndex: cards.length - position,
+  }
+}
+
+const getExitVars = (frontOffset: number) => ({
+  xPercent: -50,
+  x: toScreen(-18 - frontOffset * 8),
+  y: toScreen(stackLayout[0].y + 320 + frontOffset * 92),
+  scale: stackLayout[0].scale + 0.28 + frontOffset * 0.08,
+  rotate: -2 - frontOffset * 0.3,
+  opacity: 0,
+  zIndex: cards.length + frontOffset + 1,
+})
+
 const displayCards = computed(() =>
   stackOrder.value
     .map((id, position) => {
@@ -69,7 +94,7 @@ const displayCards = computed(() =>
       return {
         ...card,
         position,
-        image: position === 0 ? card.opened : card.closed,
+        image: id === (visualActiveId.value ?? activeId.value) ? card.opened : card.closed,
       }
     })
     .reverse(),
@@ -118,17 +143,10 @@ const animateStack = async (immediate = false, duration = 0.66, ease = 'elastic.
 
   stackOrder.value.forEach((id, position) => {
     const element = cardElements.get(id)
-    const layout = stackLayout[position]
-    if (!element || !layout) return
+    if (!element || !stackLayout[position]) return
 
     gsap.to(element, {
-      xPercent: -50,
-      x: 0,
-      y: toScreen(layout.y),
-      scale: layout.scale,
-      rotate: layout.rotate,
-      opacity: layout.opacity,
-      zIndex: cards.length - position,
+      ...getLayoutVars(position),
       duration: immediate ? 0 : duration,
       ease: immediate ? 'none' : ease,
       overwrite: true,
@@ -140,71 +158,77 @@ const activateCard = async (id: number) => {
   const position = getCardPosition(id)
   if (position <= 0 || isAnimating.value) return
 
+  const currentOrder = [...stackOrder.value]
+  const nextOrder = [...currentOrder.slice(position), ...currentOrder.slice(0, position)]
+
   isAnimating.value = true
-  const nextOrder = [...stackOrder.value.slice(position), ...stackOrder.value.slice(0, position)]
-  const pushedIds = stackOrder.value.slice(0, position)
-  const ghosts = pushedIds
-    .map((cardId) => {
-      const element = cardElements.get(cardId)
-      if (!element) return null
-
-      gsap.killTweensOf(element)
-      return createCardGhost(element)
-    })
-    .filter((ghost): ghost is HTMLElement => Boolean(ghost))
-
-  stackOrder.value = nextOrder
+  visualActiveId.value = id
   await nextTick()
 
-  pushedIds.forEach((cardId) => {
+  cardElements.forEach((element) => gsap.killTweensOf(element))
+
+  const timeline = gsap.timeline()
+  const duration = 0.72
+  const ease = 'power3.inOut'
+
+  currentOrder.forEach((cardId, currentPosition) => {
     const element = cardElements.get(cardId)
     if (!element) return
 
-    const lastLayout = stackLayout[stackLayout.length - 1]
+    const targetPosition = currentPosition - position
+
+    if (targetPosition < 0) {
+      const frontOffset = Math.abs(targetPosition) - 1
+      timeline.to(
+        element,
+        {
+          ...getExitVars(frontOffset),
+          duration,
+          ease,
+          overwrite: true,
+        },
+        0,
+      )
+      return
+    }
+
+    if (!stackLayout[targetPosition]) return
+    timeline.to(
+      element,
+      {
+        ...getLayoutVars(targetPosition),
+        duration,
+        ease,
+        overwrite: true,
+      },
+      0,
+    )
+  })
+
+  await new Promise<void>((resolve) => {
+    if (timeline.duration() === 0) {
+      resolve()
+      return
+    }
+
+    timeline.eventCallback('onComplete', resolve)
+  })
+
+  stackOrder.value = nextOrder
+  visualActiveId.value = null
+  await nextTick()
+
+  currentOrder.forEach((cardId, currentPosition) => {
+    const element = cardElements.get(cardId)
+    const finalPosition = nextOrder.indexOf(cardId)
+    if (!element || finalPosition < 0 || !stackLayout[finalPosition]) return
+
     gsap.set(element, {
-      xPercent: -50,
-      x: 0,
-      y: toScreen(lastLayout.y),
-      rotate: lastLayout.rotate,
-      scale: lastLayout.scale,
-      opacity: 0,
+      ...getLayoutVars(finalPosition),
+      opacity: currentPosition < position ? 0 : stackLayout[finalPosition].opacity,
     })
   })
 
-  ghosts.forEach((ghost, index) => {
-    const duration = 0.74
-    const delay = index * 0.08
-    const targetLayout = index === 0 ? stackLayout[0] : stackLayout[index - 1]
-    const pushedOut = index === 0
-    const targetY = toScreen(targetLayout.y + (pushedOut ? 190 : 0))
-
-    gsap
-      .timeline({
-        delay,
-        onComplete: () => removeCardGhost(ghost),
-      })
-      .to(ghost, {
-        x: toScreen(pushedOut ? -22 : 0),
-        y: targetY,
-        rotate: pushedOut ? -2 : targetLayout.rotate,
-        scale: targetLayout.scale + (pushedOut ? 0.18 : 0),
-        opacity: 1,
-        duration: duration * 0.72,
-        ease: 'power3.out',
-        overwrite: true,
-      })
-      .to(ghost, {
-        y: targetY + toScreen(48),
-        scale: targetLayout.scale + (pushedOut ? 0.26 : 0.08),
-        opacity: 0,
-        duration: duration * 0.28,
-        ease: 'power2.out',
-      })
-    window.setTimeout(() => removeCardGhost(ghost), (duration + delay) * 1000 + 80)
-  })
-
-  await animateStack(false, 0.96, 'power3.out')
-  await new Promise((resolve) => window.setTimeout(resolve, 960 + ghosts.length * 120))
   isAnimating.value = false
 }
 
