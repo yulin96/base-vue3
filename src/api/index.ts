@@ -20,7 +20,7 @@ export const apiMenus = (title: string) => {
         resolve([res.data?.status == 1, res.data])
       })
       .catch(() => {
-        // resolve([false, null])
+        resolve([false, null])
       })
   })
 }
