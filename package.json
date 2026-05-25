@@ -87,7 +87,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^10.4.0",
     "eslint-plugin-vue": "^10.9.1",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "^9.0.1",
     "postcss-preset-env": "^11.3.0",
     "postcss-px-to-viewport-8-plugin": "^1.2.5",
     "prettier": "^3.8.3",
