@@ -21,6 +21,7 @@ input,
 select,
 textarea {
   appearance: none;
+  -webkit-user-select: text;
   user-select: text;
   background: transparent;
   border: none;
