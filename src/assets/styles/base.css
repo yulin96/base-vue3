@@ -29,6 +29,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
   text-autospace: normal;
+  text-wrap: pretty;
 }
 
 select option {
