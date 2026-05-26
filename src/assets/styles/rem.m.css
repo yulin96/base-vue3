@@ -39,6 +39,7 @@ html.cover,
   -webkit-overflow-scrolling: touch;
   position: relative;
   z-index: 0;
+  overflow-y: hidden;
 
   /* overscroll-behavior: none; */
 }
