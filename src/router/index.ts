@@ -54,9 +54,15 @@ const setHistoryStack = (stack: string[]) => {
 
 const MAX_HISTORY = 50
 
-export const replaceTo = (path: RouteLocationRaw) => {
+export const replaceTo = (path: RouteLocationRaw, replaceCurrent = false) => {
   const stack = getHistoryStack()
-  stack.push(router.currentRoute.value.fullPath)
+
+  if (replaceCurrent && stack.length > 0) {
+    stack[stack.length - 1] = router.currentRoute.value.fullPath
+  } else {
+    stack.push(router.currentRoute.value.fullPath)
+  }
+
   if (stack.length > MAX_HISTORY) stack.shift()
   setHistoryStack(stack)
   return router.replace(path)
