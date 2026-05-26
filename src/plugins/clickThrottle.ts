@@ -4,7 +4,7 @@ const DEFAULT_DELAY = 600
 window.addEventListener(
   'click',
   (e) => {
-    const target = (e.target as HTMLElement).closest('[btn]') as HTMLElement
+    const target = (e.target as HTMLElement).closest('[btn], [btn3d]') as HTMLElement
 
     if (!target) return
 
