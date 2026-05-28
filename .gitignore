@@ -41,3 +41,4 @@ vite.config.ts.timestamp-*.mjs
 .env.sentry-build-plugin
 
 .playwright-cli
+.playwright-mcp
