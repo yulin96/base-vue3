@@ -67,3 +67,41 @@ object {
 canvas {
   display: block;
 }
+
+#app {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  word-break: break-all;
+  white-space: pre-line;
+  line-height: 1;
+}
+
+input,
+select,
+textarea {
+  appearance: none;
+  -webkit-user-select: text;
+  user-select: text;
+  background: transparent;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
+  min-width: 0;
+}
+
+input:focus {
+  appearance: none;
+  background: none;
+  border: none;
+}
+
+input,
+textarea {
+  caret-color: currentColor;
+}
+
+input::placeholder,
+select[content=''] {
+  color: currentColor;
+  opacity: 0.4;
+}
