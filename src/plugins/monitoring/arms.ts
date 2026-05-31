@@ -61,10 +61,7 @@ const getResponseStatus = (response?: Response | Record<string, unknown> | null)
  * - unknown          无法归类
  * - success          请求成功
  */
-const diagnoseNetworkError = (
-  response?: Response | Record<string, unknown> | null,
-  error?: unknown,
-): string => {
+const diagnoseNetworkError = (response?: Response | Record<string, unknown> | null, error?: unknown): string => {
   if (isCanceledRequest(error)) return 'canceled'
 
   const errorParts = getErrorParts(error)
@@ -72,7 +69,13 @@ const diagnoseNetworkError = (
     const { code, message, name, type } = errorParts
 
     // 超时
-    if (code === 'econnaborted' || code === 'etimedout' || code === 'timeout' || name === 'timeouterror' || includesAny(message, ['timeout', 'timed out'])) {
+    if (
+      code === 'econnaborted' ||
+      code === 'etimedout' ||
+      code === 'timeout' ||
+      name === 'timeouterror' ||
+      includesAny(message, ['timeout', 'timed out'])
+    ) {
       return 'timeout'
     }
 
@@ -82,7 +85,10 @@ const diagnoseNetworkError = (
     }
 
     // DNS 解析失败
-    if (code === 'enotfound' || includesAny(message, ['dns', 'getaddrinfo', 'name not resolved', 'nodename nor servname'])) {
+    if (
+      code === 'enotfound' ||
+      includesAny(message, ['dns', 'getaddrinfo', 'name not resolved', 'nodename nor servname'])
+    ) {
       return 'dns_error'
     }
 
@@ -97,12 +103,18 @@ const diagnoseNetworkError = (
     }
 
     // SSL/TLS 错误
-    if (includesAny(message, ['ssl', 'tls', 'certificate', 'cert', 'self signed', 'unable to verify']) || code.includes('cert')) {
+    if (
+      includesAny(message, ['ssl', 'tls', 'certificate', 'cert', 'self signed', 'unable to verify']) ||
+      code.includes('cert')
+    ) {
       return 'ssl_error'
     }
 
     // CORS 错误 —— 浏览器 fetch/XHR 跨域失败时 status=0 且 type='opaque'/'error'
-    if (includesAny(message, ['cors', 'cross-origin', 'access-control-allow-origin']) || (type === 'error' && response && (response as Response).type === 'opaque')) {
+    if (
+      includesAny(message, ['cors', 'cross-origin', 'access-control-allow-origin']) ||
+      (type === 'error' && response && (response as Response).type === 'opaque')
+    ) {
       return 'cors_error'
     }
 
@@ -127,12 +139,18 @@ const diagnoseNetworkError = (
     }
 
     // 响应体解析错误
-    if (includesAny(message, ['json', 'unexpected token', 'unexpected end of', 'not valid json']) || name === 'syntaxerror') {
+    if (
+      includesAny(message, ['json', 'unexpected token', 'unexpected end of', 'not valid json']) ||
+      name === 'syntaxerror'
+    ) {
       return 'body_parse_error'
     }
 
     // 网络错误（fetch 在 network failure 时 status=0，message='Network Error' / 'Failed to fetch'）
-    if (code === 'err_network' || includesAny(message, ['network error', 'failed to fetch', 'load failed', 'networkerror'])) {
+    if (
+      code === 'err_network' ||
+      includesAny(message, ['network error', 'failed to fetch', 'load failed', 'networkerror'])
+    ) {
       // 再次确认是否离线
       if (isOffline()) return 'offline'
       return 'network_error'
@@ -161,7 +179,8 @@ export const getNetworkQualityInfo = (): Record<string, string | number> => {
   info.is_online = typeof navigator !== 'undefined' ? (navigator.onLine ? 'yes' : 'no') : 'unknown'
 
   // Navigator.connection (Network Information API)
-  const conn = (navigator as any)?.connection || (navigator as any)?.mozConnection || (navigator as any)?.webkitConnection
+  const conn =
+    (navigator as any)?.connection || (navigator as any)?.mozConnection || (navigator as any)?.webkitConnection
   if (conn) {
     if (conn.effectiveType) info.net_effective_type = conn.effectiveType // 'slow-2g' | '2g' | '3g' | '4g'
     if (typeof conn.downlink === 'number') info.net_downlink = conn.downlink // Mbps

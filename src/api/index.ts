@@ -1,13 +1,13 @@
 import type { ResData } from '@/api/types'
-import { toUrl } from '@/config/urls'
-import { useLockRequest } from '@/hooks/useLockRequest'
+import { useLockRequest } from '@/hooks/network/useLockRequest'
 import { infoToast } from '@/plugins/vant/toast'
 import { replaceTo } from '@/router'
+import { toUrl } from '@/utils/navigation'
 import { isUrl } from '@/utils/validate'
 import type { RouteNamedMap } from 'vue-router/auto-routes'
 
 const { get: getMenus } = useLockRequest()
-export const apiMenus = (title: string) => {
+export const apiMenus = (title: string, url = 'https://cdeapi.event1.cn/api/cmenu') => {
   type T = {
     title: string
     status: number
@@ -15,7 +15,7 @@ export const apiMenus = (title: string) => {
     remark: string
   }
   return new Promise<[boolean, T | null]>((resolve) => {
-    getMenus<ResData<T>>('https://cdeapi.event1.cn/api/cmenu', { title })
+    getMenus<ResData<T>>(url, { title })
       .then((res) => {
         resolve([res.data?.status == 1, res.data])
       })

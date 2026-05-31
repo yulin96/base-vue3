@@ -1,5 +1,5 @@
-import { toUrl } from '@/config/urls'
-import { useLock } from '@/hooks/useLock'
+import { toUrl } from '@/utils/navigation'
+import { useLock } from '@/hooks/state/useLock'
 import { failToast, loadingToast } from '@/plugins/vant/toast'
 import { isWeChat } from '@/utils/platform/ua'
 import { isIOS } from '@vueuse/core'

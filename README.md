@@ -50,19 +50,21 @@ pnpm dev
 
 ## 常用命令
 
-| 命令              | 说明                   |
-| ----------------- | ---------------------- |
-| `pnpm dev`        | 启动开发服务器         |
-| `pnpm type-check` | 运行 `vue-tsc --build` |
-| `pnpm lint`       | ESLint 纯检查         |
-| `pnpm lint:fix`   | ESLint 检查并自动修复 |
-| `pnpm format`     | 格式化 `src/` 下文件   |
-| `pnpm build:only` | 仅打包（Vite build）   |
-| `pnpm deploy:prod` | 使用 `deploy` 模式打包 |
-| `pnpm deploy:test` | 使用 `deploy-test` 模式打包 |
-| `pnpm build`      | 先 type-check 再 build |
-| `pnpm build:deploy` | 先 type-check 再以 `deploy` 模式打包 |
-| `pnpm preview`    | 预览构建产物           |
+| 命令                     | 说明                                  |
+| ------------------------ | ------------------------------------- |
+| `pnpm dev`               | 启动开发服务器                        |
+| `pnpm check`             | 依次执行类型检查和代码检查            |
+| `pnpm type-check`        | 运行 `vue-tsc --build`                |
+| `pnpm lint`              | ESLint 纯检查                         |
+| `pnpm lint:fix`          | ESLint 检查并自动修复                 |
+| `pnpm format`            | 格式化整个工程                        |
+| `pnpm build:only`        | 仅打包（Vite build）                  |
+| `pnpm deploy:prod`       | 使用 `deploy` 模式打包                |
+| `pnpm deploy:test`       | 使用 `deploy-test` 模式打包           |
+| `pnpm build`             | 检查通过后再打包                      |
+| `pnpm build:deploy`      | 检查通过后再以 `deploy` 模式打包      |
+| `pnpm build:deploy:test` | 检查通过后再以 `deploy-test` 模式打包 |
+| `pnpm preview`           | 预览构建产物                          |
 
 ## 环境变量
 
@@ -97,17 +99,17 @@ base-vue3/
 ├─ src/
 │  ├─ api/                    # API 入口与类型
 │  ├─ assets/styles/          # 全局样式、主题、过渡动画
-│  ├─ components/base/        # 基础业务组件
+│  ├─ components/             # 按用途分类的自动注册组件
 │  ├─ config/                 # 环境与常量配置
-│  ├─ hooks/                  # 组合式 hooks
-│  ├─ lang/                   # i18n 资源（当前默认未启用）
+│  ├─ hooks/                  # 按用途分类的组合式 hooks
+│  ├─ locales/                # i18n 资源（当前默认未启用）
 │  ├─ pages/                  # 页面目录（自动生成路由）
-│  ├─ plugins/                # 应用初始化、指令、平台插件
-│  ├─ router/                 # 路由与全局守卫
+│  ├─ plugins/                # 应用初始化、指令、监控和 Vant 配置
+│  ├─ router/                 # 路由、全局守卫和历史记录
 │  ├─ stores/                 # Pinia 状态
-│  ├─ utils/                  # 通用工具函数
+│  ├─ utils/                  # 通用工具、平台能力和旧版实现
 │  └─ main.ts                 # 应用入口
-├─ types/                     # 自动生成类型（组件/路由）
+├─ types/                     # 应用、外部库、可选能力和路由类型
 └─ vite.config.ts             # 构建、样式、发布配置
 ```
 
@@ -115,21 +117,36 @@ base-vue3/
 
 ### 路由约定
 
-- 页面放在 `src/pages` 下即可自动生成路由，类型声明输出到 `types/route-map.d.ts`。
+- 页面放在 `src/pages` 下即可自动生成路由，类型声明输出到 `types/router/route-map.d.ts`。
 - 页面可在 SFC 中通过 `<route lang="json">` 定义 `meta`，用于转场等逻辑。
 - 项目默认通过 `meta.index` 自动推断页面切换动画方向。
 
 ### 组件与样式
 
-- `src/components` 下组件会自动注册，当前基础组件主要放在 `src/components/base`。
+- `src/components` 下组件会自动注册，并按用途生成名称。例如 `src/components/form/keyboard.vue` 对应 `FormKeyboard`。
 - 全局样式入口：`src/assets/styles/main.css`。
 - Tailwind 入口在 `src/assets/styles/tailwind.css`，主题变量与自定义 utility 主要在 `src/assets/styles/theme.css`。
+- `src/assets/styles/rem.m.css` 是移动端页面容器样式，可在 `main.css` 中单独注释停用。
 
 ### 请求与状态
 
 - 请求工具：`src/utils/request.ts`（Axios 实例 + 响应附加请求元数据）。
-- 防重复请求：`src/hooks/useLockRequest.ts`。
-- 用户状态：`src/stores/user.ts`（已启用持久化）。
+- 防重复请求：`src/hooks/network/useLockRequest.ts`。
+- 用户状态：`src/stores/user.ts` 中的 `useStore`（已启用持久化）。
+
+### 多语言
+
+多语言资源保留在 `src/locales`，默认不启用。需要开启时，仅取消 `src/main.ts` 中以下两行注释：
+
+```ts
+// import i18n from '@/locales'
+// app.use(i18n)
+```
+
+### 旧版能力
+
+- 推荐优先使用 `MediaImageScale` 和 `useCanvasFrameAnimation`。
+- 旧版拖动缩放和旧版逐帧动画保留在 `legacy` 目录，便于兼容旧项目。
 
 ### 调试建议
 

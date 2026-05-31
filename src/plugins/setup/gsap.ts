@@ -1,13 +1,6 @@
 import { gsap } from 'gsap'
+
 import { SplitText } from 'gsap/SplitText'
-
-gsap.config({ force3D: true })
-gsap.defaults({
-  duration: 0.36,
-  ease: 'power1.out',
-  overwrite: 'auto',
-})
-
 gsap.registerPlugin(SplitText)
 
 // import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin'
@@ -24,5 +17,12 @@ gsap.registerPlugin(SplitText)
 // import { ScrollTrigger } from 'gsap/ScrollTrigger'
 // import { ScrollSmoother } from 'gsap/ScrollSmoother'
 // gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
+
+gsap.config({ force3D: true })
+gsap.defaults({
+  duration: 0.36,
+  ease: 'power1.out',
+  overwrite: 'auto',
+})
 
 window.gsap = gsap

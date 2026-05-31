@@ -1,19 +1,6 @@
-type QRCodeLib = typeof import('qrcode')
+import { loadQRCodeLib } from '@/utils/qrcode'
 
-let qrCodeLibPromise: Promise<QRCodeLib> | null = null
 let qrCodeTaskId = 0
-
-const loadQRCodeLib = async () => {
-  if (!qrCodeLibPromise) {
-    qrCodeLibPromise = import('qrcode')
-      .then((mod) => ('default' in mod ? (mod.default as unknown as QRCodeLib) : mod))
-      .catch((error) => {
-        qrCodeLibPromise = null
-        throw error
-      })
-  }
-  return qrCodeLibPromise
-}
 
 const removeCurrentQRCode = () => {
   const currentNode = document.querySelector('.code-tips.pc')

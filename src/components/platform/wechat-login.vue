@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toUrl } from '@/config/urls'
+import { toUrl } from '@/utils/navigation'
 import { getOpenId } from '@/utils/platform/getOpenId'
 import { onMounted, ref } from 'vue'
 
@@ -41,7 +41,7 @@ onMounted(async () => {
     <div class="rounded-10 flex w-600 flex-col items-center justify-center bg-white py-60">
       <p class="text-32 mb-40">您还没有登录</p>
       <p class="text-32 mb-40">点击微信一键登录参与活动</p>
-      <button class="rounded-12 flex h-80 w-500 items-center justify-center bg-[#12c164] text-white" @click="openLink">
+      <div class="rounded-12 flex h-80 w-500 items-center justify-center bg-[#12c164] text-white" @click="openLink">
         <svg
           class="icon mr-10 w-60"
           viewBox="0 0 1024 1024"
@@ -61,7 +61,7 @@ onMounted(async () => {
           ></path>
         </svg>
         <p class="text-30">微信一键登录</p>
-      </button>
+      </div>
     </div>
   </van-popup>
 </template>

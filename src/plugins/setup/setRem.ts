@@ -1,5 +1,5 @@
 import '@/assets/styles/pc.css'
-import { createQRCode, removeQRCode } from '@/plugins/createQRCode'
+import { createQRCode, removeQRCode } from '@/utils/dom/createQRCode'
 import { debounce } from 'es-toolkit'
 
 function setRem() {

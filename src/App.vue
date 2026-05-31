@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useLoading } from '@/hooks/useLoading'
-import { useRouteTransition } from '@/hooks/useRouterTransition'
-import { registerWechatShare } from '@/plugins/share'
+import { useRouteTransition } from '@/hooks/interaction/useRouterTransition'
+import { useLoading } from '@/hooks/state/useLoading'
 import { sleep } from '@/utils/common'
+import { registerWechatShare } from '@/utils/platform/wechatShare'
 import { nextTick, onMounted } from 'vue'
 import { Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
@@ -11,12 +11,6 @@ const { start } = useLoading(window.IMG_RESOURCES ?? [])
 const { name } = useRouteTransition()
 
 void registerWechatShare()
-
-// const { locale } = useI18n()
-// const { VITE_APP_LOCALSTORAGE_NAME: localName } = import.meta.env
-// watch(locale, (newVal) => {
-//   localStorage.setItem(`${(localName || 'test')}-local`, newVal)
-// })
 
 const preloadImg = async () => {
   if (document.readyState !== 'complete') return

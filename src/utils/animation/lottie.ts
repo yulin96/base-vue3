@@ -39,9 +39,7 @@ export function showLottie(e: MouseEvent) {
     loop: false,
     autoplay: true,
     renderer: 'canvas',
-    ...(window['loadingLottieJson']
-      ? { animationData: window['loadingLottieJson'] }
-      : { path: LOTTIE_URL }),
+    ...(window['loadingLottieJson'] ? { animationData: window['loadingLottieJson'] } : { path: LOTTIE_URL }),
   })
   animation.setSpeed(1.6)
 

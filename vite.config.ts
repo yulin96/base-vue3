@@ -20,11 +20,8 @@ import pxtorem from '@minko-fe/postcss-pxtorem'
 import postcssPresetEnv from 'postcss-preset-env'
 
 const splitDependencies: Record<string, string> = {
-  arms: '@arms+rum-browser',
   gsap: 'gsap',
-  html2canvas: 'html2canvas',
   lottie: 'lottie-web',
-  zoomist: 'zoomist',
   dingtalk: 'dingtalk-jsapi',
   vueuse: '@vueuse/core',
 }
@@ -33,8 +30,8 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd())
   const isTestDeploy = mode === 'deploy-test'
   const isDeployMode = mode === 'deploy' || isTestDeploy
-  const resolveDeployDir = (dir: string) => {
-    const normalizedDir = dir.trim().replace(/\/+$/, '')
+  const resolveDeployDir = (dir?: string) => {
+    const normalizedDir = (dir || '').trim().replace(/\/+$/, '')
     if (!normalizedDir) return ''
     return isTestDeploy ? `${normalizedDir}/__test__` : normalizedDir
   }
@@ -70,7 +67,7 @@ export default defineConfig(({ command, mode }) => {
         cacheLocation: 'node_modules/.cache-image/',
       }),
       VueRouter({
-        dts: './types/route-map.d.ts',
+        dts: './types/router/route-map.d.ts',
         importMode: command === 'build' ? 'sync' : 'async',
       }),
       vue(),
@@ -222,23 +219,6 @@ export default defineConfig(({ command, mode }) => {
             replace: true,
             minPixelValue: 0,
           }),
-          // postcssPxToViewport({
-          //   unitToConvert: 'px',
-          //   viewportWidth: (file) => (~file.indexOf('node_modules/vant') ? 375 : 1920),
-          //   unitPrecision: 5,
-          //   propList: ['*'],
-          //   viewportUnit: 'vw',
-          //   fontViewportUnit: 'vw',
-          //   selectorBlackList: ['ignore-'],
-          //   minPixelValue: 0,
-          //   mediaQuery: true,
-          //   replace: true,
-          //   exclude: [],
-          //   include: [],
-          //   landscape: false,
-          //   landscapeUnit: 'vw',
-          //   landscapeWidth: 1628,
-          // }),
         ],
       },
     },

@@ -1,4 +1,4 @@
-import { useLock } from '@/hooks/useLock'
+import { useLock } from '@/hooks/state/useLock'
 import { infoToast } from '@/plugins/vant/toast'
 import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/utils/request'
 import { isCanceledRequest } from '@/utils/validate'

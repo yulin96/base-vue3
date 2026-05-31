@@ -1,5 +1,5 @@
 import { infoToast } from '@/plugins/vant/toast'
-import { blobToFile } from '@/utils/convert'
+import { blobToFile } from '@/utils/convert/file'
 import { compressPhoto } from '@/utils/file/compressImage'
 import { v4 } from 'uuid'
 

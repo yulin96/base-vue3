@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useGsapContext } from '@/hooks/useGsapContext'
+import { useGsapContext } from '@/hooks/animation/useGsapContext'
 
 defineOptions({ name: 'Index' })
 definePage({ meta: { index: 10 } })
