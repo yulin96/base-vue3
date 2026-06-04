@@ -41,14 +41,9 @@ if (document.readyState === 'loading') {
   setRem()
 }
 
-let lastDeviceWidth: number | null = null
 window.addEventListener(
   'resize',
   debounce(() => {
-    const newWidth = innerWidth
-    if (lastDeviceWidth == null || Math.abs(newWidth - lastDeviceWidth) > 0.5) {
-      setRem()
-      lastDeviceWidth = newWidth
-    }
+    setRem()
   }, 100),
 )
