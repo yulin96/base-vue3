@@ -117,7 +117,7 @@ base-vue3/
 
 ### 路由约定
 
-- 页面放在 `src/pages` 下即可自动生成路由，类型声明输出到 `types/router/route-map.d.ts`。
+- 页面放在 `src/pages` 下即可自动生成路由，类型声明输出到 `types/route-map.d.ts`。
 - 页面可在 SFC 中通过 `<route lang="json">` 定义 `meta`，用于转场等逻辑。
 - 项目默认通过 `meta.index` 自动推断页面切换动画方向。
 

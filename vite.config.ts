@@ -67,7 +67,7 @@ export default defineConfig(({ command, mode }) => {
         cacheLocation: 'node_modules/.cache-image/',
       }),
       VueRouter({
-        dts: './types/router/route-map.d.ts',
+        dts: './types/route-map.d.ts',
         importMode: command === 'build' ? 'sync' : 'async',
       }),
       vue(),
