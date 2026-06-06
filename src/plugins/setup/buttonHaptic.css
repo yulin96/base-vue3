@@ -13,8 +13,6 @@
 .btn-haptic-switch,
 .btn-haptic-switch:focus {
   position: absolute;
-  top: 50%;
-  left: 50%;
   margin: 0;
   appearance: auto !important;
   -webkit-appearance: auto !important;
@@ -23,7 +21,7 @@
   outline: revert !important;
   opacity: 0;
   cursor: pointer;
-  transform: translate(-50%, -50%) scale(10);
+  inset: 0;
   transform-origin: center;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
