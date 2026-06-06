@@ -30,18 +30,20 @@ const clickBack = async () => {
     magnetic="x"
     :gap="12"
     :teleport="null"
+    btn
     class="center"
     @click="clickBack"
   >
-    <img btn class="size-full" src="../../assets/images/back.svg" alt="" draggable="false" />
+    <img class="size-full" src="../../assets/images/back.svg" alt="" draggable="false" />
   </van-floating-bubble>
 
   <div
     v-else
+    btn
     class="center fixed right-20 bottom-300"
     :style="{ width: `${size * (height / 720)}px`, height: `${size * (height / 720)}px` }"
     @click="clickBack"
   >
-    <img btn class="size-full" src="../../assets/images/back.svg" alt="" draggable="false" />
+    <img class="size-full" src="../../assets/images/back.svg" alt="" draggable="false" />
   </div>
 </template>
