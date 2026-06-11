@@ -46,11 +46,3 @@ onMounted(async () => {
     </template>
   </router-view>
 </template>
-
-<style>
-html,
-body,
-.scroll-box {
-  background-color: var(--main-color);
-}
-</style>
