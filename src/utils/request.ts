@@ -55,7 +55,7 @@ export const axiosPost = <T = any>(
   return instance
     .post(url, data, {
       ...(config ?? {}),
-      postDataType: dataType,
+      ...(dataType === 'FormData' ? { postDataType: dataType } : undefined),
     } as PostRequestConfig)
     .then((response) => {
       return response.data as T
