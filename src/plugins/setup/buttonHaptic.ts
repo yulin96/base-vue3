@@ -44,7 +44,7 @@ const addIOSHapticSwitch = (button: HTMLElement) => {
 }
 
 const setupButtons = (root: ParentNode) => {
-  if (root instanceof HTMLElement && root.hasAttribute('btn')) addIOSHapticSwitch(root)
+  if (root instanceof HTMLElement && root.hasAttribute('tap')) addIOSHapticSwitch(root)
   root.querySelectorAll<HTMLElement>('[tap]').forEach(addIOSHapticSwitch)
 }
 
