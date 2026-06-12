@@ -45,7 +45,7 @@ const addIOSHapticSwitch = (button: HTMLElement) => {
 
 const setupButtons = (root: ParentNode) => {
   if (root instanceof HTMLElement && root.hasAttribute('btn')) addIOSHapticSwitch(root)
-  root.querySelectorAll<HTMLElement>('[btn]').forEach(addIOSHapticSwitch)
+  root.querySelectorAll<HTMLElement>('[tap]').forEach(addIOSHapticSwitch)
 }
 
 export function setupButtonHaptic() {
@@ -55,7 +55,7 @@ export function setupButtonHaptic() {
   setupButtons(document)
 
   document.addEventListener('click', (event) => {
-    const button = (event.target as HTMLElement | null)?.closest<HTMLElement>('[btn]')
+    const button = (event.target as HTMLElement | null)?.closest<HTMLElement>('[tap]')
     if (button && button.dataset.disabled !== 'true') triggerButtonHaptic()
   })
 
