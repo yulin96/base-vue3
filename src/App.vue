@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { useRouteTransition } from '@/hooks/interaction/useRouterTransition'
-import { useLoading } from '@/hooks/state/useLoading'
-import { sleep } from '@/utils/common'
+import { useIdleLoading } from '@/hooks/state/useIdleLoading'
 import { registerWechatShare } from '@/utils/platform/wechatShare'
 import { nextTick, onMounted } from 'vue'
 import { Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
 
-const { start } = useLoading(window.IMG_RESOURCES ?? [])
+const { start } = useIdleLoading(window.IMG_RESOURCES ?? [])
 const { name } = useRouteTransition()
 
 void registerWechatShare()
@@ -17,8 +16,7 @@ const preloadImg = async () => {
   document.removeEventListener('readystatechange', preloadImg)
 
   await nextTick()
-  await sleep(1200)
-  requestAnimationFrame(start)
+  start()
 }
 
 onMounted(async () => {

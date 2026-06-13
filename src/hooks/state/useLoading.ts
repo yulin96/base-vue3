@@ -68,7 +68,7 @@ export function useLoading(imgList: string[], next?: () => void, delay: number =
 
 export function useAutoLoading(speed: number = 20, next?: () => void) {
   const count = shallowRef(0)
-  let intervalId: NodeJS.Timeout | undefined
+  let intervalId: ReturnType<typeof setInterval> | undefined
 
   const start = () => {
     stop() // 先停止之前的定时器
