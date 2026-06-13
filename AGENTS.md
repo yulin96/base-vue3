@@ -74,12 +74,6 @@
 - 需要开启时，取消 `src/main.ts` 中导入和启用 `i18n` 的两行注释。
 - 页面切换语言统一使用 `src/locales` 导出的 `setLocale`。
 
-## Commit 规范
-
-- 所有的 git commit 提交信息必须使用 **中文** 编写。
-- 遵循 Conventional Commits 规范，格式为：`<type>(<scope>): <中文描述>`。
-- 例如：`feat(auth): 新增用户登录功能` 或 `fix(ui): 修复按钮在 iOS 下的对齐问题`。
-
 ## 给 Agent 的一句话
 
 - 把这个项目当成“默认手机端、750 设计稿、PC 只做自动居中预览”的 H5 工程来写。
