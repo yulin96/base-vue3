@@ -12,9 +12,11 @@ export function showScan() {
     if (isWeChat()) {
       try {
         const { wechatScan } = await import('@/utils/platform/wechat')
-        resolve((await wechatScan()) || '')
-      } catch {
-        resolve('')
+        const result = await wechatScan()
+        if (result) resolve(result)
+        else reject('取消扫码')
+      } catch (error) {
+        reject(error)
       } finally {
         isScanning = false
       }
@@ -25,10 +27,11 @@ export function showScan() {
       biz.util
         .scan({ type: 'qrCode' })
         .then((res) => {
-          resolve(res.text || '')
+          if (res.text) resolve(res.text)
+          else reject('取消扫码')
         })
-        .catch(() => {
-          resolve('')
+        .catch((error) => {
+          reject(error)
         })
         .finally(() => {
           isScanning = false
@@ -36,8 +39,17 @@ export function showScan() {
       return
     }
 
-    isScanning = false
-    myDialog({ message: '请在微信或钉钉中使用扫码功能' })
-    resolve('')
+    let browserScanner: typeof import('@/utils/platform/browserScan') | undefined
+    try {
+      browserScanner = await import('@/utils/platform/browserScan')
+      resolve(await browserScanner.browserScan())
+    } catch (error) {
+      if (error !== browserScanner?.SCAN_CANCELLED) {
+        myDialog({ message: '无法打开相机，请检查相机权限并使用安全网址访问' })
+      }
+      reject(error)
+    } finally {
+      isScanning = false
+    }
   })
 }
