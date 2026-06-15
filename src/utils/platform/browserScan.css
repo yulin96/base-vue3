@@ -5,6 +5,8 @@
   overflow: hidden;
   color: #fff;
   background: #000;
+
+  --browser-scan-scale: 0.5;
 }
 
 .browser-scan__reader {
@@ -38,29 +40,29 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: calc(24px * var(--browser-scan-scale));
   align-items: center;
   justify-content: center;
   background: #000;
-  font-size: 26px;
+  font-size: calc(26px * var(--browser-scan-scale));
 }
 
 .browser-scan__spinner {
-  width: 64px;
-  height: 64px;
-  border: 6px solid rgb(255 255 255 / 25%);
+  width: calc(64px * var(--browser-scan-scale));
+  height: calc(64px * var(--browser-scan-scale));
+  border: calc(6px * var(--browser-scan-scale)) solid rgb(255 255 255 / 25%);
   border-top-color: #10b981;
   border-radius: 50%;
   animation: browser-scan-spin 0.8s linear infinite;
 }
 
 .browser-scan__status {
-  margin-bottom: 48px;
-  padding: 12px 28px;
+  margin-bottom: calc(48px * var(--browser-scan-scale));
+  padding: calc(12px * var(--browser-scan-scale)) calc(28px * var(--browser-scan-scale));
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 999px;
   background: rgb(0 0 0 / 60%);
-  font-size: 26px;
+  font-size: calc(26px * var(--browser-scan-scale));
   font-weight: 500;
   letter-spacing: 1px;
   backdrop-filter: blur(8px);
@@ -69,59 +71,59 @@
 
 .browser-scan__frame {
   position: relative;
-  width: min(560px, calc(100% - 96px));
+  width: min(calc(560px * var(--browser-scan-scale)), calc(100% - calc(96px * var(--browser-scan-scale))));
   aspect-ratio: 1;
-  border-radius: 24px;
+  border-radius: calc(24px * var(--browser-scan-scale));
   box-shadow: 0 0 0 9999px rgb(0 0 0 / 45%);
 }
 
 .browser-scan__corner {
   position: absolute;
-  width: 64px;
-  height: 64px;
-  border: 8px solid #10b981;
+  width: calc(64px * var(--browser-scan-scale));
+  height: calc(64px * var(--browser-scan-scale));
+  border: calc(8px * var(--browser-scan-scale)) solid #10b981;
 }
 
 .browser-scan__corner--top-left {
-  top: -4px;
-  left: -4px;
+  top: calc(-4px * var(--browser-scan-scale));
+  left: calc(-4px * var(--browser-scan-scale));
   border-right: 0;
   border-bottom: 0;
-  border-radius: 24px 0 0;
+  border-radius: calc(24px * var(--browser-scan-scale)) 0 0;
 }
 
 .browser-scan__corner--top-right {
-  top: -4px;
-  right: -4px;
+  top: calc(-4px * var(--browser-scan-scale));
+  right: calc(-4px * var(--browser-scan-scale));
   border-bottom: 0;
   border-left: 0;
-  border-radius: 0 24px 0 0;
+  border-radius: 0 calc(24px * var(--browser-scan-scale)) 0 0;
 }
 
 .browser-scan__corner--bottom-left {
-  bottom: -4px;
-  left: -4px;
+  bottom: calc(-4px * var(--browser-scan-scale));
+  left: calc(-4px * var(--browser-scan-scale));
   border-top: 0;
   border-right: 0;
-  border-radius: 0 0 0 24px;
+  border-radius: 0 0 0 calc(24px * var(--browser-scan-scale));
 }
 
 .browser-scan__corner--bottom-right {
-  right: -4px;
-  bottom: -4px;
+  right: calc(-4px * var(--browser-scan-scale));
+  bottom: calc(-4px * var(--browser-scan-scale));
   border-top: 0;
   border-left: 0;
-  border-radius: 0 0 24px;
+  border-radius: 0 0 calc(24px * var(--browser-scan-scale));
 }
 
 .browser-scan__line {
   position: absolute;
   top: 4%;
-  right: 16px;
-  left: 16px;
-  height: 4px;
+  right: calc(16px * var(--browser-scan-scale));
+  left: calc(16px * var(--browser-scan-scale));
+  height: calc(4px * var(--browser-scan-scale));
   background: linear-gradient(90deg, transparent, #10b981, transparent);
-  box-shadow: 0 0 16px #10b981;
+  box-shadow: 0 0 calc(16px * var(--browser-scan-scale)) #10b981;
   opacity: 0.8;
   animation: browser-scan-line 3s linear infinite;
 }
@@ -129,16 +131,16 @@
 .browser-scan__close {
   position: absolute;
   z-index: 4;
-  top: calc(32px + env(safe-area-inset-top));
-  right: 32px;
+  top: calc(calc(32px * var(--browser-scan-scale)) + env(safe-area-inset-top));
+  right: calc(32px * var(--browser-scan-scale));
   display: flex;
-  width: 72px;
-  height: 72px;
+  width: calc(72px * var(--browser-scan-scale));
+  height: calc(72px * var(--browser-scan-scale));
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   background: rgb(255 255 255 / 18%);
-  font-size: 48px;
+  font-size: calc(48px * var(--browser-scan-scale));
   font-weight: 200;
   line-height: 1;
 }

@@ -43,3 +43,7 @@ html.cover,
 
   /* overscroll-behavior: none; */
 }
+
+html.cover .browser-scan {
+  --browser-scan-scale: 1;
+}
