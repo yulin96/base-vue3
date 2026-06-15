@@ -68,11 +68,11 @@ export function showScan() {
             await html5Qrcode.start(
               { facingMode: 'environment' },
               {
+                disableFlip: false,
                 fps: 10,
-                qrbox: { width: 250, height: 250 },
-                videoConstraints: {
-                  width: { ideal: 720 },
-                  height: { ideal: 1280 },
+                qrbox: {
+                  width: 250,
+                  height: 250,
                 },
               },
               async (decodedText) => {
@@ -153,7 +153,7 @@ function injectStyles() {
     #qr-scanner-reader video {
       width: 100% !important;
       height: 100% !important;
-      object-fit: cover !important;
+      // object-fit: cover !important;
     }
     .qr-scan-ui-layer {
       position: absolute;
@@ -169,8 +169,8 @@ function injectStyles() {
     }
     .qr-scan-box-wrapper {
       position: relative;
-      width: 280px;
-      height: 280px;
+      width: 250px;
+      height: 250px;
       z-index: 5;
     }
     .qr-scan-box {
@@ -274,7 +274,8 @@ function injectStyles() {
       z-index: 10;
     }
     .qr-scan-info {
-      margin-top: 24px;
+      position: absolute;
+      margin-top: 300px;
       color: rgba(255, 255, 255, 0.8);
       font-size: 14px;
       text-align: center;
@@ -300,23 +301,6 @@ function createScanUI() {
 
   container.innerHTML = `
     <div id="${readerId}"></div>
-    <div class="qr-scan-loading" id="qr-scan-loading-el">
-      <div class="qr-scan-spinner"></div>
-      <div class="qr-scan-loading-text">正在启动相机...</div>
-    </div>
-    <div class="qr-scan-ui-layer">
-      <button id="qr-scanner-close" class="qr-scan-close-btn" aria-label="关闭">✕</button>
-      <div class="qr-scan-box-wrapper">
-        <div class="qr-scan-box">
-          <div class="qr-scan-line"></div>
-        </div>
-        <div class="qr-scan-corner qr-scan-corner-tl"></div>
-        <div class="qr-scan-corner qr-scan-corner-tr"></div>
-        <div class="qr-scan-corner qr-scan-corner-bl"></div>
-        <div class="qr-scan-corner qr-scan-corner-br"></div>
-      </div>
-      <div class="qr-scan-info">将二维码放入框内，即可自动扫描</div>
-    </div>
   `
 
   document.body.appendChild(container)
