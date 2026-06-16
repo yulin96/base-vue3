@@ -1,9 +1,9 @@
 import { useLock } from '@/hooks/state/useLock'
-import { infoToast } from '@/plugins/vant/toast'
 import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/utils/request'
 import { isCanceledRequest } from '@/utils/validate'
 import type { AxiosRequestConfig } from 'axios'
 import { readonly } from 'vue'
+import { toast } from 'vue-sonner'
 
 export function useLockRequest(disableLock = false, delay = 500) {
   const [status, lock, unLock] = useLock()
@@ -21,7 +21,7 @@ export function useLockRequest(disableLock = false, delay = 500) {
         .catch((err) => {
           reject(err)
           if (!isCanceledRequest(err)) {
-            infoToast('请求中，请稍后重试')
+            toast.warning('请求中，请稍后重试')
           }
         })
         .finally(() => {

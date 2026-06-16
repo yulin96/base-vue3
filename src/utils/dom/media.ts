@@ -1,7 +1,7 @@
-import { infoToast } from '@/plugins/vant/toast'
 import { blobToFile } from '@/utils/convert/file'
 import { compressPhoto } from '@/utils/file/compressImage'
 import { v4 } from 'uuid'
+import { toast } from 'vue-sonner'
 
 /**
  * 获取用户图片
@@ -39,7 +39,7 @@ export function getUserImage(option?: Compressor.Options) {
           resolve(blobToFile(f, `${v4()}.jpg`))
         })
         .catch(() => {
-          infoToast('请上传有效的图片文件')
+          toast.warning('请上传有效的图片文件')
           resolve()
         })
         .finally(cleanup)
