@@ -35,7 +35,8 @@ html.cover,
 
 .content {
   width: 100%;
-  min-height: var(--app-height, 100vh);
+  min-height: max(var(--app-height, 100vh), 100vh);
+  min-height: max(var(--app-height, 100dvh), 100vh);
   -webkit-overflow-scrolling: touch;
   position: relative;
   z-index: 0;
