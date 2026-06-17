@@ -6,6 +6,16 @@
   --radius-full: 9999px;
 }
 
+/* html {
+  --page-width: 1920;
+  --page-height: 1080;
+
+  --page-width-size: calc(100vw / var(--page-width) * 4);
+  --page-height-size: calc(100vh / var(--page-height) * 4);
+
+  font-size: min(var(--page-width-size), var(--page-height-size));
+} */
+
 @theme {
   --color-*: initial;
 
