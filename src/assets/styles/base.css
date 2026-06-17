@@ -17,6 +17,10 @@
   user-select: none;
 }
 
+number-flow-vue {
+  --number-flow-mask-width: 0px;
+}
+
 html,
 body {
   /* width: 750px;
