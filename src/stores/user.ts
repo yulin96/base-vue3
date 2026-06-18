@@ -22,14 +22,13 @@ export const useStore = defineStore(
       ignore: {} as Partial<Record<string, unknown>>,
     })
 
-    const user = ref({
-      ...createInitialState(),
-      clear() {
-        Object.assign(this, createInitialState())
-      },
-    })
+    const user = ref(createInitialState())
 
-    return { user }
+    const clear = () => {
+      user.value = createInitialState()
+    }
+
+    return { user, clear }
   },
   {
     persist: {

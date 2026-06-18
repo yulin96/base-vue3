@@ -1,11 +1,14 @@
-import { biz, env } from 'dingtalk-jsapi'
-
 export function isDingDing() {
-  return env.platform !== 'notInDingTalk'
+  return /DingTalk/i.test(navigator.userAgent)
 }
 
-export function hideDingTalkShare() {
+export async function hideDingTalkShare() {
   if (!isDingDing()) return
 
-  void biz.navigation.setRight({ show: false }).catch(console.log)
+  try {
+    const { biz } = await import('dingtalk-jsapi')
+    void biz.navigation.setRight({ show: false }).catch(console.log)
+  } catch (error) {
+    console.error('隐藏钉钉分享按钮失败:', error)
+  }
 }

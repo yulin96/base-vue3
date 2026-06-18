@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { useScroll } from '@vueuse/core'
-import { computed, onMounted, onUpdated, ref, useTemplateRef, watch } from 'vue'
+import { useScroll, useResizeObserver } from '@vueuse/core'
+import { throttle } from 'es-toolkit'
+import { computed, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { isIOS } from '@/utils/platform/ua'
 
 const props = withDefaults(
   defineProps<{
@@ -21,6 +23,10 @@ const props = withDefaults(
     overlay?: boolean
 
     shadow?: boolean
+
+    throttleDelay?: number
+
+    preventOverscroll?: boolean
   }>(),
   {
     barWidth: 6,
@@ -32,6 +38,8 @@ const props = withDefaults(
     radius: 999,
     overlay: false,
     shadow: false,
+    throttleDelay: 0,
+    preventOverscroll: false,
   },
 )
 
@@ -40,12 +48,34 @@ const emit = defineEmits<{
 }>()
 
 const scrollRef = useTemplateRef<HTMLElement>('scrollRef')
+const contentRef = useTemplateRef<HTMLElement>('contentRef')
 
 const { y: scrollTop, arrivedState } = useScroll(scrollRef)
 
+// 动态创建节流的事件触发器
+let triggerEmit = (state: any) => {
+  emit('scroll', state)
+}
+
+watch(
+  () => props.throttleDelay,
+  (delay) => {
+    if (delay && delay > 0) {
+      triggerEmit = throttle((state: any) => {
+        emit('scroll', state)
+      }, delay)
+    } else {
+      triggerEmit = (state: any) => {
+        emit('scroll', state)
+      }
+    }
+  },
+  { immediate: true },
+)
+
 // 监听滚动状态并通过事件抛出
 watch([arrivedState, scrollTop], () => {
-  emit('scroll', {
+  triggerEmit({
     ...arrivedState,
     y: scrollTop.value,
   })
@@ -62,9 +92,54 @@ const updateState = () => {
   }
 }
 
-// 初始化及内容变化时更新
+// 使用 ResizeObserver 监听容器和内容变化，规避 onUpdated 死循环隐患
+useResizeObserver(scrollRef, updateState)
+useResizeObserver(contentRef, updateState)
+
+// 初始化更新
 onMounted(updateState)
-onUpdated(updateState)
+
+// iOS 16 以下滚动穿透与橡皮筋效果边界拦截优化
+let startY = 0
+
+const handleTouchStart = (e: TouchEvent) => {
+  startY = e.touches[0].clientY
+}
+
+const handleTouchMove = (e: TouchEvent) => {
+  if (!scrollRef.value || !props.preventOverscroll) return
+  const el = scrollRef.value
+  const currentY = e.touches[0].clientY
+  const dy = currentY - startY
+  const scrollTopVal = el.scrollTop
+  const scrollHeightVal = el.scrollHeight
+  const clientHeightVal = el.clientHeight
+
+  // 下拉且已在顶部
+  if (dy > 0 && scrollTopVal <= 0) {
+    if (e.cancelable) e.preventDefault()
+  }
+  // 上拉且已在底部
+  if (dy < 0 && scrollTopVal + clientHeightVal >= scrollHeightVal) {
+    if (e.cancelable) e.preventDefault()
+  }
+}
+
+watch(
+  [() => props.preventOverscroll, scrollRef],
+  ([prevent, el]) => {
+    if (!el) return
+    // 仅在 iOS 且开启拦截时绑定事件以防性能损耗
+    if (prevent && isIOS()) {
+      el.addEventListener('touchstart', handleTouchStart, { passive: true })
+      el.addEventListener('touchmove', handleTouchMove, { passive: false })
+    } else {
+      el.removeEventListener('touchstart', handleTouchStart)
+      el.removeEventListener('touchmove', handleTouchMove)
+    }
+  },
+  { immediate: true },
+)
 
 // 计算滑块高度
 const thumbHeight = computed(() => {
@@ -125,7 +200,9 @@ defineExpose({
 <template>
   <div class="group relative h-full w-full overflow-hidden" :style="wrapperStyle">
     <div ref="scrollRef" class="scrollbar-hide h-full w-full overflow-x-hidden overflow-y-auto overscroll-none">
-      <slot />
+      <div ref="contentRef">
+        <slot />
+      </div>
     </div>
 
     <div

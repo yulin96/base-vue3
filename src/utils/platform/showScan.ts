@@ -1,7 +1,6 @@
 import { myDialog } from '@/plugins/vant/dialog'
 import { isDingDing } from '@/utils/platform/dingtalk'
 import { isWeChat } from '@/utils/platform/ua'
-import { biz } from 'dingtalk-jsapi'
 
 let isScanning = false
 export function showScan() {
@@ -24,16 +23,23 @@ export function showScan() {
     }
 
     if (isDingDing()) {
-      biz.util
-        .scan({ type: 'qrCode' })
-        .then((res) => {
-          if (res.text) resolve(res.text)
-          else reject('取消扫码')
+      import('dingtalk-jsapi')
+        .then(({ biz }) => {
+          biz.util
+            .scan({ type: 'qrCode' })
+            .then((res) => {
+              if (res.text) resolve(res.text)
+              else reject('取消扫码')
+            })
+            .catch((error) => {
+              reject(error)
+            })
+            .finally(() => {
+              isScanning = false
+            })
         })
         .catch((error) => {
           reject(error)
-        })
-        .finally(() => {
           isScanning = false
         })
       return
