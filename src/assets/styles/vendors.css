@@ -80,20 +80,31 @@ body .van-dialog {
   border: none;
   border-radius: calc(var(--base-scale, 1) * 36 * 1px);
   corner-shape: squircle;
-  background:
-    radial-gradient(
-      ellipse at 100% 100%,
-      color-mix(in srgb, var(--van-primary-color) 24%, transparent),
-      transparent 58%
-    ),
-    #fffffff9;
+  background: radial-gradient(ellipse at 100% 100%, rgba(52, 75, 182, 0.24), transparent 58%), #fffffff9;
   box-shadow:
     inset 0 1px 0 #fffffffa,
     inset 0 0 0 1px #e6eaf2cc,
     0 calc(var(--base-scale, 1) * 12 * 1px) calc(var(--base-scale, 1) * 36 * 1px) #0206171f,
-    0 calc(var(--base-scale, 1) * 18 * 1px) calc(var(--base-scale, 1) * 54 * 1px)
-      color-mix(in srgb, var(--van-primary-color) 16%, transparent);
+    0 calc(var(--base-scale, 1) * 18 * 1px) calc(var(--base-scale, 1) * 54 * 1px) rgba(52, 75, 182, 0.16);
   backdrop-filter: saturate(180%) blur(24px);
+}
+
+@supports (background: color-mix(in srgb, red, blue)) {
+  body .van-dialog {
+    background:
+      radial-gradient(
+        ellipse at 100% 100%,
+        color-mix(in srgb, var(--van-primary-color) 24%, transparent),
+        transparent 58%
+      ),
+      #fffffff9;
+    box-shadow:
+      inset 0 1px 0 #fffffffa,
+      inset 0 0 0 1px #e6eaf2cc,
+      0 calc(var(--base-scale, 1) * 12 * 1px) calc(var(--base-scale, 1) * 36 * 1px) #0206171f,
+      0 calc(var(--base-scale, 1) * 18 * 1px) calc(var(--base-scale, 1) * 54 * 1px)
+        color-mix(in srgb, var(--van-primary-color) 16%, transparent);
+  }
 }
 
 body .van-dialog__header {
@@ -123,20 +134,34 @@ body .van-dialog--round-button .van-dialog__footer .van-dialog__confirm {
   background: var(--van-primary-color);
   box-shadow:
     inset 0 1px 0 #ffffff4d,
-    0 calc(var(--base-scale, 1) * 6 * 1px) calc(var(--base-scale, 1) * 14 * 1px)
-      color-mix(in srgb, var(--van-primary-color) 28%, transparent);
+    0 calc(var(--base-scale, 1) * 6 * 1px) calc(var(--base-scale, 1) * 14 * 1px) rgba(52, 75, 182, 0.28);
   flex: 1.5;
+}
+
+@supports (background: color-mix(in srgb, red, blue)) {
+  body .van-dialog--round-button .van-dialog__footer .van-dialog__confirm {
+    box-shadow:
+      inset 0 1px 0 #ffffff4d,
+      0 calc(var(--base-scale, 1) * 6 * 1px) calc(var(--base-scale, 1) * 14 * 1px)
+        color-mix(in srgb, var(--van-primary-color) 28%, transparent);
+  }
 }
 
 body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel {
   border-radius: 9999px;
-  background: color-mix(in srgb, #ffffff 32%, transparent);
+  background: rgba(255, 255, 255, 0.32);
   margin-right: 0;
   box-shadow:
     inset 0 0 0 1px #d6dbe5d9,
     inset 0 1px 0 #ffffffe0;
   backdrop-filter: saturate(160%) blur(12px);
   flex: 1;
+}
+
+@supports (background: color-mix(in srgb, red, blue)) {
+  body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel {
+    background: color-mix(in srgb, #ffffff 32%, transparent);
+  }
 }
 
 body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel .van-button__content {
