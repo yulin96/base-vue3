@@ -13,10 +13,6 @@ dist
 dist-ssr
 coverage
 *.local
-__temp/**
-
-/cypress/videos/
-/cypress/screenshots/
 
 # Editor directories and files
 .vscode/*
@@ -27,6 +23,20 @@ __temp/**
 *.njsproj
 *.sln
 *.sw?
+
+*.tsbuildinfo
+
+.eslintcache
+
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# Vitest
+__screenshots__/
+
+# Vite
+*.timestamp-*-*.mjs
 
 stats.html
 components.d.ts
