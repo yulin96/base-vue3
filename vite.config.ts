@@ -96,7 +96,8 @@ export default defineConfig(({ command, mode }) => {
         uploadDir: `H5/zz/auto2/${ossRootDir}`,
         skip: ['**/*.html', '**/pluginWebUpdateNotice/**'],
         overwrite: true,
-        autoDelete: true,
+        // autoDelete: true,
+        manifest: true,
 
         configBase: `${process.env.zBucketAlias || ''}/H5/zz/auto2/${ossRootDir}`,
       }),
@@ -109,8 +110,8 @@ export default defineConfig(({ command, mode }) => {
         open: !!ftpDir && isDeployMode,
         uploadPath: ftpDir,
         singleBack: true,
-        // autoUpload: true,
-        // defaultFtp: process.env.zH5FtpName,
+        autoUpload: true,
+        defaultFtp: process.env.zH5FtpName,
         ftps: [
           {
             name: process.env.zH5FtpName || process.env.zH5FtpAlias || '',
@@ -162,6 +163,9 @@ export default defineConfig(({ command, mode }) => {
     ],
     resolve: {
       tsconfigPaths: true,
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
     },
     base: './',
     build: {

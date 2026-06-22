@@ -32,7 +32,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Toaster rich-colors :duration="3000" position="top-center" :visible-toasts="2"></Toaster>
+  <teleport to="body">
+    <Toaster rich-colors :duration="3000" position="top-center" :visible-toasts="2"></Toaster>
+  </teleport>
 
   <router-view v-slot="{ Component }">
     <template v-if="Component">
