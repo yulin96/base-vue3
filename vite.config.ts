@@ -99,7 +99,7 @@ export default defineConfig(({ command, mode }) => {
         // autoDelete: true,
         manifest: true,
 
-        configBase: `${process.env.zBucketAlias || ''}/H5/zz/auto2/${ossRootDir}`,
+        // configBase: `${process.env.zBucketAlias || ''}/H5/zz/auto2/${ossRootDir}`,
       }),
       vitePluginOrganize({
         config: {
