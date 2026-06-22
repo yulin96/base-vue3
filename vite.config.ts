@@ -162,6 +162,9 @@ export default defineConfig(({ command, mode }) => {
     ],
     resolve: {
       tsconfigPaths: true,
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
     },
     base: './',
     build: {
