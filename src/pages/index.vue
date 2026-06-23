@@ -26,7 +26,7 @@ const test1 = () => {
         { src: photo, xMm: 1.7, yMm: 1.5, widthMm: 152, heightMm: 104, fit: 'cover', rotate: 270 },
         { src: photo2, xMm: 100, yMm: 40.8, widthMm: 20, heightMm: 20, fit: 'cover', rotate: 270 },
       ],
-      printer: { silent: true, copies: 1 },
+      printer: { silent: true, copies: 1, useDefaultPageSize: true },
     })
   })
 }

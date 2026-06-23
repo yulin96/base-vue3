@@ -1,5 +1,3 @@
-
-
 export type PrintPagePreset =
   | 'A0'
   | 'A1'
@@ -54,6 +52,7 @@ export type PrintRequest = {
     silent?: boolean
     deviceName?: string
     copies?: number
+    useDefaultPageSize?: boolean
   }
 }
 
