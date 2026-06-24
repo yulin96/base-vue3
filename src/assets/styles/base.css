@@ -110,6 +110,10 @@ select[content=''] {
   opacity: 0.4;
 }
 
+number-flow-vue {
+  --number-flow-mask-width: 0px;
+}
+
 /* @font-face {
   font-family: aliBaBa;
   src:
