@@ -21,7 +21,7 @@ export function useLockRequest(disableLock = false, delay = 500) {
         .catch((err) => {
           reject(err)
           if (!isCanceledRequest(err)) {
-            toast.warning('请求中，请稍后重试')
+            toast.warning('正在处理中...')
           }
         })
         .finally(() => {
