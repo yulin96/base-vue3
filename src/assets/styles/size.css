@@ -1,15 +1,3 @@
-@utility text-* {
-  font-size: calc(--value(integer) * 1px);
-}
-
-@utility rounded-* {
-  border-radius: calc(--value(integer) * 1px);
-}
-
-@utility tracking-* {
-  letter-spacing: calc(--value(integer) * 1px);
-}
-
 @theme {
   --spacing-1: 1px;
   --spacing-2: 2px;
