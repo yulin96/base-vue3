@@ -4,7 +4,15 @@ export function focusDom(name: string) {
   const dom = document.querySelector(`[${name}]`)
 
   if (dom) {
-    dom.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const rect = dom.getBoundingClientRect()
+    const scrollBox = dom.closest('.scroll-box')
+    const visibleRect = scrollBox?.getBoundingClientRect()
+    const top = visibleRect?.top ?? 0
+    const bottom = visibleRect?.bottom ?? (window.innerHeight || document.documentElement.clientHeight)
+
+    if (rect.top < top || rect.bottom > bottom) {
+      dom.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
 
     const oldTimeline = focusMap.get(dom)
     if (oldTimeline) oldTimeline.kill()
