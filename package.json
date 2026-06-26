@@ -15,7 +15,6 @@
     "build:deploy": "run-p check deploy:prod",
     "build:deploy:test": "run-p check deploy:test",
     "preview": "vite preview",
-    "setup:pc": "node build/setupPcProject.ts",
     "build:only": "vite build",
     "deploy:prod": "vite build --mode deploy",
     "deploy:test": "vite build --mode deploy-test",
