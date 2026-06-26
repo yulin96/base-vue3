@@ -171,6 +171,7 @@ export default defineConfig(({ command, mode }) => {
       assetsDir: 'assets',
       chunkSizeWarningLimit: 1000,
       cssCodeSplit: false,
+      reportCompressedSize: false,
       rolldownOptions: {
         input: {
           index: path.resolve(__dirname, 'index.html'),
