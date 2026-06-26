@@ -78,7 +78,7 @@ body .van-overlay {
 body .van-dialog {
   overflow: hidden;
   border: none;
-  border-radius: calc(var(--base-scale, 1) * 36 * 1px);
+  border-radius: calc(var(--base-scale, 1) * 22 * 1px);
   corner-shape: squircle;
   background: radial-gradient(ellipse at 100% 100%, rgba(52, 75, 182, 0.24), transparent 58%), #fffffff9;
   box-shadow:
@@ -239,7 +239,7 @@ body .dialog-popup-leave-to {
 
 body [data-rich-colors='true'][data-sonner-toast][data-styled='true'] {
   overflow: hidden;
-  border-radius: calc(var(--base-scale, 1) * 40 * 1px);
+  border-radius: calc(var(--base-scale, 1) * 20 * 1px);
   corner-shape: squircle;
   background:
     radial-gradient(ellipse at 100% 100%, rgba(var(--sonner-accent-rgb), 0.16), transparent 46%),
