@@ -34,11 +34,11 @@ onMounted(async () => {
 <template>
   <Toaster rich-colors :duration="3000" position="top-center" :visible-toasts="2"></Toaster>
 
-  <router-view v-slot="{ Component }">
+  <router-view v-slot="{ Component, route }">
     <template v-if="Component">
       <transition :name="name">
-        <keep-alive :exclude="[]">
-          <component :is="Component"></component>
+        <keep-alive :include="['home', 'Login']">
+          <component :is="Component" :key="route.fullPath"></component>
         </keep-alive>
       </transition>
     </template>
