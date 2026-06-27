@@ -120,6 +120,6 @@ type AppAPI = PrintAPI & {
 }
 
 interface Window {
-  api: AppAPI
-  runtimeConfig: AppConfig
+  api?: Partial<AppAPI>
+  runtimeConfig?: Partial<AppConfig>
 }
