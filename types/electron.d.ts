@@ -121,5 +121,4 @@ type AppAPI = PrintAPI & {
 
 interface Window {
   api?: Partial<AppAPI>
-  runtimeConfig?: Partial<AppConfig>
 }
