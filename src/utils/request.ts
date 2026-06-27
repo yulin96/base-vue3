@@ -67,7 +67,7 @@ function normalizePostRequest(config: PostRequestConfig) {
 }
 
 function encryptPostRequest(config: PostRequestConfig) {
-  const dataType = config.postDataType ?? 'FormData'
+  const dataType = config.postDataType ?? 'JSON'
   const requestData = getRequestDataSource(config.data)
   const { query, headers } = createApiSignature(
     requestData && typeof requestData === 'object' ? (requestData as Dict) : {},
@@ -80,7 +80,7 @@ function encryptPostRequest(config: PostRequestConfig) {
 }
 
 function buildPlainPostRequest(config: PostRequestConfig) {
-  if ((config.postDataType ?? 'FormData') === 'FormData' && config.data && !isFormData(config.data)) {
+  if ((config.postDataType ?? 'JSON') === 'FormData' && config.data && !isFormData(config.data)) {
     config.data = toFormData(config.data as Dict)
   }
 
