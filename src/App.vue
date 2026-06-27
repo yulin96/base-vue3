@@ -37,7 +37,7 @@ onMounted(async () => {
   <router-view v-slot="{ Component, route }">
     <template v-if="Component">
       <transition :name="name">
-        <keep-alive :include="['home', 'Login']">
+        <keep-alive :exclude="[]">
           <component :is="Component" :key="route.fullPath"></component>
         </keep-alive>
       </transition>
