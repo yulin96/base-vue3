@@ -1,8 +1,8 @@
+import { appStorageName } from '@/config/env'
 import router from '@/router'
 import type { RouteLocationRaw } from 'vue-router'
 
-const storageName = import.meta.env.VITE_APP_LOCALSTORAGE_NAME || 'test'
-const HISTORY_KEY = `${storageName}ROUTER_HISTORY_STACK`.toUpperCase()
+const HISTORY_KEY = `${appStorageName}ROUTER_HISTORY_STACK`.toUpperCase()
 const MAX_HISTORY = 50
 
 const getHistoryStack = (): string[] => {

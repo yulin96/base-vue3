@@ -17,3 +17,5 @@ export const isTestURL = location.href.includes('__test__')
  * 获取 Electron API 对象
  */
 export const electronApi = window.api
+
+export const appStorageName = import.meta.env.VITE_APP_LOCALSTORAGE_NAME || `${location.origin}${location.pathname}`

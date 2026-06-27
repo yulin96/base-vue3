@@ -1,3 +1,4 @@
+import { appStorageName } from '@/config/env'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -32,7 +33,7 @@ export const useStore = defineStore(
   },
   {
     persist: {
-      key: import.meta.env.VITE_APP_LOCALSTORAGE_NAME || 'test',
+      key: appStorageName,
       omit: ['user.ignore'],
     },
   },

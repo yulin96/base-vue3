@@ -1,3 +1,4 @@
+import { appStorageName } from '@/config/env'
 import { useLocalStorage } from '@vueuse/core'
 import { watch } from 'vue'
 import { createI18n } from 'vue-i18n'
@@ -10,9 +11,8 @@ declare module 'vue-i18n' {
   export interface DefineLocaleMessage extends MessageSchema {}
 }
 
-const { VITE_APP_LOCALSTORAGE_NAME: localName } = import.meta.env
 const localeName = useLocalStorage<'zh-CN' | 'en'>(
-  `${localName || 'test'}-local`,
+  `${appStorageName}-local`,
   navigator.language?.includes('en') ? 'en' : 'zh-CN',
 )
 
