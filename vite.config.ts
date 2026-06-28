@@ -167,7 +167,6 @@ export default defineConfig(({ command, mode }) => {
     },
     base: './',
     build: {
-      assetsInlineLimit: 10240,
       assetsDir: 'assets',
       chunkSizeWarningLimit: 1000,
       cssCodeSplit: false,
