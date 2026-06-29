@@ -234,12 +234,6 @@ importers:
       vite-plugin-image-optimizer:
         specifier: ^2.0.3
         version: 2.0.3(sharp@0.35.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
-      vite-plugin-meta-share:
-        specifier: ^0.0.1
-        version: 0.0.1
-      vite-plugin-organize-resource:
-        specifier: ^1.1.1
-        version: 1.1.1(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
       vite-plugin-upload:
         specifier: ^0.3.1
         version: 0.3.1(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
@@ -3965,14 +3959,6 @@ packages:
         optional: true
       svgo:
         optional: true
-
-  vite-plugin-meta-share@0.0.1:
-    resolution: {integrity: sha512-NxIMZhtft9F38KpnVOpq+HvRvMZzxEG/VZZoULZROKpdE8kABYilLl85cpKGOIJXEVL2LDE8MWP1dBLnsNhAkg==}
-
-  vite-plugin-organize-resource@1.1.1:
-    resolution: {integrity: sha512-XjPAvtNtSioNT95Acmg2dARiSNGCZkHnja1diSBxMQ+bFcZs9xjt/RWBTTTb5pbfugn4RzH6cKvdHOq0f50U2A==}
-    peerDependencies:
-      vite: ^6 || ^7 || ^8
 
   vite-plugin-upload@0.3.1:
     resolution: {integrity: sha512-cqav/GgljEepOmw6gG9skLaAn25lmf81eKOzIUjQvk0tFpTaDn7zjVHWW1Kv5VoHmgMnlD74Vzb/2t+g8BtWAg==}
@@ -7934,15 +7920,6 @@ snapshots:
       vite: 8.1.0(@types/node@24.13.2)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0)
     optionalDependencies:
       sharp: 0.35.2
-
-  vite-plugin-meta-share@0.0.1:
-    dependencies:
-      chalk: 5.6.2
-
-  vite-plugin-organize-resource@1.1.1(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0)):
-    dependencies:
-      chalk: 5.6.2
-      vite: 8.1.0(@types/node@24.13.2)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0)
 
   vite-plugin-upload@0.3.1(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0)):
     dependencies:

@@ -6,9 +6,9 @@ import legacy from '@vitejs/plugin-legacy'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
-import vitePluginMetaShare from 'vite-plugin-meta-share'
-import vitePluginOrganize from 'vite-plugin-organize-resource'
 import { vitePluginDeployFtp, vitePluginDeployOss } from 'vite-plugin-upload'
+import { vitePluginMetaShare } from './build/metaShare'
+import { vitePluginOrganizeResource } from './build/organizeResource'
 
 import tailwindcss from '@tailwindcss/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
@@ -99,7 +99,7 @@ export default defineConfig(({ command, mode }) => {
 
         configBase: `${process.env.zBucketAlias || ''}/H5/zz/auto2/${ossRootDir}`,
       }),
-      vitePluginOrganize({
+      vitePluginOrganizeResource({
         config: {
           IMG_RESOURCES: ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'],
         },
