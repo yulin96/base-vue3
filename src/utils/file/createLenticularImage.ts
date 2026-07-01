@@ -43,25 +43,35 @@ export async function createLenticularImage(
     ctx.fillRect(0, 0, width, height)
   }
 
-  const strip = Math.max(1, Math.floor(stripWidth))
+  const strip = Math.max(0.01, stripWidth)
 
   ctx.drawImage(images[0], 0, 0, width, height)
 
-  for (let x = strip; x < width; x += strip * images.length) {
-    for (let index = 1; index < images.length; index++) {
-      const stripX = x + strip * (index - 1)
-      const currentStripWidth = Math.min(strip, width - stripX)
+  for (let stripIndex = 1; ; stripIndex++) {
+    const stripX = Math.round(stripIndex * strip)
+    const nextStripX = Math.round((stripIndex + 1) * strip)
+    const currentStripWidth = Math.min(nextStripX, width) - stripX
 
-      if (currentStripWidth > 0) {
-        const img = images[index]
-        const scaleX = img.naturalWidth / width
-        const sx = stripX * scaleX
-        const sw = currentStripWidth * scaleX
-        const sh = img.naturalHeight
-
-        ctx.drawImage(img, sx, 0, sw, sh, stripX, 0, currentStripWidth, height)
-      }
+    if (stripX >= width) {
+      break
     }
+
+    if (currentStripWidth <= 0) {
+      continue
+    }
+
+    if (stripIndex % images.length === 0) {
+      continue
+    }
+
+    const img = images[stripIndex % images.length]
+
+    const scaleX = img.naturalWidth / width
+    const sx = stripX * scaleX
+    const sw = currentStripWidth * scaleX
+    const sh = img.naturalHeight
+
+    ctx.drawImage(img, sx, 0, sw, sh, stripX, 0, currentStripWidth, height)
   }
 
   const blob = await canvasToBlob(canvas, type, quality)
