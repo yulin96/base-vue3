@@ -1,4 +1,4 @@
-.btn-haptic-host {
+[data-haptic-host='true'] {
   position: relative;
 }
 

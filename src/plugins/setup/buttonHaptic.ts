@@ -28,6 +28,12 @@ export function triggerButtonHaptic() {
 const addIOSHapticSwitch = (button: HTMLElement) => {
   if (button.dataset.hapticReady === 'true' || VOID_ELEMENTS.has(button.tagName)) return
 
+  const position = getComputedStyle(button).position
+  if (!['relative', 'absolute', 'fixed', 'sticky'].includes(position)) {
+    button.dataset.hapticHost = 'true'
+    button.classList.add('relative')
+  }
+
   const clip = document.createElement('span')
   clip.className = 'btn-haptic-clip'
 
@@ -39,7 +45,6 @@ const addIOSHapticSwitch = (button: HTMLElement) => {
 
   clip.append(hapticSwitch)
   button.append(clip)
-  if (getComputedStyle(button).position === 'static') button.classList.add('btn-haptic-host')
   button.dataset.hapticReady = 'true'
 }
 
