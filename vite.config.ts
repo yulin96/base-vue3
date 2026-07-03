@@ -92,12 +92,12 @@ export default defineConfig(({ command, mode }) => {
         bucket: process.env.zBucket || '',
         region: 'oss-cn-beijing',
         alias: process.env.zBucketAlias || '',
-        uploadDir: `H5/zz/auto2/${ossRootDir}`,
+        uploadDir: `mm/oss-root/${ossRootDir}`,
         skip: ['**/*.html', '**/pluginWebUpdateNotice/**'],
         overwrite: true,
         autoDelete: true,
 
-        configBase: `${process.env.zBucketAlias || ''}/H5/zz/auto2/${ossRootDir}`,
+        configBase: `${process.env.zBucketAlias || ''}/mm/oss-root/${ossRootDir}`,
       }),
       vitePluginOrganizeResource({
         config: {
