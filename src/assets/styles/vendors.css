@@ -79,7 +79,7 @@ body .van-dialog {
   overflow: hidden;
   border: none;
   border-radius: calc(var(--base-scale, 1) * 22 * 1px);
-  corner-shape: squircle;
+  /* corner-shape: squircle; */
   background: radial-gradient(ellipse at 100% 100%, rgba(52, 75, 182, 0.24), transparent 58%), #fffffff9;
   box-shadow:
     inset 0 1px 0 #fffffffa,
@@ -219,33 +219,33 @@ body .dialog-popup-leave-to {
 
   --process-bg-process: #e8f8ef;
 
-  --success-bg: #ffffffd9;
+  --success-bg: #ffffffc2;
   --success-border: #eef2f7a6;
   --success-text: #118344;
 
-  --info-bg: #ffffffd9;
+  --info-bg: #ffffffc2;
   --info-border: #eef2f7a6;
   --info-text: #2563eb;
 
-  --warning-bg: #ffffffd9;
+  --warning-bg: #ffffffc2;
   --warning-border: #eef2f7a6;
   --warning-text: #b76a13;
 
   --error-bg-process: #fff1f2;
-  --error-bg: #ffffffd9;
+  --error-bg: #ffffffc2;
   --error-border: #eef2f7a6;
   --error-text: #d92d3a;
 }
 
 body [data-rich-colors='true'][data-sonner-toast][data-styled='true'] {
   overflow: hidden;
-  border-radius: calc(var(--base-scale, 1) * 20 * 1px);
-  corner-shape: squircle;
+  border-radius: calc(var(--base-scale, 1) * 26 * 1px);
+  /* corner-shape: squircle; */
   background:
     radial-gradient(ellipse at 100% 100%, rgba(var(--sonner-accent-rgb), 0.16), transparent 46%),
     radial-gradient(circle at 18% 0%, rgba(var(--sonner-accent-rgb), 0.08), transparent 44%),
     radial-gradient(circle at 96% 18%, rgba(var(--sonner-accent-soft-rgb), 0.14), transparent 40%),
-    linear-gradient(135deg, #fffffff0, #f8fafcdc 58%, #ffffffe6);
+    linear-gradient(135deg, #ffffffb0, #f8fafcbc 58%, #ffffffb6);
   box-shadow:
     inset 0 0 0 1px #d7dee880,
     inset 0 -1px 0 #b8c2ce66,
