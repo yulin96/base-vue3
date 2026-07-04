@@ -33,8 +33,8 @@ importers:
         specifier: ^2.1.3
         version: 2.1.3(vue@3.5.39(typescript@5.9.3))
       '@zumer/snapdom':
-        specifier: ^2.12.9
-        version: 2.12.9
+        specifier: ^2.15.0
+        version: 2.15.0
       ali-oss:
         specifier: ^6.23.0
         version: 6.23.0
@@ -1987,8 +1987,8 @@ packages:
       '@vue/composition-api':
         optional: true
 
-  '@zumer/snapdom@2.12.9':
-    resolution: {integrity: sha512-Zufl1vEthT931kcZfmAaRSnucAGIRLGi9N6JI8ZsdyHww5hHHLk4t5LU1DxS5pNAPi1MptPHcGON1pkXEBf5iw==}
+  '@zumer/snapdom@2.15.0':
+    resolution: {integrity: sha512-rdayfg832lYhy2v2DRr4LwzhIT0ZMeGKYicVmtzbji95KhUd7Z1g6/5jTsDEU4q32a6ywbIpAixO45hubsEftQ==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -6057,7 +6057,7 @@ snapshots:
       vue: 3.5.39(typescript@5.9.3)
       vue-demi: 0.14.10(vue@3.5.39(typescript@5.9.3))
 
-  '@zumer/snapdom@2.12.9': {}
+  '@zumer/snapdom@2.15.0': {}
 
   acorn-jsx@5.3.2(acorn@8.17.0):
     dependencies:
