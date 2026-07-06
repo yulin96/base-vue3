@@ -1,6 +1,6 @@
 import { useDocumentVisibility } from '@vueuse/core'
-import { onBeforeUnmount, readonly, ref, shallowRef, watch } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import { onBeforeUnmount, readonly, ref, shallowRef, watch } from 'vue'
 
 type ROPEventCallback = (...args: any[]) => void
 
@@ -74,8 +74,8 @@ export interface UseClientOptions {
  */
 export const useClient = <T = any>(
   subScribes: Array<string> | string,
-  pub: string,
-  sub: string,
+  pub?: string,
+  sub?: string,
   options: UseClientOptions = {},
 ) => {
   const {
@@ -158,7 +158,12 @@ export const useClient = <T = any>(
       connectionStatus.value = 'connecting'
 
       // 进入频道
-      window.ROP.Enter(pub, sub, generateSessionId(), true)
+      window.ROP.Enter(
+        pub || 'pub_357ce949f839716f0487fa733b49d3f8',
+        sub || 'sub_3ffbe7827a221c20387302a165211dc3',
+        generateSessionId(),
+        true,
+      )
     } catch (error) {
       console.error('连接失败:', error)
       scheduleRetry()
