@@ -1,3 +1,5 @@
+import '@/plugins/setup/setRem'
+
 import '@/assets/styles/main.css'
 import '@/plugins/appInit'
 
