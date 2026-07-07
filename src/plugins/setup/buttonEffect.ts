@@ -1,64 +1,105 @@
-document.addEventListener('pointerdown', (e) => {
-  const ele = (e.target as HTMLElement)?.closest('[btn]') as HTMLElement | null
+import './browserScan.css'
 
-  if (!ele || ele.dataset.disabled === 'true' || ele.hasAttribute('btn3d')) return
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode'
 
-  ele.getAnimations().forEach((animation) => animation.cancel())
+const READER_ID = 'browser-scan-reader'
+export const SCAN_CANCELLED = '取消扫码'
 
-  ele.animate([{ scale: 1 }, { scale: 0.96 }, { scale: 1 }], {
-    duration: 300,
-    easing: 'cubic-bezier(0.2, 0, 0.2, 1)',
+export async function browserScan(): Promise<string> {
+  const root = document.createElement('div')
+  root.className = 'browser-scan'
+
+  const reader = document.createElement('div')
+  reader.id = READER_ID
+  reader.className = 'browser-scan__reader'
+
+  const overlay = document.createElement('div')
+  overlay.className = 'browser-scan__overlay'
+  overlay.innerHTML = `
+    <div class="browser-scan__status">将二维码放入框内</div>
+    <div class="browser-scan__frame">
+      <i class="browser-scan__corner browser-scan__corner--top-left"></i>
+      <i class="browser-scan__corner browser-scan__corner--top-right"></i>
+      <i class="browser-scan__corner browser-scan__corner--bottom-left"></i>
+      <i class="browser-scan__corner browser-scan__corner--bottom-right"></i>
+      <i class="browser-scan__line"></i>
+    </div>
+  `
+
+  const loading = document.createElement('div')
+  loading.className = 'browser-scan__loading'
+  loading.innerHTML = `
+    <i class="browser-scan__spinner"></i>
+    <span>正在打开相机</span>
+  `
+
+  const close = document.createElement('div')
+  close.className = 'browser-scan__close'
+  close.textContent = '×'
+
+  root.append(reader, overlay, loading, close)
+  document.body.appendChild(root)
+
+  const originalOverflow = document.body.style.overflow
+  document.body.style.overflow = 'hidden'
+
+  const scanner = new Html5Qrcode(READER_ID, {
+    formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+    verbose: false,
   })
-})
 
-document.addEventListener('pointerdown', (e) => {
-  const ele = (e.target as HTMLElement)?.closest('[btn3d]') as HTMLElement | null
+  return await new Promise<string>((resolve, reject) => {
+    let finished = false
 
-  if (!ele || ele.dataset.disabled === 'true') return
+    async function finish(result = '', error?: unknown) {
+      if (finished) return
+      finished = true
 
-  const rect = ele.getBoundingClientRect()
-  const x = (e.clientX - rect.left) / rect.width
-  const y = (e.clientY - rect.top) / rect.height
+      close.removeEventListener('click', closeScan)
+      try {
+        await startPromise.catch(() => null)
+        if (scanner.isScanning) await scanner.stop()
+      } finally {
+        scanner.clear()
+        root.remove()
+        document.body.style.overflow = originalOverflow
+      }
 
-  const offsetX = x - 0.5
-  const offsetY = y - 0.5
+      if (error) reject(error)
+      else resolve(result)
+    }
 
-  const rotateX = offsetY * -16
-  const rotateY = offsetX * 16
-  const pressedTransform = `perspective(520px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(0.97)`
+    function closeScan() {
+      void finish('', SCAN_CANCELLED)
+    }
 
-  ele.getAnimations().forEach((animation) => animation.cancel())
+    close.addEventListener('click', closeScan)
 
-  ele.style.transformOrigin = 'center'
-  ele.style.transformStyle = 'preserve-3d'
-  ele.style.willChange = 'transform'
+    function getQrboxSize(frameEl: HTMLElement) {
+      const rect = frameEl.getBoundingClientRect()
+      return { width: Math.round(rect.width), height: Math.round(rect.height) }
+    }
 
-  ele.animate(
-    [{ transform: 'perspective(520px) rotateX(0deg) rotateY(0deg) scale(1)' }, { transform: pressedTransform }],
-    {
-      duration: 160,
-      easing: 'cubic-bezier(0.2, 0, 0.2, 1)',
-      fill: 'forwards',
-    },
-  )
+    const qrboxSize = getQrboxSize(overlay.querySelector('.browser-scan__frame')!)
 
-  const reset = () => {
-    const resetAnimation = ele.animate(
-      [{ transform: pressedTransform }, { transform: 'perspective(520px) rotateX(0deg) rotateY(0deg) scale(1)' }],
+    const startPromise = scanner.start(
+      { facingMode: 'environment' },
       {
-        duration: 320,
-        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-        fill: 'forwards',
+        fps: 12,
+        qrbox: qrboxSize,
       },
+      (decodedText) => void finish(decodedText),
+      undefined,
     )
+    startPromise.then(() => {
+      const video = reader.querySelector('video')
+      if (!video || video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        loading.remove()
+        return
+      }
 
-    resetAnimation.addEventListener('finish', () => {
-      ele.style.removeProperty('transform-origin')
-      ele.style.removeProperty('transform-style')
-      ele.style.removeProperty('will-change')
+      video.addEventListener('playing', () => loading.remove(), { once: true })
     })
-  }
-
-  window.addEventListener('pointerup', reset, { once: true })
-  window.addEventListener('pointercancel', reset, { once: true })
-})
+    startPromise.catch((error) => void finish('', error))
+  })
+}
