@@ -17,9 +17,13 @@ const VOID_ELEMENTS = new Set([
 ])
 const ANDROID_HAPTIC_DURATION = 10
 const TAP_MOVE_LIMIT = 10
+const POSITION_CLASSES = new Set(['relative', 'absolute', 'fixed', 'sticky'])
 let isButtonHapticSetup = false
 
 const isAndroid = () => /Android/i.test(navigator.userAgent)
+
+const hasPositionClass = (button: HTMLElement) =>
+  [...button.classList].some((className) => POSITION_CLASSES.has(className.replace(/!$/, '')))
 
 export function triggerButtonHaptic() {
   if (!isAndroid() || !navigator.vibrate) return false
@@ -30,7 +34,7 @@ const addIOSHapticSwitch = (button: HTMLElement) => {
   if (button.dataset.hapticReady === 'true' || VOID_ELEMENTS.has(button.tagName)) return
 
   const position = getComputedStyle(button).position
-  if (!['relative', 'absolute', 'fixed', 'sticky'].includes(position)) {
+  if (!hasPositionClass(button) && !POSITION_CLASSES.has(position)) {
     button.dataset.hapticHost = 'true'
     button.classList.add('relative')
   }
