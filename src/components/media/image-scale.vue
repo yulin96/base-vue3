@@ -334,10 +334,11 @@ watch(
 <template>
   <div
     ref="containerRef"
-    class="relative size-full touch-none overflow-hidden"
+    class="relative size-full overflow-hidden"
+    :class="{ 'touch-none': props.draggable }"
     @wheel="onWheel"
     @mousedown="onMouseDown"
-    @touchstart.passive="onTouchStart"
+    @touchstart="onTouchStart"
     @touchmove="onTouchMove"
     @touchend="onTouchEnd"
     @touchcancel="onTouchEnd"

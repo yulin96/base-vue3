@@ -9,6 +9,9 @@ import { computed, onBeforeUnmount, shallowRef } from 'vue'
  */
 export function useIdleLoading(imgList: string[], next?: () => void, delay: number = 300, batchSize: number = 3) {
   let timer: number | undefined
+  let scheduledTask: number | undefined
+  let scheduledWithIdleCallback = false
+  let loadingSessionId = 0
   const progressValue = shallowRef(0)
   const images: HTMLImageElement[] = []
 
@@ -20,10 +23,19 @@ export function useIdleLoading(imgList: string[], next?: () => void, delay: numb
   })
 
   const cleanup = () => {
+    loadingSessionId++
+
     if (timer) {
       clearTimeout(timer)
       timer = undefined
     }
+
+    if (scheduledTask !== undefined) {
+      if (scheduledWithIdleCallback) cancelIdleCallback(scheduledTask)
+      else clearTimeout(scheduledTask)
+      scheduledTask = undefined
+    }
+
     images.forEach((img) => {
       img.onload = null
       img.onerror = null
@@ -32,8 +44,9 @@ export function useIdleLoading(imgList: string[], next?: () => void, delay: numb
   }
 
   const start = () => {
-    progressValue.value = 0
     cleanup()
+    progressValue.value = 0
+    const currentSessionId = loadingSessionId
 
     if (imgList.length === 0) {
       next?.()
@@ -43,7 +56,27 @@ export function useIdleLoading(imgList: string[], next?: () => void, delay: numb
     let loadedCount = 0
     let index = 0
 
+    const scheduleNextBatch = () => {
+      if (currentSessionId !== loadingSessionId) return
+
+      if (typeof requestIdleCallback !== 'undefined') {
+        scheduledWithIdleCallback = true
+        scheduledTask = requestIdleCallback(() => {
+          scheduledTask = undefined
+          loadNextBatch()
+        })
+      } else {
+        scheduledWithIdleCallback = false
+        scheduledTask = window.setTimeout(() => {
+          scheduledTask = undefined
+          loadNextBatch()
+        }, 100)
+      }
+    }
+
     const loadNextBatch = () => {
+      if (currentSessionId !== loadingSessionId) return
+
       const limit = Math.min(index + batchSize, imgList.length)
 
       for (; index < limit; index++) {
@@ -51,6 +84,8 @@ export function useIdleLoading(imgList: string[], next?: () => void, delay: numb
         images.push(image)
 
         const handleLoad = () => {
+          if (currentSessionId !== loadingSessionId) return
+
           loadedCount++
           progressValue.value = loadedCount
 
@@ -68,20 +103,12 @@ export function useIdleLoading(imgList: string[], next?: () => void, delay: numb
 
       // 若还有剩余未加载的，继续在下一次空闲时间加载
       if (index < imgList.length) {
-        if (typeof requestIdleCallback !== 'undefined') {
-          requestIdleCallback(loadNextBatch)
-        } else {
-          setTimeout(loadNextBatch, 100)
-        }
+        scheduleNextBatch()
       }
     }
 
     // 在首次浏览器空闲时启动分批加载
-    if (typeof requestIdleCallback !== 'undefined') {
-      requestIdleCallback(loadNextBatch)
-    } else {
-      setTimeout(loadNextBatch, 100)
-    }
+    scheduleNextBatch()
   }
 
   onBeforeUnmount(() => {

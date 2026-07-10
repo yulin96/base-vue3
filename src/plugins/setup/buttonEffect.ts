@@ -43,6 +43,9 @@ document.addEventListener('pointerdown', (e) => {
   )
 
   const reset = () => {
+    window.removeEventListener('pointerup', reset)
+    window.removeEventListener('pointercancel', reset)
+
     const resetAnimation = ele.animate(
       [{ transform: pressedTransform }, { transform: 'perspective(520px) rotateX(0deg) rotateY(0deg) scale(1)' }],
       {
@@ -59,6 +62,6 @@ document.addEventListener('pointerdown', (e) => {
     })
   }
 
-  window.addEventListener('pointerup', reset, { once: true })
-  window.addEventListener('pointercancel', reset, { once: true })
+  window.addEventListener('pointerup', reset)
+  window.addEventListener('pointercancel', reset)
 })

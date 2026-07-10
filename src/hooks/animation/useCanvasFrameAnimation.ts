@@ -123,6 +123,10 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   let loadingPromise: Promise<Array<HTMLImageElement | null>> | null = null
   let resizeObserver: ResizeObserver | null = null
   let playbackSessionId = 0
+  let loadingSessionId = 0
+  let lifecycleId = 0
+  let destroyed = false
+  const activeImageLoads = new Map<HTMLImageElement, () => void>()
 
   // 🔴 优化1：缓存帧间隔，避免在 rAF 热路径中重复读取 reactive 属性并计算
   let frameInterval = 1000 / fps
@@ -264,8 +268,10 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   // 🟠 优化3：加载图片时分批并发（批大小由 loadConcurrency 控制）
   const loadBatch = async (
     batch: Array<{ frame: string | HTMLImageElement; index: number }>,
+    sessionId: number,
   ): Promise<Array<HTMLImageElement | null>> => {
     const markFrameProcessed = () => {
+      if (destroyed || sessionId !== loadingSessionId) return
       loadedCount++
       state.loadProgress = loadedCount / frames.length
     }
@@ -273,9 +279,34 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     const loadImageWithRetry = (frame: string, index: number, retryCount = 2): Promise<HTMLImageElement | null> => {
       return new Promise((resolve) => {
         const attemptLoad = (attempt: number) => {
+          if (destroyed || sessionId !== loadingSessionId) {
+            resolve(null)
+            return
+          }
+
           const img = new Image()
+          let settled = false
+
+          const settle = (value: HTMLImageElement | null) => {
+            if (settled) return
+            settled = true
+            activeImageLoads.delete(img)
+            img.onload = null
+            img.onerror = null
+            resolve(value)
+          }
+
+          activeImageLoads.set(img, () => {
+            img.src = ''
+            settle(null)
+          })
 
           img.onload = () => {
+            if (destroyed || sessionId !== loadingSessionId) {
+              settle(null)
+              return
+            }
+
             failedFrames.delete(index)
             markFrameProcessed()
 
@@ -284,11 +315,21 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
               nextTick(() => drawFrame(validCoverFrame))
             }
 
-            resolve(img)
+            settle(img)
           }
 
           img.onerror = () => {
+            activeImageLoads.delete(img)
+            img.onload = null
+            img.onerror = null
+
+            if (destroyed || sessionId !== loadingSessionId) {
+              settle(null)
+              return
+            }
+
             if (attempt < retryCount) {
+              settled = true
               attemptLoad(attempt + 1)
               return
             }
@@ -304,7 +345,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
               nextTick(() => drawFrame(validCoverFrame))
             }
 
-            resolve(fallback)
+            settle(fallback)
           }
 
           img.src = attempt === 0 ? frame : `${frame}${frame.includes('?') ? '&' : '?'}retry=${attempt}`
@@ -317,6 +358,11 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     return Promise.all(
       batch.map(({ frame, index }) => {
         return new Promise<HTMLImageElement | null>((resolve) => {
+          if (destroyed || sessionId !== loadingSessionId) {
+            resolve(null)
+            return
+          }
+
           if (frame instanceof HTMLImageElement) {
             failedFrames.delete(index)
             markFrameProcessed()
@@ -335,6 +381,9 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   }
 
   const preloadImagesInternal = async (suppressAutoplay: boolean): Promise<Array<HTMLImageElement | null>> => {
+    const sessionId = ++loadingSessionId
+    loadedCount = 0
+
     try {
       const frameList = frames.map((frame, index) => ({ frame, index }))
 
@@ -343,7 +392,8 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       const otherItems = frameList.filter((_, i) => i !== validCoverFrame)
 
       // 先加载封面帧
-      const [coverImg] = await loadBatch([coverItem])
+      const [coverImg] = await loadBatch([coverItem], sessionId)
+      if (destroyed || sessionId !== loadingSessionId) return []
       images[validCoverFrame] = coverImg
 
       // 再分批并发加载其余帧
@@ -352,12 +402,15 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
       for (let i = 0; i < otherItems.length; i += validLoadConcurrency) {
         const batch = otherItems.slice(i, i + validLoadConcurrency)
-        const batchResults = await loadBatch(batch)
+        const batchResults = await loadBatch(batch, sessionId)
+        if (destroyed || sessionId !== loadingSessionId) return results
         batchResults.forEach((img, batchIdx) => {
           results[otherItems[i + batchIdx].index] = img
           images[otherItems[i + batchIdx].index] = img
         })
       }
+
+      if (destroyed || sessionId !== loadingSessionId) return results
 
       state.isLoaded = true
       images = results
@@ -491,12 +544,16 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   // 播放控制方法
   const play = async (fromFrame?: number, onComplete?: () => void): Promise<void> => {
+    const currentLifecycleId = lifecycleId
+
     try {
       await ensureLoadedForPlayback()
     } catch (error) {
       console.error('Failed to preload all images:', error)
       return
     }
+
+    if (destroyed || currentLifecycleId !== lifecycleId) return
 
     if (typeof fromFrame === 'number') {
       state.currentFrame = Math.max(0, Math.min(fromFrame, frames.length - 1))
@@ -552,12 +609,16 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   }
 
   const playToFrame = async (endFrame: number, onComplete?: () => void): Promise<void> => {
+    const currentLifecycleId = lifecycleId
+
     try {
       await ensureLoadedForPlayback()
     } catch (error) {
       console.error('Failed to preload all images:', error)
       return
     }
+
+    if (destroyed || currentLifecycleId !== lifecycleId) return
 
     const validEndFrame = Math.max(0, Math.min(endFrame, frames.length - 1))
 
@@ -631,6 +692,8 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   // 初始化
   const init = async () => {
     try {
+      destroyed = false
+
       if (!canvas.value) {
         throw new Error('Canvas element not found')
       }
@@ -663,6 +726,11 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   // 🟡 优化4：destroy 释放 ctx 引用，防止内存泄漏
   const destroy = () => {
+    destroyed = true
+    lifecycleId++
+    loadingSessionId++
+    activeImageLoads.forEach((cancel) => cancel())
+    activeImageLoads.clear()
     pause()
     ctx = null
     images = []

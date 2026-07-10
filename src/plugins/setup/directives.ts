@@ -17,6 +17,7 @@ export function registerDirective(app: App<Element>) {
       let timer: ReturnType<typeof setTimeout> | null = null
 
       const onStart = () => {
+        if (timer) clearTimeout(timer)
         timer = setTimeout(
           () => {
             binding.value?.()
@@ -41,6 +42,7 @@ export function registerDirective(app: App<Element>) {
     unmounted(el: LongPressElement) {
       const handlers = el[LONG_PRESS_KEY]
       if (handlers) {
+        handlers.onEnd()
         el.removeEventListener('touchstart', handlers.onStart)
         el.removeEventListener('touchend', handlers.onEnd)
         el.removeEventListener('touchcancel', handlers.onEnd)

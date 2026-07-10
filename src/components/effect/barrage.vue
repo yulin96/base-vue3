@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { sleep } from '@/utils/common'
 import { randomInt } from 'es-toolkit'
-import { createVNode, nextTick, onBeforeUnmount, render, toRaw, type CSSProperties } from 'vue'
+import {
+  createVNode,
+  nextTick,
+  onBeforeUnmount,
+  render,
+  toRaw,
+  type ComponentPublicInstance,
+  type CSSProperties,
+} from 'vue'
 import BarrageCard from './barrage-card.vue'
 
 const {
@@ -17,6 +25,13 @@ let started = false
 
 const activeTasks = new Set<gsap.core.Tween>()
 const cardMountNodes = new Set<HTMLDivElement>()
+const cardBoxMap = new Map<number, HTMLElement>()
+const cardContentMap = new Map<number, Set<HTMLElement>>()
+
+const setCardBox = (id: number, el: Element | ComponentPublicInstance | null) => {
+  if (el instanceof HTMLElement) cardBoxMap.set(id, el)
+  else cardBoxMap.delete(id)
+}
 
 const addCard = (barrage: TBarrage) => {
   if (disposed) return
@@ -29,19 +44,15 @@ const deleteCard = (id: number) => {
   barrageList.value = (barrageList.value || []).filter((i) => i.id != id)
   conveyorList = (conveyorList || []).filter((i) => i.id != id)
 
-  gsap.to(`.card-true-id-${id}`, { opacity: 1, scale: 0 })
+  const cardNodes = cardContentMap.get(id)
+  if (cardNodes?.size) gsap.to([...cardNodes], { opacity: 1, scale: 0 })
 }
 
-const cardBoxMap = new Map<number, HTMLElement>()
 const vw1 = innerWidth / 100
 
 const createCard = async (id: number, gap: number) => {
   if (disposed) return
-  let el = cardBoxMap.get(id)
-  if (!el) {
-    el = document.getElementById(`card-box-${id}`)!
-    if (el) cardBoxMap.set(id, el)
-  }
+  const el = cardBoxMap.get(id)
   if (!el) return console.error('card box is null')
 
   // 等待列表有数据，最多重试 10 次
@@ -75,8 +86,10 @@ const createCard = async (id: number, gap: number) => {
 
   const div2 = document.createElement('div')
   div2.style.height = '100%'
-  div2.classList.add(`card-true-id-${card.id}`)
   cardMountNodes.add(div2)
+  const cardNodes = cardContentMap.get(card.id) ?? new Set<HTMLElement>()
+  cardNodes.add(div2)
+  cardContentMap.set(card.id, cardNodes)
   div.appendChild(div2)
 
   const vNode = createVNode(BarrageCard, { barrage: card })
@@ -114,6 +127,8 @@ const createCard = async (id: number, gap: number) => {
       activeTasks.delete(nextCardTimer)
       render(null, div2)
       cardMountNodes.delete(div2)
+      cardNodes.delete(div2)
+      if (!cardNodes.size) cardContentMap.delete(card.id)
       div.remove()
     },
   })
@@ -139,6 +154,7 @@ const stop = () => {
   })
   cardMountNodes.clear()
   cardBoxMap.clear()
+  cardContentMap.clear()
 }
 
 onBeforeUnmount(() => {
@@ -151,8 +167,8 @@ defineExpose({ deleteCard, addCard, start, stop })
 <template>
   <div
     v-for="item in row"
-    :id="`card-box-${item}`"
     :key="item"
+    :ref="(el) => setCardBox(item, el)"
     :style="{ height: `${100 / row}%` }"
     :class="`center relative w-full`"
   ></div>

@@ -21,6 +21,8 @@ declare global {
 }
 
 const ROP_SCRIPT_MARKER = 'data-rop-client-script'
+const ROP_SCRIPT_STATE = 'data-rop-client-state'
+const ROP_SCRIPT_TIMEOUT = 15000
 let ropScriptLoadingPromise: Promise<void> | null = null
 
 function ensureRopScript(scriptUrl: string): Promise<void> {
@@ -28,22 +30,57 @@ function ensureRopScript(scriptUrl: string): Promise<void> {
 
   if (!ropScriptLoadingPromise) {
     ropScriptLoadingPromise = new Promise<void>((resolve, reject) => {
-      const existingScript = document.querySelector<HTMLScriptElement>(`script[${ROP_SCRIPT_MARKER}="true"]`)
-      if (existingScript) {
-        if (window.ROP) return resolve()
+      let ropScript = document.querySelector<HTMLScriptElement>(`script[${ROP_SCRIPT_MARKER}="true"]`)
+      let shouldAppendScript = false
 
-        existingScript.addEventListener('load', () => resolve(), { once: true })
-        existingScript.addEventListener('error', () => reject(new Error('ROP客户端脚本加载失败')), { once: true })
-        return
+      if (ropScript && ropScript.getAttribute(ROP_SCRIPT_STATE) !== 'loading') {
+        ropScript.remove()
+        ropScript = null
       }
 
-      const ropScript = document.createElement('script')
-      ropScript.src = scriptUrl
-      ropScript.type = 'text/javascript'
-      ropScript.setAttribute(ROP_SCRIPT_MARKER, 'true')
-      ropScript.onload = () => resolve()
-      ropScript.onerror = () => reject(new Error('ROP客户端脚本加载失败'))
-      document.head.appendChild(ropScript)
+      if (!ropScript) {
+        ropScript = document.createElement('script')
+        ropScript.src = scriptUrl
+        ropScript.type = 'text/javascript'
+        ropScript.setAttribute(ROP_SCRIPT_MARKER, 'true')
+        ropScript.setAttribute(ROP_SCRIPT_STATE, 'loading')
+        shouldAppendScript = true
+      }
+
+      const targetScript = ropScript
+      const timeoutId = window.setTimeout(() => {
+        cleanup()
+        targetScript.remove()
+        reject(new Error('ROP客户端脚本加载超时'))
+      }, ROP_SCRIPT_TIMEOUT)
+
+      const cleanup = () => {
+        clearTimeout(timeoutId)
+        targetScript.removeEventListener('load', handleLoad)
+        targetScript.removeEventListener('error', handleError)
+      }
+
+      const handleLoad = () => {
+        cleanup()
+        if (!window.ROP) {
+          targetScript.remove()
+          reject(new Error('ROP客户端脚本已加载，但客户端未注册'))
+          return
+        }
+
+        targetScript.setAttribute(ROP_SCRIPT_STATE, 'loaded')
+        resolve()
+      }
+
+      const handleError = () => {
+        cleanup()
+        targetScript.remove()
+        reject(new Error('ROP客户端脚本加载失败'))
+      }
+
+      targetScript.addEventListener('load', handleLoad, { once: true })
+      targetScript.addEventListener('error', handleError, { once: true })
+      if (shouldAppendScript) document.head.appendChild(targetScript)
     }).catch((error) => {
       ropScriptLoadingPromise = null
       throw error

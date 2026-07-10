@@ -21,8 +21,11 @@ const buttonRef = useTemplateRef('buttonRef')
 const bubbles = new Map()
 const animations = new Set<gsap.core.Timeline>()
 let rafId: number | null = null
+let disposed = false
 
 const createBubbles = async () => {
+  if (disposed) return
+
   if (bubbles.size < count && active.value) {
     if (!buttonRef.value) return
     const bubble = document.createElement('i')
@@ -64,14 +67,18 @@ const createBubbles = async () => {
   }
 
   await sleep(120)
+  if (disposed) return
   rafId = requestAnimationFrame(createBubbles)
 }
 
 onMounted(() => {
+  disposed = false
   createBubbles()
 })
 
 onUnmounted(() => {
+  disposed = true
+
   // 清理 requestAnimationFrame
   if (rafId !== null) {
     cancelAnimationFrame(rafId)
