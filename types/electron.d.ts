@@ -66,17 +66,11 @@ type PrintAPI = {
 
 type ExitButtonPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 
-type ExitButtonPositionInput = ExitButtonPosition | 1 | 2 | 3 | 4 | '1' | '2' | '3' | '4'
-
 type ExitButtonConfig = {
   enabled: boolean
   mark: boolean
   position: ExitButtonPosition
   size: number
-}
-
-type ExitButtonConfigPatch = Omit<Partial<ExitButtonConfig>, 'position'> & {
-  position?: ExitButtonPositionInput
 }
 
 type WindowConfig = {
@@ -110,7 +104,7 @@ type AppConfig = WindowConfig & {
 }
 
 type AppConfigPatch = Omit<Partial<AppConfig>, 'exitButton'> & {
-  exitButton?: ExitButtonConfigPatch
+  exitButton?: Partial<ExitButtonConfig>
 }
 
 type ConfigDisplayNames = Partial<Record<keyof AppConfig, string>>
