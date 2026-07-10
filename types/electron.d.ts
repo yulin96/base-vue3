@@ -66,11 +66,17 @@ type PrintAPI = {
 
 type ExitButtonPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 
+type ExitButtonPositionInput = ExitButtonPosition | 1 | 2 | 3 | 4 | '1' | '2' | '3' | '4'
+
 type ExitButtonConfig = {
   enabled: boolean
   mark: boolean
   position: ExitButtonPosition
   size: number
+}
+
+type ExitButtonConfigPatch = Omit<Partial<ExitButtonConfig>, 'position'> & {
+  position?: ExitButtonPositionInput
 }
 
 type WindowConfig = {
@@ -101,6 +107,10 @@ type AppConfig = WindowConfig & {
   list8: string
   list9: string
   list10: string
+}
+
+type AppConfigPatch = Omit<Partial<AppConfig>, 'exitButton'> & {
+  exitButton?: ExitButtonConfigPatch
 }
 
 type ConfigDisplayNames = Partial<Record<keyof AppConfig, string>>
@@ -152,7 +162,7 @@ type ScreenAPI = {
 
 type AppAPI = PrintAPI & {
   config: AppConfig
-  defineConfig: (config: Partial<AppConfig>) => Promise<AppConfig>
+  defineConfig: (config: AppConfigPatch) => Promise<AppConfig>
   defineDisplayNames: (names: ConfigDisplayNames) => Promise<ConfigDisplayNames>
   hideConfig: (names: ConfigHideTarget) => Promise<ConfigEditorOptions>
   hideAllConfig: () => Promise<ConfigEditorOptions>
