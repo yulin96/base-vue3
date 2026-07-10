@@ -10,9 +10,7 @@ type PrintPagePreset =
   | 'Letter'
   | 'Tabloid'
   | 'photo-5in'
-  | 'photo-5in-landscape'
   | 'photo-6in'
-  | 'photo-6in-landscape'
 
 type PrintPageSize =
   | PrintPagePreset
@@ -88,8 +86,10 @@ type AppConfig = WindowConfig & {
   hideCursor: boolean
   disableZoom: boolean
   disableSelect: boolean
+  gpuAcceleration: boolean
   printCountdown: number
   autoUpdate: boolean
+  autoLaunch: boolean
   exitButton: ExitButtonConfig
   list1: string
   list2: string
@@ -105,19 +105,71 @@ type AppConfig = WindowConfig & {
 
 type ConfigDisplayNames = Partial<Record<keyof AppConfig, string>>
 
+type ConfigGroupName =
+  | 'systemStartup'
+  | 'resourceUpdate'
+  | 'window'
+  | 'performance'
+  | 'pageBehavior'
+  | 'exitButton'
+  | 'customConfig'
+
+type ConfigHideTarget =
+  | keyof AppConfig
+  | ConfigGroupName
+  | 'exitButton.enabled'
+  | 'exitButton.mark'
+  | 'exitButton.position'
+  | 'exitButton.size'
+  | 'ossManifestUrl'
+  | (
+      | keyof AppConfig
+      | ConfigGroupName
+      | 'exitButton.enabled'
+      | 'exitButton.mark'
+      | 'exitButton.position'
+      | 'exitButton.size'
+      | 'ossManifestUrl'
+    )[]
+
+type ConfigEditorOptions = {
+  hiddenConfigs: string[]
+  hideAllConfig: boolean
+}
+
+type ScreenMessage = {
+  from: number | null
+  to: number
+  command: string
+  data?: unknown
+}
+
+type ScreenAPI = {
+  getScreenIndex: () => Promise<number | null>
+  sendToScreen: (target: number, command: string, data?: unknown) => Promise<boolean>
+  onScreenMessage: (listener: (message: ScreenMessage) => void) => () => void
+}
+
 type AppAPI = PrintAPI & {
   config: AppConfig
-  defineConfig: (names: ConfigDisplayNames) => Promise<ConfigDisplayNames>
+  defineConfig: (config: Partial<AppConfig>) => Promise<AppConfig>
+  defineDisplayNames: (names: ConfigDisplayNames) => Promise<ConfigDisplayNames>
+  hideConfig: (names: ConfigHideTarget) => Promise<ConfigEditorOptions>
+  hideAllConfig: () => Promise<ConfigEditorOptions>
+  enterFullscreen: () => Promise<boolean>
+  exitFullscreen: () => Promise<boolean>
   quit: () => Promise<void>
   getConfigDisplayNames: () => Promise<ConfigDisplayNames>
+  getConfig: () => Promise<AppConfig>
+  getConfigEditorOptions: () => Promise<ConfigEditorOptions>
   getConfigFile: () => Promise<{
     path: string
     content: string
     values: Record<string, unknown>
   }>
-  saveConfigFile: (content: string) => Promise<{ path: string }>
+  saveConfigFile: (config: Record<string, unknown>) => Promise<{ path: string }>
   restart: () => Promise<void>
-}
+} & ScreenAPI
 
 interface Window {
   api?: Partial<AppAPI>
