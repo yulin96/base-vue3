@@ -22,8 +22,6 @@ export interface FrameAnimationOptions {
   coverFrame?: number
   /** 图片适配模式，默认'contain' */
   objectFit?: 'contain' | 'cover' | 'fill' | 'none'
-  /** 并发加载批次大小，默认6 */
-  loadConcurrency?: number
 }
 
 export interface FrameAnimationState {
@@ -71,7 +69,6 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     loopCount = -1,
     coverFrame = 0,
     objectFit = 'contain',
-    loadConcurrency = 6,
   } = options
 
   const maxFrameIndex = frames.length - 1
@@ -81,7 +78,6 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   const boundedLoopEnd = Math.max(0, Math.min(loopEnd, maxFrameIndex))
   const validLoopStart = Math.min(boundedLoopStart, boundedLoopEnd)
   const validLoopEnd = Math.max(boundedLoopStart, boundedLoopEnd)
-  const validLoadConcurrency = Math.max(1, loadConcurrency)
 
   if (coverFrame !== validCoverFrame) {
     console.warn(`封面帧超出图片数量范围。图片数量: ${frames.length}, 已修正为: ${validCoverFrame}`)
@@ -265,9 +261,9 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     return params
   }
 
-  // 🟠 优化3：加载图片时分批并发（批大小由 loadConcurrency 控制）
-  const loadBatch = async (
-    batch: Array<{ frame: string | HTMLImageElement; index: number }>,
+  // 并发加载图片，由浏览器自行调度请求
+  const loadImages = async (
+    items: Array<{ frame: string | HTMLImageElement; index: number }>,
     sessionId: number,
   ): Promise<Array<HTMLImageElement | null>> => {
     const markFrameProcessed = () => {
@@ -356,7 +352,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     }
 
     return Promise.all(
-      batch.map(({ frame, index }) => {
+      items.map(({ frame, index }) => {
         return new Promise<HTMLImageElement | null>((resolve) => {
           if (destroyed || sessionId !== loadingSessionId) {
             resolve(null)
@@ -387,28 +383,20 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     try {
       const frameList = frames.map((frame, index) => ({ frame, index }))
 
-      // 优先单独加载封面帧，保证首屏快速显示
+      // 封面帧排在最前，加载完成后会立即绘制
       const coverItem = frameList[validCoverFrame]
       const otherItems = frameList.filter((_, i) => i !== validCoverFrame)
-
-      // 先加载封面帧
-      const [coverImg] = await loadBatch([coverItem], sessionId)
-      if (destroyed || sessionId !== loadingSessionId) return []
-      images[validCoverFrame] = coverImg
-
-      // 再分批并发加载其余帧
       const results: Array<HTMLImageElement | null> = new Array(frames.length).fill(null)
-      results[validCoverFrame] = coverImg
+      const loadItems = [coverItem, ...otherItems]
+      const loadedImages = await loadImages(loadItems, sessionId)
 
-      for (let i = 0; i < otherItems.length; i += validLoadConcurrency) {
-        const batch = otherItems.slice(i, i + validLoadConcurrency)
-        const batchResults = await loadBatch(batch, sessionId)
-        if (destroyed || sessionId !== loadingSessionId) return results
-        batchResults.forEach((img, batchIdx) => {
-          results[otherItems[i + batchIdx].index] = img
-          images[otherItems[i + batchIdx].index] = img
-        })
-      }
+      if (destroyed || sessionId !== loadingSessionId) return results
+
+      loadedImages.forEach((img, index) => {
+        const frameIndex = loadItems[index].index
+        results[frameIndex] = img
+        images[frameIndex] = img
+      })
 
       if (destroyed || sessionId !== loadingSessionId) return results
 
