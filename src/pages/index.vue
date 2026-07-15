@@ -190,8 +190,8 @@ onBeforeUnmount(() => {
             class="rounded-30 center relative h-1200 w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
           >
             <!--  -->
-            <img class="absolute bottom-30 z-20 w-460" src="https://oss.eventnet.cn/mm/temp/b1.png" />
-            <div class="absolute bottom-460 w-590">
+            <img class="absolute bottom-30 z-20 w-560" src="https://oss.eventnet.cn/mm/temp/fin1.png" />
+            <div class="absolute bottom-530 w-500 -translate-x-20">
               <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
             </div>
           </div>
