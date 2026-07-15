@@ -12,7 +12,9 @@ const uploadInput = ref<HTMLInputElement>()
 const cameraInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
-const resultUrl = ref('')
+const resultUrl = ref(
+  'https://dashscope-7c2c.oss-accelerate.aliyuncs.com/1d/44/20260715/edd52a7a/10f3dfc5-97ac-4312-a790-9389827f16e1_0.png?Expires=1784181032&OSSAccessKeyId=LTAI5tPxpiCM2hjmWrFXrym1&Signature=sep7v3UT3QWk4l2ynUvD7ZxY1B4%3D',
+)
 const errorMessage = ref('')
 const compressing = ref(false)
 const { generate, loading } = useWanImageRequest()
@@ -184,8 +186,8 @@ onBeforeUnmount(() => {
             >
           </div>
 
-          <div class="rounded-30 overflow-hidden bg-white p-12 shadow-[0_18px_55px_rgba(67,52,39,0.09)]">
-            <img :src="resultUrl" class="rounded-22 aspect-square w-full object-contain" alt="AI 生成结果" />
+          <div class="rounded-30 overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]">
+            <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
           </div>
           <p class="text-20 mt-16 text-center leading-[1.5] text-[#8a857c]">
             生成图片链接有效期有限，请及时打开原图保存。
