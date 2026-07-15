@@ -76,9 +76,7 @@ onBeforeUnmount(() => {
         <header>
           <!-- <p class="mb-12 text-22 font-semibold tracking-[0.16em] text-[#8b6748]">WAN 2.7 IMAGE</p>
           <h1 class="text-50 leading-[1.12] font-semibold tracking-[-0.04em]">生成你的<br />3D 公仔头像</h1> -->
-          <p class="text-24 mt-18 text-center leading-[1.6] text-[#77736b]">
-            上传清晰正面照片，AI 将参考固定模板生成公仔头像。
-          </p>
+          <p class="text-24 mt-18 text-center leading-[1.6] text-[#77736b]">上传清晰正面照片</p>
         </header>
 
         <section class="rounded-32 mt-38 bg-white p-16 shadow-[0_18px_55px_rgba(67,52,39,0.09)]">

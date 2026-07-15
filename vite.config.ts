@@ -108,8 +108,8 @@ export default defineConfig(({ command, mode }) => {
         open: !!ftpDir && isDeployMode,
         uploadPath: ftpDir,
         singleBack: true,
-        // autoUpload: true,
-        // defaultFtp: process.env.zH5FtpName,
+        autoUpload: true,
+        defaultFtp: process.env.zH5FtpName,
         ftps: [
           {
             name: process.env.zH5FtpName || process.env.zH5FtpAlias || '',
