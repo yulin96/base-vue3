@@ -194,7 +194,7 @@ onBeforeUnmount(() => {
               class="absolute bottom-30 z-20 w-560"
               src="https://oss.1ycloud.com/yl25/c06oiyq/zh-33c2f12355bb75e3233946f25878d38e.png"
             />
-            <div class="absolute bottom-540 w-590">
+            <div class="absolute bottom-546 w-590">
               <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
             </div>
           </div>
