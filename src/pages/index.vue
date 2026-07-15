@@ -12,7 +12,7 @@ const uploadInput = ref<HTMLInputElement>()
 const cameraInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
-const resultUrl = ref('https://oss.eventnet.cn/mm/temp/4315f5b0efaba48ca20c0e12b8948dec.jpg')
+const resultUrl = ref('https://oss.eventnet.cn/mm/temp/4476878e-d585-4040-95d0-08366c80608e_0.png')
 const errorMessage = ref('')
 const compressing = ref(false)
 const { generate, loading } = useWanImageRequest()
@@ -190,10 +190,12 @@ onBeforeUnmount(() => {
             class="rounded-30 center relative h-1200 w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
           >
             <!--  -->
-            <img class="absolute bottom-30 z-20 w-460" src="https://oss.eventnet.cn/mm/temp/b1.png" />
-            <div class="absolute bottom-460 w-590">
-              <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
-            </div>
+            <img class="absolute bottom-30 z-20 w-550" src="https://oss.eventnet.cn/mm/temp/bn2.png" />
+            <img
+              :src="resultUrl"
+              class="rounded-22 relative z-30 w-400 object-contain mix-blend-multiply"
+              alt="AI 生成结果"
+            />
           </div>
           <p class="text-20 mt-16 text-center leading-[1.5] text-[#8a857c]">
             生成图片链接有效期有限，请及时打开原图保存。

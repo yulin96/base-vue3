@@ -12,12 +12,7 @@ export function useWanImageRequest() {
   const { post, lock } = useLockRequest(false, 0)
 
   const generate = (image: File) => {
-    return post<ResData<WanImageResult>>(
-      'https://api.yul.ink/image',
-      { image },
-      { timeout: 200000 },
-      'FormData',
-    )
+    return post<ResData<WanImageResult>>('https://api.yul.ink/image2', { image }, { timeout: 200000 }, 'FormData')
   }
 
   return { generate, loading: lock }
