@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useWanImageRequest } from '@/api/wan-image'
 import { failToast } from '@/plugins/vant/toast'
+import { compressPhoto } from '@/utils/file/compressImage'
 import { isAxiosError } from 'axios'
 import { onBeforeUnmount, ref } from 'vue'
 
@@ -13,12 +14,13 @@ const selectedFile = ref<File>()
 const previewUrl = ref('')
 const resultUrl = ref('')
 const errorMessage = ref('')
+const compressing = ref(false)
 const { generate, loading } = useWanImageRequest()
 
 const openUpload = () => uploadInput.value?.click()
 const openCamera = () => cameraInput.value?.click()
 
-const selectImage = (event: Event) => {
+const selectImage = async (event: Event) => {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   input.value = ''
@@ -30,17 +32,35 @@ const selectImage = (event: Event) => {
     return
   }
 
-  if (file.size > 20 * 1024 * 1024) {
-    failToast('图片不能超过 20 MB')
-    return
+  compressing.value = true
+
+  try {
+    const compressed = await compressPhoto(file, {
+      maxWidth: 2048,
+      maxHeight: 2048,
+    })
+
+    if (compressed.size > 20 * 1024 * 1024) {
+      failToast('图片压缩后仍超过 20 MB')
+      return
+    }
+
+    const compressedFile = new File([compressed], file.name, {
+      type: compressed.type || file.type,
+      lastModified: file.lastModified,
+    })
+
+    if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+
+    selectedFile.value = compressedFile
+    previewUrl.value = URL.createObjectURL(compressedFile)
+    resultUrl.value = ''
+    errorMessage.value = ''
+  } catch (error) {
+    failToast(error instanceof Error ? error.message : '图片压缩失败')
+  } finally {
+    compressing.value = false
   }
-
-  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
-
-  selectedFile.value = file
-  previewUrl.value = URL.createObjectURL(file)
-  resultUrl.value = ''
-  errorMessage.value = ''
 }
 
 const generateImage = async () => {
@@ -98,12 +118,14 @@ onBeforeUnmount(() => {
             </button>
 
             <div
-              v-if="loading"
+              v-if="loading || compressing"
               class="absolute inset-0 flex flex-col items-center justify-center bg-[#201d19]/78 text-white"
             >
               <span class="size-48 animate-spin rounded-full border-4 border-white/25 border-t-white"></span>
-              <p class="text-25 mt-20 font-medium">AI 正在生成</p>
-              <p class="text-20 mt-8 text-white/65">通常需要几十秒，请不要关闭页面</p>
+              <p class="text-25 mt-20 font-medium">{{ compressing ? '正在压缩图片' : 'AI 正在生成' }}</p>
+              <p class="text-20 mt-8 text-white/65">
+                {{ compressing ? '优化上传大小，请稍候' : '通常需要几十秒，请不要关闭页面' }}
+              </p>
             </div>
           </div>
 
@@ -111,7 +133,7 @@ onBeforeUnmount(() => {
             <button
               type="button"
               class="rounded-22 text-24 h-86 bg-[#f0ede7] font-medium text-[#4d4943] active:scale-[0.98]"
-              :disabled="loading"
+              :disabled="loading || compressing"
               @click="openUpload"
             >
               相册选择
@@ -119,7 +141,7 @@ onBeforeUnmount(() => {
             <button
               type="button"
               class="rounded-22 text-24 h-86 bg-[#f0ede7] font-medium text-[#4d4943] active:scale-[0.98]"
-              :disabled="loading"
+              :disabled="loading || compressing"
               @click="openCamera"
             >
               拍照上传
@@ -139,7 +161,7 @@ onBeforeUnmount(() => {
         <button
           type="button"
           class="rounded-26 text-26 mt-24 h-96 w-full bg-[#20201d] font-semibold text-white shadow-[0_16px_30px_rgba(32,32,29,0.18)] active:scale-[0.99] disabled:bg-[#b9b4aa] disabled:shadow-none"
-          :disabled="!selectedFile || loading"
+          :disabled="!selectedFile || loading || compressing"
           @click="generateImage"
         >
           {{ loading ? '正在生成…' : '开始生成' }}
