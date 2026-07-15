@@ -12,7 +12,7 @@ const uploadInput = ref<HTMLInputElement>()
 const cameraInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
-const resultUrl = ref('')
+const resultUrl = ref('https://oss.eventnet.cn/mm/temp/4315f5b0efaba48ca20c0e12b8948dec.jpg')
 const errorMessage = ref('')
 const compressing = ref(false)
 const { generate, loading } = useWanImageRequest()
@@ -190,8 +190,11 @@ onBeforeUnmount(() => {
             class="rounded-30 center relative h-1200 w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
           >
             <!--  -->
-            <img class="absolute bottom-30 z-20 w-560" src="https://oss.eventnet.cn/mm/temp/fin1.png" />
-            <div class="absolute bottom-530 w-500 -translate-x-20">
+            <img
+              class="absolute bottom-30 z-20 w-560"
+              src="https://oss.1ycloud.com/yl25/c06oiyq/zh-33c2f12355bb75e3233946f25878d38e.png"
+            />
+            <div class="absolute bottom-540 w-590">
               <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
             </div>
           </div>
