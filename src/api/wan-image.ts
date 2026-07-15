@@ -4,6 +4,7 @@ import { useLockRequest } from '@/hooks/network/useLockRequest'
 export interface WanImageResult {
   images: string[]
   requestId?: string
+  seed?: number
   usage?: Record<string, unknown>
 }
 
