@@ -11,7 +11,7 @@ export interface WanImageResult {
 export function useWanImageRequest() {
   const { post, lock } = useLockRequest(false, 0)
 
-  const generate = (image: File) => {
+  const generate = (image: string) => {
     return post<ResData<WanImageResult>>(
       'https://api.yul.ink/image',
       { image },
