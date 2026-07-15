@@ -2,7 +2,6 @@
 import { useWanImageRequest } from '@/api/wan-image'
 import { failToast } from '@/plugins/vant/toast'
 import { compressPhoto } from '@/utils/file/compressImage'
-import { uploadFile } from '@/utils/file/uploadFile'
 import { isAxiosError } from 'axios'
 import { onBeforeUnmount, ref } from 'vue'
 
@@ -12,12 +11,10 @@ definePage({ meta: { index: 10 } })
 const uploadInput = ref<HTMLInputElement>()
 const cameraInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
-const uploadedImageUrl = ref('')
 const previewUrl = ref('')
 const resultUrl = ref('')
 const errorMessage = ref('')
 const compressing = ref(false)
-const uploading = ref(false)
 const { generate, loading } = useWanImageRequest()
 
 const openUpload = () => uploadInput.value?.click()
@@ -58,7 +55,6 @@ const selectImage = async (event: Event) => {
     if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
 
     selectedFile.value = compressedFile
-    uploadedImageUrl.value = ''
     previewUrl.value = URL.createObjectURL(compressedFile)
     resultUrl.value = ''
     errorMessage.value = ''
@@ -70,26 +66,13 @@ const selectImage = async (event: Event) => {
 }
 
 const generateImage = async () => {
-  if (!selectedFile.value || loading.value || uploading.value) return
+  if (!selectedFile.value || loading.value) return
 
   errorMessage.value = ''
   resultUrl.value = ''
-  uploading.value = true
 
   try {
-    if (!uploadedImageUrl.value) {
-      const [uploadError, imageUrl] = await uploadFile({
-        id: 'IYXE',
-        file: selectedFile.value,
-        test: true,
-      })
-
-      if (uploadError || !imageUrl) throw new Error('图片上传失败，请稍后重试')
-      uploadedImageUrl.value = imageUrl
-    }
-    console.log(uploadedImageUrl.value)
-    // if (!!1) return
-    const response = await generate(uploadedImageUrl.value)
+    const response = await generate(selectedFile.value)
     const imageUrl = response.data?.images?.[0]
 
     if (!imageUrl) throw new Error('接口未返回生成图片')
@@ -100,8 +83,6 @@ const generateImage = async () => {
       : undefined
 
     errorMessage.value = responseMessage || (error instanceof Error ? error.message : '生成失败，请稍后重试')
-  } finally {
-    uploading.value = false
   }
 }
 
@@ -139,20 +120,18 @@ onBeforeUnmount(() => {
             </button>
 
             <div
-              v-if="loading || compressing || uploading"
+              v-if="loading || compressing"
               class="absolute inset-0 flex flex-col items-center justify-center bg-[#201d19]/78 text-white"
             >
               <span class="size-48 animate-spin rounded-full border-4 border-white/25 border-t-white"></span>
               <p class="text-25 mt-20 font-medium">
-                {{ compressing ? '正在压缩图片' : uploading && !loading ? '正在上传图片' : 'AI 正在生成' }}
+                {{ compressing ? '正在压缩图片' : 'AI 正在生成' }}
               </p>
               <p class="text-20 mt-8 text-white/65">
                 {{
                   compressing
                     ? '优化上传大小，请稍候'
-                    : uploading && !loading
-                      ? '正在准备生成，请稍候'
-                      : '通常需要十秒左右，请不要关闭页面'
+                    : '通常需要十秒左右，请不要关闭页面'
                 }}
               </p>
             </div>
@@ -162,7 +141,7 @@ onBeforeUnmount(() => {
             <button
               type="button"
               class="rounded-22 text-24 h-86 bg-[#f0ede7] font-medium text-[#4d4943] active:scale-[0.98]"
-              :disabled="loading || compressing || uploading"
+              :disabled="loading || compressing"
               @click="openUpload"
             >
               相册选择
@@ -170,7 +149,7 @@ onBeforeUnmount(() => {
             <button
               type="button"
               class="rounded-22 text-24 h-86 bg-[#f0ede7] font-medium text-[#4d4943] active:scale-[0.98]"
-              :disabled="loading || compressing || uploading"
+              :disabled="loading || compressing"
               @click="openCamera"
             >
               拍照上传
@@ -190,10 +169,10 @@ onBeforeUnmount(() => {
         <button
           type="button"
           class="rounded-26 text-26 mt-24 h-96 w-full bg-[#20201d] font-semibold text-white shadow-[0_16px_30px_rgba(32,32,29,0.18)] active:scale-[0.99] disabled:bg-[#b9b4aa] disabled:shadow-none"
-          :disabled="!selectedFile || loading || compressing || uploading"
+          :disabled="!selectedFile || loading || compressing"
           @click="generateImage"
         >
-          {{ uploading && !loading ? '正在上传…' : loading ? '正在生成…' : '开始生成' }}
+          {{ loading ? '正在生成…' : '开始生成' }}
         </button>
 
         <p v-if="errorMessage" class="rounded-20 text-22 mt-20 bg-[#fff0ee] px-20 py-18 leading-[1.5] text-[#ad3e32]">

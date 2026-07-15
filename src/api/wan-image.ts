@@ -11,9 +11,9 @@ export interface WanImageResult {
 export function useWanImageRequest() {
   const { post, lock } = useLockRequest(false, 0)
 
-  const generate = (image: string) => {
+  const generate = (image: File) => {
     return post<ResData<WanImageResult>>(
-      !location.href.includes('__test__') ? 'https://api.yul.ink/qwen-image' : 'https://api.yul.ink/image',
+      'https://api.yul.ink/image',
       { image },
       { timeout: 200000 },
       'FormData',
