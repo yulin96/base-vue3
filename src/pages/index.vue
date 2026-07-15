@@ -187,16 +187,9 @@ onBeforeUnmount(() => {
           </div>
 
           <div
-            class="rounded-30 center relative h-1200 w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
+            class="rounded-30 center relative w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
           >
-            <!--  -->
-            <img
-              class="absolute bottom-30 z-20 w-560"
-              src="https://oss.1ycloud.com/yl25/c06oiyq/zh-33c2f12355bb75e3233946f25878d38e.png"
-            />
-            <div class="absolute bottom-550 w-500">
-              <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
-            </div>
+            <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
           </div>
           <p class="text-20 mt-16 text-center leading-[1.5] text-[#8a857c]">
             生成图片链接有效期有限，请及时打开原图保存。
