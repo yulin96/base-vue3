@@ -12,9 +12,7 @@ const uploadInput = ref<HTMLInputElement>()
 const cameraInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
-const resultUrl = ref(
-  'https://dashscope-7c2c.oss-accelerate.aliyuncs.com/1d/44/20260715/edd52a7a/10f3dfc5-97ac-4312-a790-9389827f16e1_0.png?Expires=1784181032&OSSAccessKeyId=LTAI5tPxpiCM2hjmWrFXrym1&Signature=sep7v3UT3QWk4l2ynUvD7ZxY1B4%3D',
-)
+const resultUrl = ref('')
 const errorMessage = ref('')
 const compressing = ref(false)
 const { generate, loading } = useWanImageRequest()
