@@ -33,8 +33,8 @@ importers:
         specifier: ^2.1.3
         version: 2.1.3(vue@3.5.39(typescript@5.9.3))
       '@zumer/snapdom':
-        specifier: ^2.15.0
-        version: 2.15.0
+        specifier: ^2.16.0
+        version: 2.16.0
       ali-oss:
         specifier: ^6.23.0
         version: 6.23.0
@@ -66,8 +66,8 @@ importers:
         specifier: ^17.4.2
         version: 17.4.2
       driver.js:
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.7.0
+        version: 1.7.0
       es-toolkit:
         specifier: ^1.49.0
         version: 1.49.0
@@ -1987,8 +1987,8 @@ packages:
       '@vue/composition-api':
         optional: true
 
-  '@zumer/snapdom@2.15.0':
-    resolution: {integrity: sha512-rdayfg832lYhy2v2DRr4LwzhIT0ZMeGKYicVmtzbji95KhUd7Z1g6/5jTsDEU4q32a6ywbIpAixO45hubsEftQ==}
+  '@zumer/snapdom@2.16.0':
+    resolution: {integrity: sha512-ZfN3o6kcxb+jDhYe/JHFZf3g4UfDv3MGyTiK/sWvFU+vYlxa2KZVLZH7DxhKkobwGp66KMhRnXTqIKmaSgM50Q==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -2389,8 +2389,8 @@ packages:
     resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
     engines: {node: '>=12'}
 
-  driver.js@1.6.0:
-    resolution: {integrity: sha512-gryo9QS7AZhz8J0bmdf42dwaTzcd1BgSJLnaSM7cPJbu8bTW8wIEuiGDy4MoCvB4Sr8wA9g5o2G9EFNVYZGeVQ==}
+  driver.js@1.7.0:
+    resolution: {integrity: sha512-IWkESaVWaoxIWu3TqTpLRDgOFmDdjZsg/Oz7hrrr4ApBUapTFm9YCXYnptu3mKN8l4eAdtrxpU54l7kHLK96tw==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -6061,7 +6061,7 @@ snapshots:
       vue: 3.5.39(typescript@5.9.3)
       vue-demi: 0.14.10(vue@3.5.39(typescript@5.9.3))
 
-  '@zumer/snapdom@2.15.0': {}
+  '@zumer/snapdom@2.16.0': {}
 
   acorn-jsx@5.3.2(acorn@8.17.0):
     dependencies:
@@ -6428,7 +6428,7 @@ snapshots:
 
   dotenv@17.4.2: {}
 
-  driver.js@1.6.0: {}
+  driver.js@1.7.0: {}
 
   dunder-proto@1.0.1:
     dependencies:
