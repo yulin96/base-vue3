@@ -36,8 +36,8 @@ const selectImage = async (event: Event) => {
 
   try {
     const compressed = await compressPhoto(file, {
-      maxWidth: 2048,
-      maxHeight: 2048,
+      maxWidth: 1024,
+      maxHeight: 1024,
     })
 
     console.log(compressed.size)
@@ -128,11 +128,7 @@ onBeforeUnmount(() => {
                 {{ compressing ? '正在压缩图片' : 'AI 正在生成' }}
               </p>
               <p class="text-20 mt-8 text-white/65">
-                {{
-                  compressing
-                    ? '优化上传大小，请稍候'
-                    : '通常需要十秒左右，请不要关闭页面'
-                }}
+                {{ compressing ? '优化上传大小，请稍候' : '通常需要十秒左右，请不要关闭页面' }}
               </p>
             </div>
           </div>
