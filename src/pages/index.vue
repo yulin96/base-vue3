@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
               <span class="size-48 animate-spin rounded-full border-4 border-white/25 border-t-white"></span>
               <p class="text-25 mt-20 font-medium">{{ compressing ? '正在压缩图片' : 'AI 正在生成' }}</p>
               <p class="text-20 mt-8 text-white/65">
-                {{ compressing ? '优化上传大小，请稍候' : '通常需要几十秒，请不要关闭页面' }}
+                {{ compressing ? '优化上传大小，请稍候' : '通常需要十秒左右，请不要关闭页面' }}
               </p>
             </div>
           </div>
