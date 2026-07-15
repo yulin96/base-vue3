@@ -40,6 +40,8 @@ const selectImage = async (event: Event) => {
       maxHeight: 2048,
     })
 
+    console.log(compressed.size)
+
     if (compressed.size > 20 * 1024 * 1024) {
       failToast('图片压缩后仍超过 20 MB')
       return
