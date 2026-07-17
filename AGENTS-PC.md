@@ -55,3 +55,17 @@
 - 修改样式或页面后，优先运行与改动范围匹配的 lint / type-check；能只查单文件就不要跑全量流程。
 - 如果改了适配基础配置，至少检查 `vite.config.ts`、`src/assets/styles/main.css`、`src/assets/styles/tailwind.css`、`src/assets/styles/theme.css` 是否仍符合 PC 模式。
 - 涉及视觉还原时，优先用浏览器按目标宽高预览；不要只看代码判断位置是否正确。
+
+## Electron 客户端能力
+
+- 项目运行在配套 `base-electron` 客户端时，统一从 `src/config/env.ts` 导入 `electronApi`；不要在业务代码里自行封装 IPC，也不要直接假定 `window.api` 一定存在。
+- `electronApi` 在普通浏览器中可能是 `undefined`，且类型声明允许客户端只提供部分接口。调用时使用可选链，并对有业务影响的 Promise 失败进行明确处理。
+- 客户端接口的本项目类型声明位于 `types/electron.d.ts`。客户端升级或新增 preload 接口后，先对照 `base-electron/src/preload/index.ts` 和 `base-electron/src/shared/app-types.d.ts` 同步类型，再在业务代码中使用。
+- 配置面板定制优先复用客户端现有接口：
+  - `defineDisplayNames(names)` 修改配置字段在面板中的显示名称，常用于为 `list1` 到 `list10` 设置业务名称；它不修改配置值。
+  - `hideConfig(targets)` 可隐藏字段、`exitButton` 子字段或配置分组；`hideAllConfig()` 会关闭并禁用本次运行期间的整个配置面板。
+  - 上述显示名称和隐藏状态只保存在客户端主进程内存中，客户端重启后需由业务页面重新设置。`hideAllConfig()` 本次运行内没有恢复接口，调用前必须确认这是明确需求。
+- `electronApi.config` 是 preload 加载时的启动快照，不会自动刷新；需要最新配置时调用 `getConfig()`。`defineConfig(patch)` 会局部写入配置，但多数启动配置不会自动热更新，立即切换全屏应使用 `enterFullscreen()` / `exitFullscreen()`。
+- 打印使用 `previewPrint(request)` / `print(request)`；打印预览不能替代目标打印机、实际纸张、驱动方向和静默打印的实机验证。
+- 多窗口通信使用 `getScreenIndex()`、`sendToScreen()` 和 `onScreenMessage()`。组件卸载时必须调用监听函数返回的取消函数；`sendToScreen()` 返回 `true` 只表示消息已投递，不代表目标业务处理成功。
+- `quit()`、`restart()` 属于高影响操作，客户端不会代替业务检查未保存内容或显示确认框，调用前由页面完成保存和用户确认。
