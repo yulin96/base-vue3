@@ -144,7 +144,7 @@ function reportRequestError(error: unknown) {
       api_code: typeof responseData?.code === 'number' ? responseData.code : String(responseData?.code || ''),
       api_business_status:
         typeof responseData?.status === 'number' ? responseData.status : String(responseData?.status || ''),
-      api_request_data: stringifyData(getRequestData(config)),
+      api_request_data: stringifyData(redactSensitiveData(getRequestData(config))),
       api_response_data: stringifyData(responseData),
       api_error_code: error.code || '',
       api_error_name: error.name || 'AxiosError',
@@ -210,3 +210,19 @@ function getResponseMessage(responseData: Dict | undefined, fallbackMessage: str
 }
 
 const BODY_REQUEST_METHODS = ['post', 'put', 'patch', 'delete']
+
+const SENSITIVE_REQUEST_KEYS = ['password', 'token', 'secret', 'mobile', 'phone']
+
+function redactSensitiveData(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(redactSensitiveData)
+  if (!value || typeof value !== 'object' || isFormData(value)) return value
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [
+      key,
+      SENSITIVE_REQUEST_KEYS.some((sensitiveKey) => key.toLowerCase().includes(sensitiveKey))
+        ? '******'
+        : redactSensitiveData(item),
+    ]),
+  )
+}
