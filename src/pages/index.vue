@@ -94,14 +94,8 @@ onBeforeUnmount(() => {
 <template>
   <div class="size-full bg-[#f4f1eb] text-[#20201d]">
     <section class="scroll-box index min-h-screen overflow-y-auto bg-transparent">
-      <main class="page-shell mx-auto flex min-h-screen w-full flex-col px-32 pt-54">
-        <header>
-          <!-- <p class="mb-12 text-22 font-semibold tracking-[0.16em] text-[#8b6748]">WAN 2.7 IMAGE</p>
-          <h1 class="text-50 leading-[1.12] font-semibold tracking-[-0.04em]">生成你的<br />3D 公仔头像</h1> -->
-          <p class="text-24 mt-18 text-center leading-[1.6] text-[#77736b]">上传清晰正面照片</p>
-        </header>
-
-        <section class="rounded-32 mt-38 bg-white p-16 shadow-[0_18px_55px_rgba(67,52,39,0.09)]">
+      <main class="page-shell mx-auto flex min-h-screen w-full flex-col px-32 pt-20">
+        <section class="rounded-32 mt-10 bg-white p-16 shadow-[0_18px_55px_rgba(67,52,39,0.09)]">
           <div class="rounded-24 relative aspect-square w-full overflow-hidden bg-[#ece8e0]">
             <img v-if="previewUrl" :src="previewUrl" class="size-full object-cover" alt="用户上传图片预览" />
 
@@ -190,12 +184,12 @@ onBeforeUnmount(() => {
             class="rounded-30 center relative h-1200 w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
           >
             <!--  -->
-            <img
+            <!-- <img
               class="absolute bottom-30 z-20 w-560"
               src="https://oss.1ycloud.com/yl25/c06oiyq/zh-33c2f12355bb75e3233946f25878d38e.png"
-            />
+            /> -->
             <div class="absolute bottom-550 w-500">
-              <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
+              <img :src="resultUrl" class="rounded-22 w-full border object-contain" alt="AI 生成结果" />
             </div>
           </div>
           <p class="text-20 mt-16 text-center leading-[1.5] text-[#8a857c]">

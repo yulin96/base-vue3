@@ -1,4 +1,5 @@
 import type { ResData } from '@/api/types'
+import { devModel } from '@/config/env'
 import { useLockRequest } from '@/hooks/network/useLockRequest'
 
 export interface WanImageResult {
@@ -13,7 +14,7 @@ export function useWanImageRequest() {
 
   const generate = (image: File) => {
     return post<ResData<WanImageResult>>(
-      'https://api.yul.ink/image',
+      `${devModel ? 'http://127.0.0.1:3002/image' : 'https://api.yul.ink/image'}`,
       { image },
       { timeout: 200000 },
       'FormData',
