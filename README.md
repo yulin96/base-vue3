@@ -153,6 +153,74 @@ base-vue3/
 - URL 带 `?dev` 时会动态加载 vConsole，方便真机调试。
 - 可访问 `/clear.html` 快速清理本地缓存。
 
+## Electron 客户端接口
+
+项目可作为配套 `base-electron` 客户端的业务页面运行。客户端通过 preload 暴露 `window.api`，本项目在 `src/config/env.ts` 中将其导出为 `electronApi`，完整调用类型见 `types/electron.d.ts`。
+
+普通浏览器中没有这些客户端能力，因此调用时应保留可选链：
+
+```ts
+import { electronApi } from '@/config/env'
+
+await electronApi?.defineDisplayNames?.({
+  list1: '门店编号',
+  list2: '活动编号',
+})
+```
+
+### 配置面板定制
+
+`defineDisplayNames(names)` 用于覆盖配置面板中的字段名称，最常见的用途是赋予 `list1` 到 `list10` 明确的业务含义。它只修改面板文案，不会修改对应配置值。
+
+```ts
+await electronApi?.defineDisplayNames?.({
+  list1: '门店编号',
+  list2: '活动编号',
+  printCountdown: '打印倒计时',
+})
+
+await electronApi?.hideConfig?.(['performance', 'exitButton.mark', 'list10'])
+```
+
+- `hideConfig(targets)`：隐藏一个或多个配置字段、`exitButton` 子字段或配置分组。
+- `hideAllConfig()`：关闭并禁用本次运行期间的整个配置面板；本次运行内没有恢复接口。
+- `getConfigDisplayNames()`：读取当前已定义的字段名称。
+- `getConfigEditorOptions()`：读取当前隐藏项和配置面板是否已整体禁用。
+
+这些面板定制只保存在客户端主进程内存中，客户端重启后需要由业务页面重新调用。适合放在应用初始化流程中，不要依赖上一次运行的状态。
+
+### 常用接口速查
+
+| 接口                                     | 说明                            | 使用注意                                |
+| ---------------------------------------- | ------------------------------- | --------------------------------------- |
+| `config`                                 | preload 加载时读取的配置快照    | 配置文件变化后不会自动更新              |
+| `getConfig()`                            | 重新读取并返回最新的标准化配置  | 需要最新值时优先使用                    |
+| `defineConfig(patch)`                    | 局部合并并保存支持的配置字段    | 多数启动配置需重启客户端后生效          |
+| `enterFullscreen()` / `exitFullscreen()` | 立即切换当前业务窗口全屏状态    | 返回值表示是否找到并处理了当前窗口      |
+| `previewPrint(request)`                  | 按打印参数打开预览              | 不能验证打印机驱动默认纸型和实际装纸    |
+| `print(request)`                         | 执行打印并返回 `PrintResult`    | 上线前需使用目标打印机和实际纸张验证    |
+| `getScreenIndex()`                       | 获取当前业务窗口从 1 开始的编号 | 无法识别当前窗口时返回 `null`           |
+| `sendToScreen(target, command, data?)`   | 向指定业务窗口发送消息          | `true` 只表示已投递，不表示业务处理成功 |
+| `onScreenMessage(listener)`              | 监听其他窗口发来的消息          | 返回取消函数，组件卸载时必须调用        |
+| `restart()` / `quit()`                   | 重启或退出客户端                | 调用前自行处理未保存数据并向用户确认    |
+
+多窗口监听示例：
+
+```ts
+const stopListening = electronApi?.onScreenMessage?.((message) => {
+  console.log(message.from, message.command, message.data)
+})
+
+await electronApi?.sendToScreen?.(2, 'player:play', {
+  mediaId: 'demo-001',
+})
+
+// Vue 组件卸载时调用
+stopListening?.()
+```
+
+客户端新增或调整接口后，应以其 `src/preload/index.ts` 和 `src/shared/app-types.d.ts` 为准，同步更新本项目的 `types/electron.d.ts`，不要只根据接口名称猜测行为。
+
 ## CI 与质量保障
 
 GitHub Actions 在 `main` 分支 push / PR 时自动执行：
