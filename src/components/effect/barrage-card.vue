@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { sample } from 'es-toolkit'
+import type { TBarrage } from './barrage.types'
 
 const props = defineProps<{ barrage: TBarrage }>()
 

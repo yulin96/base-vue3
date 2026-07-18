@@ -50,22 +50,50 @@ export async function browserScan(): Promise<string> {
 
   return await new Promise<string>((resolve, reject) => {
     let finished = false
+    let startPromise: Promise<null> | undefined
 
-    async function finish(result = '', error?: unknown) {
+    function clearScanner() {
+      try {
+        scanner.clear()
+      } catch (error) {
+        console.warn('清理浏览器扫码器失败:', error)
+      }
+    }
+
+    async function stopScanner() {
+      try {
+        if (scanner.isScanning) await scanner.stop()
+      } catch (error) {
+        console.warn('停止浏览器扫码器失败:', error)
+      } finally {
+        clearScanner()
+      }
+    }
+
+    function cleanupScanner() {
+      if (scanner.isScanning) {
+        void stopScanner()
+        return
+      }
+
+      if (startPromise) {
+        void startPromise.then(stopScanner).catch(clearScanner)
+        return
+      }
+
+      clearScanner()
+    }
+
+    function finish(result = '', error?: unknown) {
       if (finished) return
       finished = true
 
       close.removeEventListener('click', closeScan)
-      try {
-        await startPromise.catch(() => null)
-        if (scanner.isScanning) await scanner.stop()
-      } finally {
-        scanner.clear()
-        root.remove()
-        document.body.style.overflow = originalOverflow
-      }
+      root.remove()
+      document.body.style.overflow = originalOverflow
+      cleanupScanner()
 
-      if (error) reject(error)
+      if (error !== undefined) reject(error)
       else resolve(result)
     }
 
@@ -75,23 +103,30 @@ export async function browserScan(): Promise<string> {
 
     close.addEventListener('click', closeScan)
 
-    const startPromise = scanner.start(
-      { facingMode: 'environment' },
-      {
-        fps: 15,
-      },
-      (decodedText) => void finish(decodedText),
-      undefined,
-    )
-    startPromise.then(() => {
-      const video = reader.querySelector('video')
-      if (!video || video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-        loading.remove()
-        return
-      }
+    try {
+      startPromise = scanner.start(
+        { facingMode: 'environment' },
+        {
+          fps: 15,
+        },
+        (decodedText) => finish(decodedText),
+        undefined,
+      )
+      void startPromise
+        .then(() => {
+          if (finished) return
 
-      video.addEventListener('playing', () => loading.remove(), { once: true })
-    })
-    startPromise.catch((error) => void finish('', error))
+          const video = reader.querySelector('video')
+          if (!video || video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+            loading.remove()
+            return
+          }
+
+          video.addEventListener('playing', () => loading.remove(), { once: true })
+        })
+        .catch((error) => finish('', error))
+    } catch (error) {
+      finish('', error)
+    }
   })
 }

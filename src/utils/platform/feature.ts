@@ -2,23 +2,15 @@
  * 检查设备是否有摄像头
  * @returns {Promise<boolean>} - 如果设备有摄像头则返回 true，否则返回 false
  */
-export function hasCamera(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-      resolve(false)
-      return
-    }
+export async function hasCamera(): Promise<boolean> {
+  if (!navigator.mediaDevices?.enumerateDevices) return false
 
-    navigator.mediaDevices
-      .enumerateDevices()
-      .then((devices) => {
-        const hasVideoInput = devices.some((device) => device.kind === 'videoinput')
-        resolve(hasVideoInput)
-      })
-      .catch(() => {
-        resolve(false)
-      })
-  })
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    return devices.some((device) => device.kind === 'videoinput')
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -27,7 +19,7 @@ export function hasCamera(): Promise<boolean> {
  */
 export function supportsWebp(): Promise<boolean> {
   if ('_webpSupport' in window) {
-    return Promise.resolve((window as any)._webpSupport)
+    return Promise.resolve(window._webpSupport ?? false)
   }
 
   return new Promise((resolve) => {
@@ -36,12 +28,12 @@ export function supportsWebp(): Promise<boolean> {
 
     img.onload = function () {
       const result = img.width > 0 && img.height > 0
-      ;(window as any)._webpSupport = result
+      window._webpSupport = result
       resolve(result)
     }
 
     img.onerror = function () {
-      ;(window as any)._webpSupport = false
+      window._webpSupport = false
       resolve(false)
     }
 

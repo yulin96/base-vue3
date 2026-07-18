@@ -17,7 +17,7 @@ void setupPreloadImg()
   <router-view v-slot="{ Component, route }">
     <template v-if="Component">
       <transition :name="name">
-        <keep-alive :exclude="[]">
+        <keep-alive :exclude="[]" :max="10">
           <component :is="Component" :key="route.fullPath"></component>
         </keep-alive>
       </transition>

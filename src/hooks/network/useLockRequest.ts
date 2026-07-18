@@ -8,43 +8,40 @@ import { toast } from 'vue-sonner'
 export function useLockRequest(disableLock = false, delay = 500) {
   const [status, lock, unLock] = useLock()
 
-  const makeRequest = <T>(requestFn: () => Promise<T>): Promise<T> => {
+  const makeRequest = async <T>(requestFn: () => Promise<T>): Promise<T> => {
     if (status.value && !disableLock) {
-      return Promise.reject({ code: -9996, error: '请求正在进行中，请稍后再试' })
+      throw { code: -9996, error: '请求正在进行中，请稍后再试' }
     }
 
     lock()
 
-    return new Promise((resolve, reject) => {
-      requestFn()
-        .then(resolve)
-        .catch((err) => {
-          reject(err)
-          if (!isCanceledRequest(err)) {
-            toast.warning('正在处理中...')
-          }
-        })
-        .finally(() => {
-          const unlock = () => unLock()
-          delay ? setTimeout(unlock, delay) : unlock()
-        })
-    })
+    try {
+      return await requestFn()
+    } catch (error) {
+      if (!isCanceledRequest(error)) {
+        toast.warning('正在处理中...')
+      }
+      throw error
+    } finally {
+      const unlock = () => unLock()
+      delay ? setTimeout(unlock, delay) : unlock()
+    }
   }
 
-  const post = <T = any>(
+  const post = <T = unknown>(
     url: string,
-    data?: Record<string, any>,
-    config?: AxiosRequestConfig<any>,
+    data?: Record<string, unknown>,
+    config?: AxiosRequestConfig,
     dataType?: IFormDataOrJSON,
   ): Promise<T> => {
     return makeRequest(() => axiosPost(url, data, config, dataType))
   }
 
-  const get = <T = any>(
+  const get = <T = unknown>(
     url: string,
-    params?: Record<string, any>,
-    config?: AxiosRequestConfig<any>,
-    data?: Record<string, any>,
+    params?: Record<string, unknown>,
+    config?: AxiosRequestConfig,
+    data?: Record<string, unknown>,
   ): Promise<T> => {
     return makeRequest(() => axiosGet(url, params, config, data))
   }

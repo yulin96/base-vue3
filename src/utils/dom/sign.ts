@@ -23,14 +23,14 @@ export default class LineCanvas {
 
     const ctx = this.canvas.getContext('2d')
     if (!ctx) {
-      alert('您的浏览器不支持canvas，请更换浏览器后重试！')
-      return
+      this.canvas.remove()
+      throw new Error('您的浏览器不支持 Canvas')
     }
     this.cxt = ctx
     this.ctxInit()
 
-    this.canvas.addEventListener('touchstart', this.touchstart, false)
-    this.canvas.addEventListener('touchmove', this.touchmove, false)
+    this.canvas.addEventListener('touchstart', this.touchstart, { passive: false })
+    this.canvas.addEventListener('touchmove', this.touchmove, { passive: false })
     this.canvas.addEventListener('touchend', this.touchend, false)
   }
 
@@ -44,6 +44,7 @@ export default class LineCanvas {
     this.cxt.shadowColor = '#000'
     this.cxt.shadowBlur = 1
     this.cxt.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.cxt.fillRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
   // 将触摸坐标转换为 canvas 内部坐标
@@ -68,6 +69,7 @@ export default class LineCanvas {
 
   // 绘制中
   private touchmove = (e: TouchEvent) => {
+    e.preventDefault()
     const touch = e.changedTouches[0]
     if (touch) {
       const { x, y } = this.getCanvasPoint(touch)
@@ -85,7 +87,7 @@ export default class LineCanvas {
   // 清除
   public clear = () => {
     this.signing = false
-    this.cxt.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.ctxInit()
   }
 
   // 销毁

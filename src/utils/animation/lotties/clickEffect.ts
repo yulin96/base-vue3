@@ -21,11 +21,14 @@ export const createClickEffect = (x: number, y: number) => {
     autoplay: false,
   })
 
-  animation.addEventListener('DOMLoaded', async () => {
+  animation.addEventListener('DOMLoaded', () => {
     animation.goToAndPlay(12, true)
   })
-  animation.addEventListener('complete', () => {
+  const cleanup = () => {
     animation.destroy()
-    document.body.removeChild(div)
-  })
+    div.remove()
+  }
+  animation.addEventListener('complete', cleanup)
+  animation.addEventListener('data_failed', cleanup)
+  animation.addEventListener('error', cleanup)
 }

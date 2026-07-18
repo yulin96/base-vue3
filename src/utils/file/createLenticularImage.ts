@@ -22,13 +22,30 @@ export async function createLenticularImage(
   }
 
   const images = await Promise.all(sources.map(sourceToImage))
-  const { width = images[0]?.naturalWidth || 0, height = images[0]?.naturalHeight || 0 } = options
+  const {
+    width: requestedWidth = images[0]?.naturalWidth || 0,
+    height: requestedHeight = images[0]?.naturalHeight || 0,
+  } = options
 
-  if (!width || !height) {
+  if (
+    !Number.isFinite(requestedWidth) ||
+    !Number.isFinite(requestedHeight) ||
+    requestedWidth < 1 ||
+    requestedHeight < 1
+  ) {
     throw new Error('图像尺寸无效')
   }
 
   const { stripWidth = 8, type = 'image/png', quality = 0.92, fileName = 'lenticular.png', backgroundColor } = options
+  if (!Number.isFinite(stripWidth) || stripWidth < 1) {
+    throw new RangeError('stripWidth 必须是大于或等于 1 的有限数值')
+  }
+  if (!Number.isFinite(quality) || quality < 0 || quality > 1) {
+    throw new RangeError('quality 必须在 0 到 1 之间')
+  }
+
+  const width = Math.round(requestedWidth)
+  const height = Math.round(requestedHeight)
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
@@ -43,7 +60,7 @@ export async function createLenticularImage(
     ctx.fillRect(0, 0, width, height)
   }
 
-  const strip = Math.max(0.01, stripWidth)
+  const strip = Math.round(stripWidth)
 
   ctx.drawImage(images[0], 0, 0, width, height)
 
@@ -110,12 +127,25 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality: number):
 }
 
 function waitImageLoaded(image: HTMLImageElement): Promise<HTMLImageElement> {
-  if (image.complete && image.naturalWidth > 0) {
-    return Promise.resolve(image)
+  if (image.complete) {
+    return image.naturalWidth > 0 ? Promise.resolve(image) : Promise.reject(new Error('图像加载失败'))
   }
 
   return new Promise((resolve, reject) => {
-    image.onload = () => resolve(image)
-    image.onerror = () => reject(new Error('图像加载失败'))
+    const cleanup = () => {
+      image.removeEventListener('load', handleLoad)
+      image.removeEventListener('error', handleError)
+    }
+    const handleLoad = () => {
+      cleanup()
+      resolve(image)
+    }
+    const handleError = () => {
+      cleanup()
+      reject(new Error('图像加载失败'))
+    }
+
+    image.addEventListener('load', handleLoad)
+    image.addEventListener('error', handleError)
   })
 }

@@ -11,6 +11,23 @@ type ArmsExceptionPayload = {
   column?: number
   properties?: Record<string, unknown>
 }
+type HttpResponseLike = {
+  status?: number
+  statusText?: string
+  type?: string
+}
+type ApiEvaluationOptions = {
+  method?: string
+  params?: unknown
+  data?: unknown
+  url?: string
+  headers?: unknown
+}
+type ApiEvaluationResponse = HttpResponseLike & {
+  url?: string
+  responseText?: string
+  clone?: () => { text: () => Promise<string> }
+}
 
 const truncateText = (value: string, maxLength = 2000) => value.slice(0, maxLength)
 const getErrorLikeValue = (error: unknown, key: 'name' | 'code' | 'message') => {
@@ -36,7 +53,7 @@ const getErrorParts = (error: unknown) => {
   }
 }
 
-const getResponseStatus = (response?: Response | Record<string, unknown> | null) => {
+const getResponseStatus = (response?: HttpResponseLike | null) => {
   return typeof response?.status === 'number' ? response.status : undefined
 }
 
@@ -61,7 +78,7 @@ const getResponseStatus = (response?: Response | Record<string, unknown> | null)
  * - unknown          无法归类
  * - success          请求成功
  */
-const diagnoseNetworkError = (response?: Response | Record<string, unknown> | null, error?: unknown): string => {
+const diagnoseNetworkError = (response?: HttpResponseLike | null, error?: unknown): string => {
   if (isCanceledRequest(error)) return 'canceled'
 
   const errorParts = getErrorParts(error)
@@ -113,7 +130,7 @@ const diagnoseNetworkError = (response?: Response | Record<string, unknown> | nu
     // CORS 错误 —— 浏览器 fetch/XHR 跨域失败时 status=0 且 type='opaque'/'error'
     if (
       includesAny(message, ['cors', 'cross-origin', 'access-control-allow-origin']) ||
-      (type === 'error' && response && (response as Response).type === 'opaque')
+      (type === 'error' && response?.type === 'opaque')
     ) {
       return 'cors_error'
     }
@@ -179,8 +196,7 @@ export const getNetworkQualityInfo = (): Record<string, string | number> => {
   info.is_online = typeof navigator !== 'undefined' ? (navigator.onLine ? 'yes' : 'no') : 'unknown'
 
   // Navigator.connection (Network Information API)
-  const conn =
-    (navigator as any)?.connection || (navigator as any)?.mozConnection || (navigator as any)?.webkitConnection
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection
   if (conn) {
     if (conn.effectiveType) info.net_effective_type = conn.effectiveType // 'slow-2g' | '2g' | '3g' | '4g'
     if (typeof conn.downlink === 'number') info.net_downlink = conn.downlink // Mbps
@@ -192,21 +208,7 @@ export const getNetworkQualityInfo = (): Record<string, string | number> => {
   return info
 }
 
-/**
- * 针对 AxiosError 的诊断包装
- * 从 AxiosError 结构中提取 response 和原始 error，调用 diagnoseNetworkError
- */
-export const diagnoseAxiosError = (error: unknown): string => {
-  if (!error || typeof error !== 'object') return 'unknown'
-
-  return diagnoseNetworkError((error as { response?: { status?: number; statusText?: string } }).response as any, error)
-}
-
-const getApiErrorMessage = (
-  responseText: string,
-  response?: Response | Record<string, unknown> | null,
-  error?: unknown,
-) => {
+const getApiErrorMessage = (responseText: string, response?: HttpResponseLike | null, error?: unknown) => {
   if (isCanceledRequest(error)) return 'request canceled'
 
   const errorMessage = getErrorLikeValue(error, 'message')
@@ -311,11 +313,15 @@ export function registerARMS() {
         },
         tracing: false,
 
-        evaluateApi: async (options, response, error) => {
+        evaluateApi: async (
+          options: ApiEvaluationOptions,
+          response?: ApiEvaluationResponse | string | null,
+          error?: unknown,
+        ) => {
           let requestData = ''
           let responseText = ''
+          const responseObject = typeof response === 'string' ? null : response
 
-          const method = String(options.method || '').toLowerCase()
           const normalizeJsonText = (value: string) => {
             const text = value.trim()
             if (!text) return ''
@@ -323,7 +329,6 @@ export function registerARMS() {
             const firstChar = text[0]
             const lastChar = text[text.length - 1]
             const isJsonText = (firstChar === '{' && lastChar === '}') || (firstChar === '[' && lastChar === ']')
-
             if (!isJsonText) return value
 
             try {
@@ -332,36 +337,41 @@ export function registerARMS() {
               return value
             }
           }
+
           const parseUrlParams = (url: unknown) => {
             if (typeof url !== 'string' || !url) return null
 
-            const searchParams = new URL(url, location.href).searchParams
-            const entries = Array.from(searchParams.entries())
+            let searchParams: URLSearchParams
+            try {
+              searchParams = new URL(url, location.href).searchParams
+            } catch {
+              return null
+            }
 
+            const entries = Array.from(searchParams.entries())
             if (!entries.length) return null
 
             return entries.reduce<Record<string, string | string[]>>((result, [key, value]) => {
               const currentValue = result[key]
-              if (currentValue === undefined) {
-                result[key] = value
-                return result
-              }
-              result[key] = Array.isArray(currentValue) ? [...currentValue, value] : [currentValue, value]
+              if (currentValue === undefined) result[key] = value
+              else result[key] = Array.isArray(currentValue) ? [...currentValue, value] : [currentValue, value]
               return result
             }, {})
           }
 
+          const method = String(options.method || '').toLowerCase()
           const body =
             method === 'get'
-              ? (options.params ?? parseUrlParams(options.url || response?.url) ?? options.data)
+              ? (options.params ?? parseUrlParams(options.url || responseObject?.url) ?? options.data)
               : options.data
+
           try {
             if (body instanceof FormData) {
-              const obj = {}
+              const object: Record<string, string> = {}
               body.forEach((value, key) => {
-                obj[key] = value instanceof File ? `[File: ${value.name}]` : value
+                object[key] = value instanceof File ? `[File: ${value.name}]` : value
               })
-              requestData = JSON.stringify(obj)
+              requestData = JSON.stringify(object)
             } else if (typeof body === 'object') {
               requestData = JSON.stringify(body)
             } else {
@@ -370,37 +380,32 @@ export function registerARMS() {
 
             requestData = normalizeJsonText(requestData)
 
-            if (response) {
-              if (typeof response.clone === 'function') {
-                const clone = response.clone()
-                responseText = await clone.text()
-              } else if (response.responseText) {
-                responseText = response.responseText
-              } else if (typeof response === 'string') {
-                responseText = response
-              }
-
-              responseText = normalizeJsonText(responseText)
+            if (typeof response === 'string') {
+              responseText = response
+            } else if (responseObject?.clone) {
+              responseText = await responseObject.clone().text()
+            } else if (typeof responseObject?.responseText === 'string') {
+              responseText = responseObject.responseText
             }
-          } catch (e) {
+
+            responseText = normalizeJsonText(responseText)
+          } catch {
             requestData = '解析出错'
           }
 
-          const apiErrorCategory = diagnoseNetworkError(response, error)
-          const apiErrorMessage = getApiErrorMessage(responseText, response, error)
-          const apiStatus = typeof response?.status === 'number' ? response.status : -1
-          const apiStatusText = response?.statusText == null ? '' : String(response.statusText)
+          const apiErrorCategory = diagnoseNetworkError(responseObject, error)
+          const apiErrorMessage = getApiErrorMessage(responseText, responseObject, error)
+          const apiStatus = typeof responseObject?.status === 'number' ? responseObject.status : -1
+          const apiStatusText = responseObject?.statusText == null ? '' : String(responseObject.statusText)
           const apiErrorName = getErrorLikeValue(error, 'name')
           const apiErrorCode = getErrorLikeValue(error, 'code')
           const networkInfo = apiErrorCategory !== 'success' ? getNetworkQualityInfo() : {}
 
           return {
-            success: error || (response && response.status >= 400) ? 0 : 1,
-
+            success: error || (responseObject?.status !== undefined && responseObject.status >= 400) ? 0 : 1,
             snapshots: JSON.stringify({
               reqHeaders: JSON.stringify(options.headers),
             }),
-
             properties: {
               api_type: body instanceof FormData ? 'form-data' : 'json',
               api_status: apiStatus,
@@ -418,7 +423,7 @@ export function registerARMS() {
       }
 
       // 1. 将配置挂载到全局变量 __rum
-      window['__rum'] = config
+      window.__rum = config
 
       // 2. 动态创建并插入 SDK 脚本
       const script = document.createElement('script')

@@ -9,108 +9,68 @@ import { toast } from 'vue-sonner'
  * @returns 返回一个 Promise，该 Promise 在用户选择图片后解析为 File 对象
  */
 export function getUserImage(option?: Compressor.Options) {
-  return new Promise<File | void>((resolve) => {
-    const input = document.createElement('input')
-    const cleanup = () => {
-      input.onchange = null
-      input.oncancel = null
-      input.remove()
-    }
+  return selectUserFile('image/*').then(async (file) => {
+    if (!file) return
 
-    document.body.appendChild(input)
-    input.type = 'file'
-    input.accept = 'image/*'
-    input.multiple = false
-    input.style.position = 'fixed'
-    input.style.top = '0'
-    input.style.left = '2000px'
-    input.style.opacity = '0'
-
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      if (!file) {
-        cleanup()
-        resolve()
-        return
-      }
-
-      compressPhoto(file, option)
-        .then((f) => {
-          resolve(blobToFile(f, `${v4()}.jpg`))
-        })
-        .catch(() => {
-          toast.warning('请上传有效的图片文件')
-          resolve()
-        })
-        .finally(cleanup)
+    try {
+      const compressedFile = await compressPhoto(file, option)
+      return blobToFile(compressedFile, `${v4()}.jpg`)
+    } catch {
+      toast.warning('请上传有效的图片文件')
     }
-    input.oncancel = () => {
-      cleanup()
-      resolve()
-    }
-    input.click()
   })
 }
 
 export function getUserVideo() {
-  return new Promise<File | void>((resolve) => {
-    const input = document.createElement('input')
-    const cleanup = () => {
-      input.onchange = null
-      input.oncancel = null
-      input.remove()
-    }
-
-    document.body.appendChild(input)
-    input.type = 'file'
-    input.accept = 'video/*'
-    input.multiple = false
-
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      cleanup()
-      if (!file) {
-        resolve()
-        return
-      }
-      resolve(file)
-    }
-    input.oncancel = () => {
-      cleanup()
-      resolve()
-    }
-    input.click()
-  })
+  return selectUserFile('video/*')
 }
 
 export function getUserFile(accept = '*') {
+  return selectUserFile(accept)
+}
+
+function selectUserFile(accept: string) {
   return new Promise<File | void>((resolve) => {
     const input = document.createElement('input')
+    let settled = false
+    let focusTimer: number | undefined
+
+    const finish = (file?: File) => {
+      if (settled) return
+      settled = true
+      cleanup()
+      resolve(file)
+    }
+
     const cleanup = () => {
+      if (focusTimer !== undefined) clearTimeout(focusTimer)
+      window.removeEventListener('focus', handleWindowFocus)
       input.onchange = null
       input.oncancel = null
       input.remove()
     }
 
-    document.body.appendChild(input)
+    const handleWindowFocus = () => {
+      focusTimer = window.setTimeout(() => finish(input.files?.[0]), 300)
+    }
+
     input.type = 'file'
     input.accept = accept
     input.multiple = false
+    input.style.display = 'none'
+    document.body.appendChild(input)
 
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
+    input.onchange = () => finish(input.files?.[0])
+    input.oncancel = () => finish()
+    window.addEventListener('focus', handleWindowFocus)
+
+    try {
+      input.click()
+    } catch (error) {
+      settled = true
       cleanup()
-      if (!file) {
-        resolve()
-        return
-      }
-      resolve(file)
+      throw error
     }
-    input.oncancel = () => {
-      cleanup()
-      resolve()
-    }
-    input.click()
   })
 }
 
@@ -121,12 +81,10 @@ export function getPosition() {
         (position) => {
           resolve(position.coords)
         },
-        (...args) => {
-          reject(args)
-        },
+        (error) => reject(error),
       )
     } else {
-      reject('你的浏览器不支持当前地理位置信息获取')
+      reject(new Error('你的浏览器不支持当前地理位置信息获取'))
     }
   })
 }

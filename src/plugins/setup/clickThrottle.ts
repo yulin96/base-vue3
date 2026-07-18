@@ -1,5 +1,8 @@
-const clickRecord = new WeakMap()
+import './clickThrottle.css'
+
+const clickRecord = new WeakMap<HTMLElement, number>()
 const DEFAULT_DELAY = 600
+const LOCK_CLASS = 'base-click-throttle-locked'
 
 window.addEventListener(
   'click',
@@ -23,9 +26,9 @@ window.addEventListener(
       e.preventDefault()
     } else {
       clickRecord.set(target, now)
-      target.style.pointerEvents = 'none'
-      setTimeout(() => {
-        target.style.removeProperty('pointer-events')
+      target.classList.add(LOCK_CLASS)
+      window.setTimeout(() => {
+        target.classList.remove(LOCK_CLASS)
       }, delay)
     }
   },

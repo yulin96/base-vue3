@@ -24,6 +24,7 @@ export function useTransform(options: TransformOptions) {
 
   const moveElement = useTemplateRef<HTMLElement>(key)
   let containerElement: HTMLElement | null = null
+  let boundElement: HTMLElement | null = null
 
   // 保存当前位置和缩放值
   let positionMark = { x: defaultPosition.x, y: defaultPosition.y }
@@ -47,6 +48,15 @@ export function useTransform(options: TransformOptions) {
 
   // 一个变量用于跟踪拖动后阻止点击的计时器
   let preventClickTimer: number | null = null
+
+  const clearPreventClick = () => {
+    if (preventClickTimer !== null) {
+      clearTimeout(preventClickTimer)
+      preventClickTimer = null
+    }
+    document.removeEventListener('click', preventClickAfterDrag, true)
+    document.removeEventListener('touchend', preventClickAfterDrag, true)
+  }
 
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault()
@@ -136,10 +146,7 @@ export function useTransform(options: TransformOptions) {
   // 处理鼠标释放事件
   const handleMouseUp = (e: MouseEvent) => {
     // 先清除之前可能存在的阻止点击计时器
-    if (preventClickTimer !== null) {
-      clearTimeout(preventClickTimer)
-      preventClickTimer = null
-    }
+    clearPreventClick()
 
     // 获取当前是否真正拖动的状态
     const wasMoving = hasMoved
@@ -159,7 +166,7 @@ export function useTransform(options: TransformOptions) {
       // 设置重置状态的计时器
       preventClickTimer = window.setTimeout(() => {
         hasMoved = false
-        preventClickTimer = null
+        clearPreventClick()
       }, 300) // 300毫秒后重置状态，此时点击应该已被处理
     }
 
@@ -272,10 +279,7 @@ export function useTransform(options: TransformOptions) {
   // 处理触摸结束事件
   const handleTouchEnd = (e: TouchEvent) => {
     // 先清除之前可能存在的阻止点击计时器
-    if (preventClickTimer !== null) {
-      clearTimeout(preventClickTimer)
-      preventClickTimer = null
-    }
+    clearPreventClick()
 
     // 获取当前是否真正拖动的状态
     const wasMoving = hasMoved
@@ -293,7 +297,7 @@ export function useTransform(options: TransformOptions) {
       // 设置重置状态的计时器
       preventClickTimer = window.setTimeout(() => {
         hasMoved = false
-        preventClickTimer = null
+        clearPreventClick()
       }, 300) // 300毫秒后重置状态，此时点击应该已被处理
     }
 
@@ -364,36 +368,34 @@ export function useTransform(options: TransformOptions) {
     moveElement.value.style.position = 'relative'
     moveElement.value.style.touchAction = 'none'
     moveElement.value.style.userSelect = 'none'
+    boundElement = moveElement.value
 
     // 应用默认位置
     positionMark = { x: defaultPosition.x, y: defaultPosition.y }
     updateItemPosition()
 
-    moveElement.value.addEventListener('touchstart', handleTouchStart, { passive: false })
-    moveElement.value.addEventListener('touchmove', handleTouchMove, { passive: false })
-    moveElement.value.addEventListener('touchend', handleTouchEnd)
-    moveElement.value.addEventListener('wheel', handleWheel, { passive: false })
-    moveElement.value.addEventListener('mousedown', handleMouseDown)
+    boundElement.addEventListener('touchstart', handleTouchStart, { passive: false })
+    boundElement.addEventListener('touchmove', handleTouchMove, { passive: false })
+    boundElement.addEventListener('touchend', handleTouchEnd)
+    boundElement.addEventListener('touchcancel', handleTouchEnd)
+    boundElement.addEventListener('wheel', handleWheel, { passive: false })
+    boundElement.addEventListener('mousedown', handleMouseDown)
   })
 
   onBeforeUnmount(() => {
-    // 清理 preventClick 计时器
-    if (preventClickTimer !== null) {
-      clearTimeout(preventClickTimer)
-      preventClickTimer = null
-    }
+    clearPreventClick()
 
     // 清理 document 级的事件监听器（拖动过程中销毁时可能残留）
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
 
-    if (!moveElement.value) return
-
-    moveElement.value.removeEventListener('touchstart', handleTouchStart)
-    moveElement.value.removeEventListener('touchmove', handleTouchMove)
-    moveElement.value.removeEventListener('touchend', handleTouchEnd)
-    moveElement.value.removeEventListener('wheel', handleWheel)
-    moveElement.value.removeEventListener('mousedown', handleMouseDown)
+    boundElement?.removeEventListener('touchstart', handleTouchStart)
+    boundElement?.removeEventListener('touchmove', handleTouchMove)
+    boundElement?.removeEventListener('touchend', handleTouchEnd)
+    boundElement?.removeEventListener('touchcancel', handleTouchEnd)
+    boundElement?.removeEventListener('wheel', handleWheel)
+    boundElement?.removeEventListener('mousedown', handleMouseDown)
+    boundElement = null
   })
 
   // 点击拦截函数 - 用于拖动后阻止点击

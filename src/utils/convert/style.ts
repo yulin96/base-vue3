@@ -9,7 +9,7 @@ export function toVw(text: string, screenSize = 750): string {
   return `${((px / screenSize) * 100).toFixed(5).replace(/\.?0+$/, '')}vw`
 }
 
-export function convertConfigToPx(config?: ConfigProviderThemeVars, screenSize = 750): ConfigProviderThemeVars {
+export function convertConfigToVw(config?: ConfigProviderThemeVars, screenSize = 750): ConfigProviderThemeVars {
   if (!config) return {}
 
   const result: ConfigProviderThemeVars = {}

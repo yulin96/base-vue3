@@ -15,13 +15,22 @@ export function focusDom(name: string) {
     }
 
     const oldTimeline = focusMap.get(dom)
-    if (oldTimeline) oldTimeline.kill()
+    if (oldTimeline) {
+      oldTimeline.revert()
+      focusMap.delete(dom)
+    }
+
+    const computedStyle = getComputedStyle(dom)
+    const originalColor = computedStyle.color
+    const originalBorderColor = computedStyle.borderColor
 
     const timeline = gsap
       .timeline({
         onComplete: () => {
-          timeline.kill()
+          if (focusMap.get(dom) !== timeline) return
+
           focusMap.delete(dom)
+          timeline.revert()
         },
       })
       .to(dom, {
@@ -36,7 +45,7 @@ export function focusDom(name: string) {
         ],
       })
       .to(dom, { duration: 0.5, color: '#e7000b', borderColor: '#e7000b' }, '<')
-      .to(dom, { duration: 0.5, color: '#000', borderColor: '#e8e8e8' }, '>1')
+      .to(dom, { duration: 0.5, color: originalColor, borderColor: originalBorderColor }, '>1')
 
     focusMap.set(dom, timeline)
   }

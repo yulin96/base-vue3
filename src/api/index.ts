@@ -7,22 +7,23 @@ import type { RouteNamedMap } from 'vue-router/auto-routes'
 import { toast } from 'vue-sonner'
 
 const { get: getMenus } = useLockRequest()
-export const apiMenus = (title: string, url = 'https://cdeapi.event1.cn/api/cmenu') => {
-  type T = {
-    title: string
-    status: number
-    url: string
-    remark: string
+type MenuData = {
+  title: string
+  status: number
+  url: string
+  remark: string
+}
+
+export const apiMenus = async (
+  title: string,
+  url = 'https://cdeapi.event1.cn/api/cmenu',
+): Promise<[boolean, MenuData | null]> => {
+  try {
+    const response = await getMenus<ResData<MenuData>>(url, { title })
+    return [response.data?.status == 1, response.data ?? null]
+  } catch {
+    return [false, null]
   }
-  return new Promise<[boolean, T | null]>((resolve) => {
-    getMenus<ResData<T>>(url, { title })
-      .then((res) => {
-        resolve([res.data?.status == 1, res.data])
-      })
-      .catch(() => {
-        resolve([false, null])
-      })
-  })
 }
 
 export async function replaceToWithMenus(name: string, path?: () => void | keyof RouteNamedMap | (string & {})) {

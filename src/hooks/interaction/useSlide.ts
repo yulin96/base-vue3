@@ -18,13 +18,27 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
   const { arrivedState } = useScroll(ele, { offset: { bottom: 0 } })
 
   let lock = false
+  let boundElement: HTMLElement | null = null
+  let wheelLockTimer: number | null = null
 
-  const onStart = () => {
+  const resetLock = () => {
     lock = false
+    if (wheelLockTimer !== null) {
+      clearTimeout(wheelLockTimer)
+      wheelLockTimer = null
+    }
   }
 
-  const onMove = (t: any) => {
-    const pageY = t?.changedTouches?.[0]?.pageY || t.pageY
+  const onStart = (event: TouchEvent) => {
+    const touch = event.touches[0]
+    startMove.value.pageY = touch?.pageY ?? 0
+    startMove.value.once = !touch
+    resetLock()
+  }
+
+  const onMove = (event: TouchEvent) => {
+    const pageY = event.touches[0]?.pageY
+    if (pageY === undefined) return
     if (!ele.value) return
     if (arrivedState.top || arrivedState.bottom || ele.value.scrollTop < 0) {
       if (startMove.value.once) {
@@ -35,8 +49,8 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
       if (Math.abs(startMove.value.pageY - pageY) > slideNumber) {
         if (lock) return
         lock = true
-        if (t.cancelable) {
-          t.preventDefault()
+        if (event.cancelable) {
+          event.preventDefault()
         }
         return startMove.value.pageY > pageY ? next?.() : prev?.()
       }
@@ -51,41 +65,50 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
     }
   }
 
-  const onEnd = (t: any) => {
+  const onEnd = () => {
     startMove.value.pageY = 0
     startMove.value.once = true
-    lock = false
+    resetLock()
   }
 
-  const eleEffect = (t: any) => {
-    if (!ele.value) return
+  const eleEffect = (event: WheelEvent) => {
+    if (!ele.value || lock) return
 
-    if (t.deltaY < -60 && ele.value.scrollTop === 0) {
+    if (event.deltaY < -60 && ele.value.scrollTop === 0) {
+      lock = true
       prev?.()
-    }
-
-    if (
-      t.deltaY > 60 &&
+    } else if (
+      event.deltaY > 60 &&
       Math.ceil(ele.value.scrollTop) + Math.ceil(ele.value.clientHeight) + 2 >= ele.value.scrollHeight
     ) {
+      lock = true
       next?.()
+    }
+
+    if (lock) {
+      wheelLockTimer = window.setTimeout(resetLock, 300)
     }
   }
 
   const bindEvents = () => {
     if (!ele.value) return
-    ele.value.addEventListener('touchstart', onStart)
-    ele.value.addEventListener('touchmove', onMove)
-    ele.value.addEventListener('touchend', onEnd)
-    ele.value.addEventListener('wheel', eleEffect)
+    boundElement = ele.value
+    boundElement.addEventListener('touchstart', onStart)
+    boundElement.addEventListener('touchmove', onMove, { passive: false })
+    boundElement.addEventListener('touchend', onEnd)
+    boundElement.addEventListener('touchcancel', onEnd)
+    boundElement.addEventListener('wheel', eleEffect)
   }
 
   const unbindEvents = () => {
-    if (!ele.value) return
-    ele.value.removeEventListener('touchstart', onStart)
-    ele.value.removeEventListener('touchmove', onMove)
-    ele.value.removeEventListener('touchend', onEnd)
-    ele.value.removeEventListener('wheel', eleEffect)
+    if (!boundElement) return
+    boundElement.removeEventListener('touchstart', onStart)
+    boundElement.removeEventListener('touchmove', onMove)
+    boundElement.removeEventListener('touchend', onEnd)
+    boundElement.removeEventListener('touchcancel', onEnd)
+    boundElement.removeEventListener('wheel', eleEffect)
+    boundElement = null
+    resetLock()
   }
 
   onMounted(bindEvents)
@@ -100,7 +123,7 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
   onDeactivated(() => {
     startMove.value.pageY = 0
     startMove.value.once = true
-    lock = false
+    resetLock()
     unbindEvents()
   })
 

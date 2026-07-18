@@ -37,11 +37,16 @@ export async function createAntiqueImage(
 
   const ctx = canvas.getContext('2d')
   if (!ctx) {
+    originalImage.close()
     throw new Error('无法获取Canvas 2D上下文')
   }
 
   // 绘制原始图片
-  ctx.drawImage(originalImage, 0, 0)
+  try {
+    ctx.drawImage(originalImage, 0, 0)
+  } finally {
+    originalImage.close()
+  }
 
   // 获取图片数据
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
@@ -109,18 +114,18 @@ export async function createAntiqueImage(
   addVignette(ctx, canvas.width, canvas.height)
 
   // 将canvas转换回文件
-  return new Promise<File>((resolve) => {
+  const outputType = ['image/png', 'image/jpeg', 'image/webp'].includes(file.type) ? file.type : 'image/png'
+
+  return new Promise<File>((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (blob) {
-        // 保持原始文件名但添加后缀，并保持原始类型
-        const fileName = file.name.replace(/\.[^/.]+$/, '') + '_old' + getFileExtension(file.name)
-        const newFile = new File([blob], fileName, { type: file.type })
+        const fileName = file.name.replace(/\.[^/.]+$/, '') + '_old' + getFileExtension(outputType)
+        const newFile = new File([blob], fileName, { type: blob.type || outputType })
         resolve(newFile)
       } else {
-        // 如果转换失败，返回原文件
-        resolve(file)
+        reject(new Error('无法生成做旧图片'))
       }
-    }, file.type)
+    }, outputType)
   })
 }
 
@@ -151,7 +156,8 @@ function addVignette(ctx: CanvasRenderingContext2D, width: number, height: numbe
 /**
  * 获取文件扩展名
  */
-function getFileExtension(filename: string): string {
-  const match = filename.match(/\.[^/.]+$/)
-  return match ? match[0] : ''
+function getFileExtension(mimeType: string): string {
+  if (mimeType === 'image/jpeg') return '.jpg'
+  if (mimeType === 'image/webp') return '.webp'
+  return '.png'
 }

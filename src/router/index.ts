@@ -38,6 +38,7 @@ export { goBack, replaceTo } from './history'
 declare module 'vue-router' {
   interface RouteMeta {
     index?: number
+    keepAlive?: boolean
     transitionName?: string
     needLogin?: boolean
     [x: string]: string | number | boolean | undefined
@@ -45,9 +46,3 @@ declare module 'vue-router' {
 }
 
 export default router
-
-declare global {
-  interface Window {
-    _hmt?: any
-  }
-}

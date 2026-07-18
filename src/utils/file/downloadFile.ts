@@ -7,33 +7,35 @@ import { closeToast } from 'vant'
 
 const [status, lock, unLock] = useLock()
 
-export function downloadFile(url: string, filename?: string) {
+export async function downloadFile(url: string, filename?: string) {
   if (typeof fetch === 'function' && isWeChat() && isIOS) {
     if (status.value) return
     lock()
     loadingToast('下载中...')
-    fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        closeToast()
 
-        const tempUrl = URL.createObjectURL(new Blob([blob]))
-        const a = document.createElement('a')
-        a.href = tempUrl
-        a.download = decodeURIComponent(filename ?? url.split('/')?.pop() ?? 'download')
-        a.click()
-        URL.revokeObjectURL(tempUrl)
-      })
-      .catch(() => {
-        closeToast()
-        failToast('下载失败')
-      })
-      .finally(() => {
-        setTimeout(() => {
-          unLock()
-        }, 500)
-      })
-  } else {
-    toUrl(url)
+    try {
+      const response = await fetch(url)
+      if (!response.ok) throw new Error(`下载失败: HTTP ${response.status}`)
+
+      const blob = await response.blob()
+      const downloadName = decodeURIComponent(filename ?? url.split('/').pop() ?? 'download')
+      const tempUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = tempUrl
+      a.download = downloadName
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.setTimeout(() => URL.revokeObjectURL(tempUrl), 1000)
+      closeToast()
+    } catch {
+      closeToast()
+      failToast('下载失败')
+    } finally {
+      window.setTimeout(unLock, 500)
+    }
+    return
   }
+
+  toUrl(url)
 }

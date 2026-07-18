@@ -19,6 +19,7 @@ const DPR = window.devicePixelRatio || 1
 const lotteryCanvas = useTemplateRef('lotteryCanvas')
 
 let ctx: CanvasRenderingContext2D | null = null
+let completed = false
 useEventListener(lotteryCanvas, 'touchstart', (e) => {
   e.stopPropagation()
   e.preventDefault()
@@ -45,7 +46,8 @@ useEventListener(lotteryCanvas, 'touchend', (e) => {
 
   if (!lotteryCanvas.value || !ctx) return
 
-  if (checkScratchCompletion(lotteryCanvas.value, ctx)) {
+  if (!completed && checkScratchCompletion(lotteryCanvas.value, ctx)) {
+    completed = true
     emits('success')
   }
 })
@@ -99,6 +101,7 @@ function checkScratchCompletion(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
 }
 
 const reset = () => {
+  completed = false
   initLottery()
 }
 

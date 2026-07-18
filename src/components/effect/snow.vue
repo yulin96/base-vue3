@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import { randomNum } from '@/utils/random'
-import { v4 } from 'uuid'
-import { onActivated, onDeactivated, onMounted, onUnmounted } from 'vue'
+import { onActivated, onDeactivated, onMounted, onUnmounted, useTemplateRef } from 'vue'
 
 const { img = 'https://oss.eventnet.cn/H5/zz/public/icon/snow.png' } = defineProps<{
   img?: string
 }>()
 
-const id = v4()
+const snowRef = useTemplateRef<HTMLDivElement>('snowRef')
 
 onMounted(() => {
-  autoCreateSnow(document.getElementById(id) as HTMLDivElement)
+  startSnow()
 })
 
 let snowTimer: ReturnType<typeof setTimeout> | undefined
 const runningAnimations = new Set<Animation>()
 
 onUnmounted(() => {
-  clearTimeout(snowTimer)
+  stopSnow()
   // 取消所有正在运行的动画
   runningAnimations.forEach((a) => a.cancel())
   runningAnimations.clear()
@@ -27,18 +26,35 @@ let activated = true
 
 onActivated(() => {
   activated = true
+  runningAnimations.forEach((animation) => animation.play())
+  startSnow()
 })
 
 onDeactivated(() => {
   activated = false
+  stopSnow()
+  runningAnimations.forEach((animation) => animation.pause())
 })
 
 let snowCount = 0
+function startSnow() {
+  if (snowTimer !== undefined || !activated || !snowRef.value) return
+  autoCreateSnow(snowRef.value)
+}
+
+function stopSnow() {
+  if (snowTimer === undefined) return
+  clearTimeout(snowTimer)
+  snowTimer = undefined
+}
+
 function autoCreateSnow(wrapper: HTMLDivElement) {
   if (document.visibilityState === 'visible' && activated) createSnow(wrapper)
 
   snowTimer = setTimeout(
     () => {
+      snowTimer = undefined
+      if (!activated) return
       autoCreateSnow(wrapper)
     },
     snowCount < 30 ? randomNum(400, 1000) : randomNum(800, 1600),
@@ -98,5 +114,5 @@ function createSnow(wrapper: HTMLDivElement) {
 </script>
 
 <template>
-  <div :id="id" class="pointer-events-none relative -z-10"></div>
+  <div ref="snowRef" class="pointer-events-none relative -z-10"></div>
 </template>

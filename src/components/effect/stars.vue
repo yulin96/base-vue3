@@ -25,14 +25,24 @@ const starsBoxRef = ref<HTMLDivElement>()
 const visibility = useDocumentVisibility()
 let timeoutId: number | null = null
 let isRunning = false
+const animations = new Set<gsap.core.Tween>()
+
+const getInterval = (currentStarCount: number) => {
+  if (currentStarCount >= Math.max(0, Math.floor(props.maxStars))) {
+    return Math.max(16, props.maxInterval)
+  }
+
+  const min = Math.max(16, Math.min(props.minInterval, props.maxInterval))
+  const max = Math.max(min, Math.min(100, props.maxInterval))
+  return Math.round(random(min, max))
+}
 
 const loopCreate = () => {
   if (!isRunning) return
   if (!starsBoxRef.value) return
 
   const currentStarCount = starsBoxRef.value.children.length
-  const interval =
-    currentStarCount > props.maxStars ? randomInt(600, props.maxInterval) : randomInt(props.minInterval, 100)
+  const interval = getInterval(currentStarCount)
 
   timeoutId = window.setTimeout(() => {
     loopCreate()
@@ -50,7 +60,7 @@ const start = () => {
 
 const stop = () => {
   isRunning = false
-  if (timeoutId) {
+  if (timeoutId !== null) {
     clearTimeout(timeoutId)
     timeoutId = null
   }
@@ -58,12 +68,16 @@ const stop = () => {
 
 const destroy = () => {
   stop()
+  animations.forEach((animation) => animation.kill())
+  animations.clear()
   while (starsBoxRef.value && starsBoxRef.value.firstChild) {
     starsBoxRef.value.removeChild(starsBoxRef.value.firstChild)
   }
 }
 
-async function createStar(starsBox: HTMLDivElement) {
+function createStar(starsBox: HTMLDivElement) {
+  if (starsBox.children.length >= Math.max(0, Math.floor(props.maxStars))) return
+
   const star = document.createElement('div')
 
   const size = Math.floor(randomInt(props.minSize, props.maxSize))
@@ -81,8 +95,8 @@ async function createStar(starsBox: HTMLDivElement) {
   starsBox.appendChild(star)
 
   const duration = randomTwoFloat(2, 4)
-  gsap.to(star, { x: random(-12, 12), y: random(-12, 12), ease: 'none', duration: duration * 2 })
-  await gsap.to(star, {
+  const moveTween = gsap.to(star, { x: random(-12, 12), y: random(-12, 12), ease: 'none', duration: duration * 2 })
+  const fadeTween = gsap.to(star, {
     opacity: 1,
     scale: randomTwoFloat(0.9, 1),
     duration: duration,
@@ -91,11 +105,14 @@ async function createStar(starsBox: HTMLDivElement) {
     ease: randomCubicBezier(),
     repeatDelay: randomTwoFloat(0.6, 1),
     onComplete: () => {
-      if (starsBox && star.parentNode === starsBox) {
-        starsBox.removeChild(star)
-      }
+      animations.delete(moveTween)
+      animations.delete(fadeTween)
+      moveTween.kill()
+      star.remove()
     },
   })
+  animations.add(moveTween)
+  animations.add(fadeTween)
 }
 
 function randomCubicBezier() {
@@ -147,6 +164,14 @@ watch(visibility, (newVisibility) => {
     start()
   }
 })
+
+watch(
+  () => props.autoStart,
+  (autoStart) => {
+    if (autoStart && visibility.value === 'visible') start()
+    else stop()
+  },
+)
 
 defineExpose({
   start,

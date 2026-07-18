@@ -26,7 +26,7 @@ export const useStore = defineStore(
     const user = ref(createInitialState())
 
     const clear = () => {
-      Object.assign(user.value, createInitialState())
+      user.value = createInitialState()
     }
 
     return { user, clear }

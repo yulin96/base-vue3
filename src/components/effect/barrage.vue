@@ -10,6 +10,7 @@ import {
   type ComponentPublicInstance,
   type CSSProperties,
 } from 'vue'
+import type { TBarrage } from './barrage.types'
 import BarrageCard from './barrage-card.vue'
 
 const {

@@ -1,3 +1,6 @@
+const scriptLoadTasks = new Map<string, Promise<void>>()
+const stylesheetLoadTasks = new Map<string, Promise<void>>()
+
 /**
  * 检测页面上的元素
  * 通过在屏幕上均匀分布的点来检测元素，用于获取页面主要内容
@@ -5,6 +8,15 @@
  * @returns 检测到的元素集合
  */
 export function detectionElements(num = 10): Set<Element> {
+  if (!Number.isInteger(num) || num <= 0) {
+    throw new RangeError('num 必须是正整数')
+  }
+
+  if (num === 1) {
+    const centerElement = document.elementFromPoint(innerWidth / 2, innerHeight / 2)
+    return centerElement ? new Set([centerElement]) : new Set()
+  }
+
   const calcWidth = [10, (innerWidth - 20) / (num - 1)]
   const calcHeight = [10, (innerHeight - 20) / (num - 1)]
 
@@ -42,11 +54,14 @@ export function supportsCSSProperty(propertyName: string): boolean {
  * @returns Promise 对象，解析为 void
  */
 export function loadScript(url: string, options: { async?: boolean; defer?: boolean } = {}): Promise<void> {
+  const normalizedUrl = new URL(url, document.baseURI).href
+  const existingTask = scriptLoadTasks.get(normalizedUrl)
+  if (existingTask) return existingTask
+
   const { async = true, defer = false } = options
 
-  return new Promise((resolve, reject) => {
-    // 检查脚本是否已加载
-    if (document.querySelector(`script[src="${url}"]`)) {
+  const task = new Promise<void>((resolve, reject) => {
+    if ([...document.scripts].some((script) => script.src === normalizedUrl)) {
       resolve()
       return
     }
@@ -56,11 +71,24 @@ export function loadScript(url: string, options: { async?: boolean; defer?: bool
     script.async = async
     script.defer = defer
 
-    script.onload = () => resolve()
-    script.onerror = () => reject(new Error(`Failed to load script: ${url}`))
+    script.onload = () => {
+      script.onload = null
+      script.onerror = null
+      resolve()
+    }
+    script.onerror = () => {
+      script.onload = null
+      script.onerror = null
+      script.remove()
+      reject(new Error(`Failed to load script: ${url}`))
+    }
 
     document.head.appendChild(script)
   })
+
+  scriptLoadTasks.set(normalizedUrl, task)
+  void task.catch(() => scriptLoadTasks.delete(normalizedUrl))
+  return task
 }
 
 /**
@@ -69,9 +97,12 @@ export function loadScript(url: string, options: { async?: boolean; defer?: bool
  * @returns Promise 对象，解析为 void
  */
 export function loadStylesheet(url: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // 检查样式表是否已加载
-    if (document.querySelector(`link[href="${url}"]`)) {
+  const normalizedUrl = new URL(url, document.baseURI).href
+  const existingTask = stylesheetLoadTasks.get(normalizedUrl)
+  if (existingTask) return existingTask
+
+  const task = new Promise<void>((resolve, reject) => {
+    if ([...document.styleSheets].some((stylesheet) => stylesheet.href === normalizedUrl)) {
       resolve()
       return
     }
@@ -80,20 +111,24 @@ export function loadStylesheet(url: string): Promise<void> {
     link.rel = 'stylesheet'
     link.href = url
 
-    link.onload = () => resolve()
-    link.onerror = () => reject(new Error(`Failed to load stylesheet: ${url}`))
+    link.onload = () => {
+      link.onload = null
+      link.onerror = null
+      resolve()
+    }
+    link.onerror = () => {
+      link.onload = null
+      link.onerror = null
+      link.remove()
+      reject(new Error(`Failed to load stylesheet: ${url}`))
+    }
 
     document.head.appendChild(link)
   })
-}
 
-/**
- * 获取元素相对于视口的位置
- * @param element - 目标元素
- * @returns 元素相对于视口的位置和尺寸信息
- */
-export function getElementViewportPosition(element: Element): DOMRect {
-  return element.getBoundingClientRect()
+  stylesheetLoadTasks.set(normalizedUrl, task)
+  void task.catch(() => stylesheetLoadTasks.delete(normalizedUrl))
+  return task
 }
 
 /**

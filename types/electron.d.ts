@@ -1,4 +1,4 @@
-type PrintPagePreset =
+export type PrintPagePreset =
   | 'A0'
   | 'A1'
   | 'A2'
@@ -12,14 +12,14 @@ type PrintPagePreset =
   | 'photo-5in'
   | 'photo-6in'
 
-type PrintPageSize =
+export type PrintPageSize =
   | PrintPagePreset
   | {
       widthMm: number
       heightMm: number
     }
 
-type PrintMargin =
+export type PrintMargin =
   | number
   | {
       topMm?: number
@@ -28,9 +28,9 @@ type PrintMargin =
       leftMm?: number
     }
 
-type PrintImageFit = 'fill' | 'contain' | 'cover'
+export type PrintImageFit = 'fill' | 'contain' | 'cover'
 
-type PrintImageItem = {
+export type PrintImageItem = {
   src: string
   xMm: number
   yMm: number
@@ -40,7 +40,7 @@ type PrintImageItem = {
   rotate?: 0 | 90 | 180 | 270
 }
 
-type PrintRequest = {
+export type PrintRequest = {
   page: PrintPageSize
   landscape?: boolean
   margin?: PrintMargin
@@ -54,26 +54,26 @@ type PrintRequest = {
   }
 }
 
-type PrintResult = {
+export type PrintResult = {
   success: boolean
   failureReason?: string
 }
 
-type PrintAPI = {
+export type PrintAPI = {
   print: (request: PrintRequest) => Promise<PrintResult>
   previewPrint: (request: PrintRequest) => Promise<void>
 }
 
-type ExitButtonPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+export type ExitButtonPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 
-type ExitButtonConfig = {
+export type ExitButtonConfig = {
   enabled: boolean
   mark: boolean
   position: ExitButtonPosition
   size: number
 }
 
-type WindowConfig = {
+export type WindowConfig = {
   width: number
   height: number
   autoHideMenuBar: boolean
@@ -81,7 +81,7 @@ type WindowConfig = {
   frame: boolean
 }
 
-type AppConfig = WindowConfig & {
+export type AppConfig = WindowConfig & {
   test: boolean
   hideCursor: boolean
   disableZoom: boolean
@@ -103,13 +103,13 @@ type AppConfig = WindowConfig & {
   list10: string
 }
 
-type AppConfigPatch = Omit<Partial<AppConfig>, 'exitButton'> & {
+export type AppConfigPatch = Omit<Partial<AppConfig>, 'exitButton'> & {
   exitButton?: Partial<ExitButtonConfig>
 }
 
-type ConfigDisplayNames = Partial<Record<keyof AppConfig, string>>
+export type ConfigDisplayNames = Partial<Record<keyof AppConfig, string>>
 
-type ConfigGroupName =
+export type ConfigGroupName =
   | 'systemStartup'
   | 'resourceUpdate'
   | 'window'
@@ -118,7 +118,7 @@ type ConfigGroupName =
   | 'exitButton'
   | 'customConfig'
 
-type ConfigHideTarget =
+export type ConfigHideKey =
   | keyof AppConfig
   | ConfigGroupName
   | 'exitButton.enabled'
@@ -126,35 +126,28 @@ type ConfigHideTarget =
   | 'exitButton.position'
   | 'exitButton.size'
   | 'ossManifestUrl'
-  | (
-      | keyof AppConfig
-      | ConfigGroupName
-      | 'exitButton.enabled'
-      | 'exitButton.mark'
-      | 'exitButton.position'
-      | 'exitButton.size'
-      | 'ossManifestUrl'
-    )[]
 
-type ConfigEditorOptions = {
-  hiddenConfigs: string[]
+export type ConfigHideTarget = ConfigHideKey | ConfigHideKey[]
+
+export type ConfigEditorOptions = {
+  hiddenConfigs: ConfigHideKey[]
   hideAllConfig: boolean
 }
 
-type ScreenMessage = {
+export type ScreenMessage = {
   from: number | null
   to: number
   command: string
   data?: unknown
 }
 
-type ScreenAPI = {
+export type ScreenAPI = {
   getScreenIndex: () => Promise<number | null>
   sendToScreen: (target: number, command: string, data?: unknown) => Promise<boolean>
   onScreenMessage: (listener: (message: ScreenMessage) => void) => () => void
 }
 
-type AppAPI = PrintAPI & {
+export type AppAPI = PrintAPI & {
   config: AppConfig
   defineConfig: (config: AppConfigPatch) => Promise<AppConfig>
   defineDisplayNames: (names: ConfigDisplayNames) => Promise<ConfigDisplayNames>
@@ -175,6 +168,8 @@ type AppAPI = PrintAPI & {
   restart: () => Promise<void>
 } & ScreenAPI
 
-interface Window {
-  api?: Partial<AppAPI>
+declare global {
+  interface Window {
+    api?: Partial<AppAPI>
+  }
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { sleep } from '@/utils/common'
 import { randomInt } from 'es-toolkit'
-import { nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -14,11 +14,13 @@ const props = withDefaults(
 )
 
 const lineRef = useTemplateRef('lineRef')
-const lineWidth: number[] = []
+const lineWidth = ref<number[]>([])
 
 const lines = ref<string[]>([])
 const currentIndex = ref(0)
 let disposed = false
+let mounted = false
+let writingSessionId = 0
 
 // 使用 canvas measureText 优化文本宽度计算
 const measureTextWidth = (text: string): number => {
@@ -34,19 +36,18 @@ const measureTextWidth = (text: string): number => {
   return ctx.measureText(text).width
 }
 
-const writeText = async () => {
-  if (disposed) return
+const writeText = async (sessionId: number) => {
+  if (disposed || sessionId !== writingSessionId) return
 
   const idx = currentIndex.value
   if (idx >= props.texts.length) return
 
   if (!lines.value[idx]) lines.value[idx] = ''
 
-  const line = props.texts[idx]
-  const shown = lines.value[idx].length
-  if (!line) return
-  if (shown < line.length) {
-    lines.value[idx] += line[shown]
+  const characters = Array.from(props.texts[idx] ?? '')
+  const shown = Array.from(lines.value[idx]).length
+  if (shown < characters.length) {
+    lines.value[idx] += characters[shown]
   } else if (idx < props.texts.length - 1) {
     currentIndex.value++
   } else if (idx == props.texts.length - 1) {
@@ -56,23 +57,41 @@ const writeText = async () => {
   const time = Array.isArray(props.speed) ? randomInt(props.speed[0], props.speed[1]) : props.speed
 
   await sleep(time)
-  if (disposed) return
-  writeText()
+  if (disposed || sessionId !== writingSessionId) return
+  void writeText(sessionId)
 }
 
-onMounted(async () => {
-  // 使用 canvas 测量文本宽度,避免创建临时 DOM 元素
-  props.texts.forEach((text) => {
-    lineWidth.push(measureTextWidth(text))
-  })
+const restart = async () => {
+  const sessionId = ++writingSessionId
+  lines.value = []
+  currentIndex.value = 0
+  lineWidth.value = []
 
   await nextTick()
-  writeText()
+  if (disposed || sessionId !== writingSessionId) return
+
+  // 使用 canvas 测量文本宽度,避免创建临时 DOM 元素
+  lineWidth.value = props.texts.map(measureTextWidth)
+  void writeText(sessionId)
+}
+
+onMounted(() => {
+  mounted = true
+  void restart()
 })
 
 onUnmounted(() => {
   disposed = true
+  writingSessionId++
 })
+
+watch(
+  () => props.texts,
+  () => {
+    if (mounted) void restart()
+  },
+  { deep: true },
+)
 // <com-typewriter
 //     :texts="['别急', '月亮总会在云后升起', '就算黑夜漫长', '也挡不住清晨那一缕微光']"
 //     :speed="[90, 160]"
@@ -82,7 +101,7 @@ onUnmounted(() => {
 <template>
   <div ref="lineRef" class="flex w-full flex-col items-center">
     <div v-for="(_, index) in texts" :key="index" :style="{ width: lineWidth[index] + 'px' }" class="whitespace-nowrap">
-      <span v-for="text in lines[index]" :key="text" class="fadeIn">{{ text }}</span>
+      <span v-for="(text, charIndex) in lines[index]" :key="charIndex" class="fadeIn">{{ text }}</span>
 
       <span v-show="currentIndex === index" class="animate-[caret-blink_0.8s_infinite] ease-out">_</span>
     </div>

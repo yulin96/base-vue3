@@ -43,8 +43,10 @@ const props = withDefaults(
   },
 )
 
+type ScrollState = { left: boolean; right: boolean; top: boolean; bottom: boolean; y: number }
+
 const emit = defineEmits<{
-  (e: 'scroll', state: { left: boolean; right: boolean; top: boolean; bottom: boolean; y: number }): void
+  (e: 'scroll', state: ScrollState): void
 }>()
 
 const scrollRef = useTemplateRef<HTMLElement>('scrollRef')
@@ -53,7 +55,7 @@ const contentRef = useTemplateRef<HTMLElement>('contentRef')
 const { y: scrollTop, arrivedState } = useScroll(scrollRef)
 
 // 动态创建节流的事件触发器
-let triggerEmit = (state: any) => {
+let triggerEmit = (state: ScrollState) => {
   emit('scroll', state)
 }
 
@@ -61,11 +63,11 @@ watch(
   () => props.throttleDelay,
   (delay) => {
     if (delay && delay > 0) {
-      triggerEmit = throttle((state: any) => {
+      triggerEmit = throttle((state: ScrollState) => {
         emit('scroll', state)
       }, delay)
     } else {
-      triggerEmit = (state: any) => {
+      triggerEmit = (state: ScrollState) => {
         emit('scroll', state)
       }
     }

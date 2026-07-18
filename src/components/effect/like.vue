@@ -2,7 +2,7 @@
 import Lottie, { type AnimationItem } from 'lottie-web'
 import { onMounted, onUnmounted, useTemplateRef, watchPostEffect } from 'vue'
 
-const { like, json } = defineProps<{ like: boolean; json: string }>()
+const { like, json } = defineProps<{ like: boolean; json: string | Record<string, unknown> }>()
 
 // fetch('https://oss.eventnet.cn/H5/zz/public/lotties/like/like1.json')
 //   .then((res) => res.json())
@@ -30,7 +30,7 @@ onMounted(() => {
     loop: false,
     autoplay: false,
     renderer: 'canvas',
-    animationData: json,
+    ...(typeof json === 'string' ? { path: json } : { animationData: json }),
   })
 
   lottieLike.addEventListener('config_ready', () => {

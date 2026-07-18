@@ -2,12 +2,12 @@ import { useDocumentVisibility } from '@vueuse/core'
 import { v4 as uuidv4 } from 'uuid'
 import { onBeforeUnmount, readonly, ref, shallowRef, watch } from 'vue'
 
-type ROPEventCallback = (...args: any[]) => void
+type ROPEventCallback<TArgs extends unknown[] = unknown[]> = (...args: TArgs) => void
 
 // ROP客户端类型定义
 interface ROPClient {
-  On: (event: string, callback: ROPEventCallback) => void
-  Off?: (event: string, callback: ROPEventCallback) => void
+  On: <TArgs extends unknown[]>(event: string, callback: ROPEventCallback<TArgs>) => void
+  Off?: <TArgs extends unknown[]>(event: string, callback: ROPEventCallback<TArgs>) => void
   Enter: (pub: string, sub: string, suid: string, boolean: boolean) => void
   Subscribe: (topic: string) => void
   Publish: (topic: string, message: string) => void
@@ -109,7 +109,7 @@ export interface UseClientOptions {
  * @param options 配置选项
  * @returns 包含接收数据、连接状态和控制方法的响应式引用
  */
-export const useClient = <T = any>(
+export const useClient = <T = unknown>(
   subScribes: Array<string> | string,
   pub?: string,
   sub?: string,
@@ -126,7 +126,7 @@ export const useClient = <T = any>(
   const data = shallowRef<T>()
   const connectionStatus = ref<ConnectionStatus>('disconnected')
   const retryCount = ref(0)
-  const eventHandlers: Array<{ event: string; callback: ROPEventCallback }> = []
+  const removeEventCallbacks: Array<() => void> = []
   let handlersRegistered = false
   let destroyed = false
 
@@ -145,21 +145,18 @@ export const useClient = <T = any>(
     }
   }
 
-  const addEventHandler = (ROP: ROPClient, event: string, callback: ROPEventCallback) => {
+  const addEventHandler = <TArgs extends unknown[]>(
+    ROP: ROPClient,
+    event: string,
+    callback: ROPEventCallback<TArgs>,
+  ) => {
     ROP.On(event, callback)
-    eventHandlers.push({ event, callback })
+    removeEventCallbacks.push(() => ROP.Off?.(event, callback))
   }
 
   const removeEventHandlers = () => {
-    if (!window.ROP?.Off) {
-      eventHandlers.length = 0
-      return
-    }
-
-    eventHandlers.forEach(({ event, callback }) => {
-      window.ROP?.Off?.(event, callback)
-    })
-    eventHandlers.length = 0
+    removeEventCallbacks.forEach((removeEvent) => removeEvent())
+    removeEventCallbacks.length = 0
   }
 
   // 延迟重连
@@ -251,15 +248,15 @@ export const useClient = <T = any>(
       scheduleRetry()
     })
 
-    addEventHandler(ROP, 'publish_data', (message: any, topic: string) => {
+    addEventHandler(ROP, 'publish_data', (message: unknown, topic: string) => {
       // 只处理订阅的主题消息
       if ((subIsString ? topic === subScribes : subScribes.includes(topic)) && message) {
         try {
           // 尝试解析JSON，如果失败则直接使用原始消息
-          let parsedMessage: any
+          let parsedMessage: unknown
           if (typeof message === 'string') {
             try {
-              parsedMessage = JSON.parse(message)
+              parsedMessage = JSON.parse(message) as unknown
             } catch {
               parsedMessage = message
             }

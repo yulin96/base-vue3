@@ -1,5 +1,5 @@
-export function convertObjectName<T = Record<string, any>>(
-  obj: Record<string, any>,
+export function convertObjectName<T = Record<string, unknown>>(
+  obj: Record<string, unknown>,
   nameKey: Record<string, string>,
   maxDepth = 10,
 ): T {
@@ -14,7 +14,7 @@ export function convertObjectName<T = Record<string, any>>(
     }) as unknown as T
   }
 
-  const result: Record<string, any> = {}
+  const result: Record<string, unknown> = {}
   const keys = Object.keys(nameKey)
 
   for (const [key, value] of Object.entries(obj)) {
@@ -24,7 +24,9 @@ export function convertObjectName<T = Record<string, any>>(
     if (newKey === undefined || newKey === null) continue
 
     result[newKey] =
-      value !== null && typeof value === 'object' ? convertObjectName(value, nameKey, maxDepth - 1) : value
+      value !== null && typeof value === 'object'
+        ? convertObjectName(value as Record<string, unknown>, nameKey, maxDepth - 1)
+        : value
   }
 
   return result as unknown as T
@@ -39,7 +41,7 @@ export function convertNullToEmpty<T>(obj: T, maxDepth = 10): T {
     return obj.map((item) => convertNullToEmpty(item, maxDepth - 1)) as unknown as T
   }
 
-  const result = { ...obj } as any
+  const result = { ...obj } as Record<string, unknown>
 
   for (const key in result) {
     if (result[key] === null) {
@@ -49,10 +51,10 @@ export function convertNullToEmpty<T>(obj: T, maxDepth = 10): T {
     }
   }
 
-  return result
+  return result as T
 }
 
-export function deepClone<T>(obj: T, maxDepth = 100, visited = new WeakMap()): T {
+export function deepClone<T>(obj: T, maxDepth = 100, visited = new WeakMap<object, unknown>()): T {
   if (obj === null || maxDepth <= 0 || typeof obj !== 'object') {
     return obj
   }
@@ -74,7 +76,7 @@ export function deepClone<T>(obj: T, maxDepth = 100, visited = new WeakMap()): T
   }
 
   if (obj instanceof Map) {
-    const map = new Map()
+    const map = new Map<unknown, unknown>()
     visited.set(obj, map)
     obj.forEach((value, key) => {
       map.set(deepClone(key, maxDepth - 1, visited), deepClone(value, maxDepth - 1, visited))
@@ -83,7 +85,7 @@ export function deepClone<T>(obj: T, maxDepth = 100, visited = new WeakMap()): T
   }
 
   if (obj instanceof Set) {
-    const set = new Set()
+    const set = new Set<unknown>()
     visited.set(obj, set)
     obj.forEach((value) => {
       set.add(deepClone(value, maxDepth - 1, visited))
@@ -91,21 +93,24 @@ export function deepClone<T>(obj: T, maxDepth = 100, visited = new WeakMap()): T
     return set as unknown as T
   }
 
-  const cloned = Array.isArray(obj) ? [] : ({} as any)
-  visited.set(obj, cloned)
-
   if (Array.isArray(obj)) {
+    const cloned: unknown[] = []
+    visited.set(obj, cloned)
     for (let i = 0; i < obj.length; i++) {
       cloned[i] = deepClone(obj[i], maxDepth - 1, visited)
     }
-    return cloned
+    return cloned as T
   }
 
-  for (const key in obj) {
+  const source = obj as Record<string, unknown>
+  const cloned: Record<string, unknown> = {}
+  visited.set(obj, cloned)
+
+  for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      cloned[key] = deepClone(obj[key], maxDepth - 1, visited)
+      cloned[key] = deepClone(source[key], maxDepth - 1, visited)
     }
   }
 
-  return cloned
+  return cloned as T
 }

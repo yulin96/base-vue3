@@ -5,8 +5,9 @@ const { flip = false } = defineProps<{ flip?: boolean }>()
 
 const flipRef = useTemplateRef('flipRef')
 
-watchPostEffect(() => {
-  gsap.to(flipRef.value, { rotateY: flip ? 180 : 0, duration: 0.3, ease: 'power1' })
+watchPostEffect((onCleanup) => {
+  const tween = gsap.to(flipRef.value, { rotateY: flip ? 180 : 0, duration: 0.3, ease: 'power1' })
+  onCleanup(() => tween.kill())
 })
 
 /**

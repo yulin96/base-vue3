@@ -7,7 +7,7 @@ import { debounce } from 'es-toolkit'
  * @param time 防抖间隔时间（毫秒），默认 600ms
  * @returns 防抖处理后的新函数
  */
-export function debounceLeading<F extends (...args: any[]) => void>(fn: F, time = 600) {
+export function debounceLeading<TArgs extends unknown[]>(fn: (...args: TArgs) => void, time = 600) {
   return debounce(fn, time, { edges: ['leading'] })
 }
 

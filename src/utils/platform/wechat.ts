@@ -1,11 +1,22 @@
 import { isWeChat } from '@/utils/platform/ua'
 import axios, { toFormData } from 'axios'
 
-let wxSdkPromise: Promise<any> | null = null
-const loadWechatSdk = async (): Promise<typeof import('weixin-js-sdk').default> => {
+type WechatSdk = typeof import('weixin-js-sdk').default
+type WechatSdkConfig = {
+  appId: string
+  timestamp: number
+  nonceStr: string
+  signature: string
+}
+type WechatSdkConfigResponse = Omit<WechatSdkConfig, 'timestamp'> & {
+  timestamp: number | string
+}
+
+let wxSdkPromise: Promise<WechatSdk> | null = null
+const loadWechatSdk = async (): Promise<WechatSdk> => {
   if (!wxSdkPromise) {
     wxSdkPromise = import('weixin-js-sdk')
-      .then((mod) => ('default' in mod ? mod.default : mod))
+      .then((module) => module.default)
       .catch((error) => {
         wxSdkPromise = null
         throw error
@@ -17,7 +28,7 @@ const loadWechatSdk = async (): Promise<typeof import('weixin-js-sdk').default> 
 let wxConfigIsReady = false
 let wxConfigPromise: Promise<void> | null = null
 
-async function applyWechatSdkConfig(data: any, debug = false): Promise<void> {
+async function applyWechatSdkConfig(data: WechatSdkConfig, debug = false): Promise<void> {
   const wx = await loadWechatSdk()
 
   return new Promise((resolve, reject) => {
@@ -48,7 +59,7 @@ async function applyWechatSdkConfig(data: any, debug = false): Promise<void> {
     })
 
     wx.error((res) => {
-      reject(res?.errMsg || '微信 JSSDK 配置失败')
+      reject(new Error(res?.errMsg || '微信 JSSDK 配置失败'))
     })
   })
 }
@@ -62,7 +73,7 @@ export async function ensureWechatSdkReady() {
 
   wxConfigPromise = (async () => {
     try {
-      const { data } = await axios.post(
+      const { data } = await axios.post<{ data?: unknown }>(
         'https://wechat.event1.cn/api/getJsSdk',
         toFormData({
           url,
@@ -70,7 +81,11 @@ export async function ensureWechatSdkReady() {
         }),
       )
 
-      await applyWechatSdkConfig(data?.data ?? {})
+      if (!isWechatSdkConfig(data.data)) {
+        throw new Error('微信 JSSDK 配置响应格式错误')
+      }
+
+      await applyWechatSdkConfig({ ...data.data, timestamp: Number(data.data.timestamp) })
     } catch (error) {
       wxConfigPromise = null
       throw error
@@ -82,6 +97,20 @@ export async function ensureWechatSdkReady() {
 
 /** @deprecated 请使用 ensureWechatSdkReady */
 export const getWechatConfig = ensureWechatSdkReady
+
+function isWechatSdkConfig(value: unknown): value is WechatSdkConfigResponse {
+  if (!value || typeof value !== 'object') return false
+
+  const config = value as Record<string, unknown>
+  return (
+    typeof config.appId === 'string' &&
+    (typeof config.timestamp === 'number' || typeof config.timestamp === 'string') &&
+    Number.isFinite(Number(config.timestamp)) &&
+    Number(config.timestamp) > 0 &&
+    typeof config.nonceStr === 'string' &&
+    typeof config.signature === 'string'
+  )
+}
 
 export type IWxShare = {
   title?: string
@@ -97,32 +126,29 @@ export async function wechatShare(data: IWxShare) {
     await ensureWechatSdkReady()
     const wx = await loadWechatSdk()
 
-    return await new Promise<boolean>((resolve) => {
+    const shareLink = link || location.href.split('#')[0] || ''
+    const appMessageTask = new Promise<boolean>((resolve) => {
       wx.updateAppMessageShareData({
         title: title || document.title,
         desc: desc || '',
-        link: link || location.href.split('#')[0] || '',
+        link: shareLink,
         imgUrl: imgUrl || '',
-        success() {
-          resolve(true)
-        },
-        fail() {
-          resolve(false)
-        },
-      })
-
-      wx.updateTimelineShareData({
-        title: title || document.title,
-        link: link || location.href.split('#')[0] || '',
-        imgUrl: imgUrl || '',
-        success() {
-          resolve(true)
-        },
-        fail() {
-          resolve(false)
-        },
+        success: () => resolve(true),
+        fail: () => resolve(false),
       })
     })
+    const timelineTask = new Promise<boolean>((resolve) => {
+      wx.updateTimelineShareData({
+        title: title || document.title,
+        link: shareLink,
+        imgUrl: imgUrl || '',
+        success: () => resolve(true),
+        fail: () => resolve(false),
+      })
+    })
+
+    const results = await Promise.all([appMessageTask, timelineTask])
+    return results.every(Boolean)
   } catch (err) {
     console.log(err)
     return false

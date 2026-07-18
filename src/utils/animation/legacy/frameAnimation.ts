@@ -35,9 +35,11 @@ export default class FrameAnimation {
   private height: number
   private posterImg!: HTMLImageElement
   private path!: [number, number, number, number]
+  private animationId: number | null = null
+  private destroyed = false
 
   private imgList: HTMLImageElement[] = []
-  private currentIndex = 1
+  private currentIndex = 0
   private fromTo: null | [number, number] = null
 
   constructor(option: FrameAnimationOption) {
@@ -53,7 +55,16 @@ export default class FrameAnimation {
     }
 
     this.option = option
-    this.animationCtx = this.animationElement.getContext('2d')!
+    const animationCtx = this.animationElement.getContext('2d')
+    if (!animationCtx) throw new Error('无法获取 Canvas 2D 上下文')
+    if (!Number.isInteger(option.maxLength) || option.maxLength <= 0) {
+      throw new RangeError('maxLength 必须是正整数')
+    }
+    if (option.fps !== undefined && (!Number.isFinite(option.fps) || option.fps <= 0)) {
+      throw new RangeError('fps 必须是大于 0 的有限数值')
+    }
+
+    this.animationCtx = animationCtx
     this.width = this.animationElement.clientWidth * window.devicePixelRatio
     this.height = this.animationElement.clientHeight * window.devicePixelRatio
     this.animationElement.width = this.width
@@ -78,6 +89,7 @@ export default class FrameAnimation {
     if (poster) {
       try {
         const img = await loadImg(poster)
+        if (this.destroyed) return
         this.posterImg = img
         this.animationCtx.drawImage(img, ...this.path)
       } catch (error) {
@@ -87,18 +99,25 @@ export default class FrameAnimation {
 
     if (loop) this.fromTo = [loopStartIndex, loopEndIndex - 1]
 
-    const imgList = Array.from({ length: maxLength }, (_, i) => loadImg(`${urlPrefix}${i + 1}${urlSuffix}`))
-    let index = 0
-    for await (const img of imgList) {
-      this.imgList.push(img)
-      index++
+    try {
+      this.imgList = await Promise.all(
+        Array.from({ length: maxLength }, (_, i) => loadImg(`${urlPrefix}${i + 1}${urlSuffix}`)),
+      )
+    } catch (error) {
+      console.error('帧动画图片加载失败:', error)
+      return
     }
-    if (index !== maxLength) return console.error('图片加载失败')
+    if (this.destroyed) {
+      this.imgList = []
+      return
+    }
+
     this.canPlay = true
     if (autoPlay) this.play()
   }
 
   public play() {
+    if (this.destroyed || !this.canPlay) return
     if (this.playing) return console.error('已经在播放中')
     this.playing = true
     if (!this.fromTo) this.fromTo = [0, this.option.maxLength - 1]
@@ -123,23 +142,41 @@ export default class FrameAnimation {
           this.currentIndex++
         } else {
           this.currentIndex = from
-          if (++this.cycles >= (this.option?.loopNum || Infinity)) return
+          if (++this.cycles >= (this.option.loopNum ?? Infinity)) {
+            this.playing = false
+            this.animationId = null
+            return
+          }
         }
 
         lastTime = time
       }
-      requestAnimationFrame(frame)
+      this.animationId = requestAnimationFrame(frame)
     }
-    requestAnimationFrame(frame)
+    this.animationId = requestAnimationFrame(frame)
   }
 
   public pause() {
     this.playing = false
+    if (this.animationId !== null) {
+      cancelAnimationFrame(this.animationId)
+      this.animationId = null
+    }
   }
 
   public stop() {
+    this.pause()
     this.animationCtx.clearRect(...this.path)
-    this.animationCtx.drawImage(this.posterImg, ...this.path)
+    if (this.posterImg) this.animationCtx.drawImage(this.posterImg, ...this.path)
+    this.currentIndex = 0
+    this.cycles = 0
+  }
+
+  public destroy() {
+    this.destroyed = true
+    this.stop()
+    this.canPlay = false
+    this.imgList = []
   }
 
   get isPlay() {

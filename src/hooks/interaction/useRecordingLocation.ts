@@ -1,11 +1,26 @@
 import { v4 } from 'uuid'
-import { nextTick, onActivated, onDeactivated, useTemplateRef } from 'vue'
+import { nextTick, onActivated, onBeforeUnmount, onDeactivated, useTemplateRef } from 'vue'
 
 export function useRecordingLocation(initialKey?: string) {
   const key = initialKey || v4()
   const moveRef = useTemplateRef<HTMLElement>(key)
 
   let top = 0
+  let active = false
+  const animationFrameIds = new Set<number>()
+
+  const clearScheduledRestore = () => {
+    animationFrameIds.forEach((id) => cancelAnimationFrame(id))
+    animationFrameIds.clear()
+  }
+
+  const scheduleRestore = (callback: () => void) => {
+    const id = requestAnimationFrame(() => {
+      animationFrameIds.delete(id)
+      if (active) callback()
+    })
+    animationFrameIds.add(id)
+  }
 
   const restoreTop = () => {
     if (!moveRef.value) return
@@ -13,12 +28,15 @@ export function useRecordingLocation(initialKey?: string) {
   }
 
   onActivated(() => {
+    active = true
+    clearScheduledRestore()
     void nextTick(() => {
+      if (!active) return
       restoreTop()
 
-      requestAnimationFrame(() => {
+      scheduleRestore(() => {
         restoreTop()
-        requestAnimationFrame(() => {
+        scheduleRestore(() => {
           restoreTop()
         })
       })
@@ -26,7 +44,14 @@ export function useRecordingLocation(initialKey?: string) {
   })
 
   onDeactivated(() => {
+    active = false
+    clearScheduledRestore()
     top = moveRef.value?.scrollTop || 0
+  })
+
+  onBeforeUnmount(() => {
+    active = false
+    clearScheduledRestore()
   })
 
   return { key }

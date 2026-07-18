@@ -1,4 +1,4 @@
-type TBarrage = {
+export type TBarrage = {
   id: number
   name?: string
   avatar?: string

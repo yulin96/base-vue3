@@ -6,8 +6,13 @@ import { computed, onBeforeUnmount, shallowRef } from 'vue'
  * @param next 所有图片加载完成后的回调函数
  * @param delay 加载完成后的延迟回调时间（毫秒）
  * @param batchSize 每次浏览器空闲时加载的图片批次大小
+ * @throws batchSize 不是正整数时抛出 RangeError
  */
 export function useIdleLoading(imgList: string[], next?: () => void, delay: number = 300, batchSize: number = 3) {
+  if (!Number.isInteger(batchSize) || batchSize <= 0) {
+    throw new RangeError('batchSize 必须是正整数')
+  }
+
   let timer: number | undefined
   let scheduledTask: number | undefined
   let scheduledWithIdleCallback = false
