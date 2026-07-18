@@ -51,7 +51,7 @@
     "jsencrypt": "^3.5.4",
     "lottie-web": "^5.13.0",
     "lucky-canvas": "^1.7.27",
-    "pinia": "^3.0.4",
+    "pinia": "^4.0.2",
     "pinia-plugin-persistedstate": "^4.7.1",
     "qrcode": "^1.5.4",
     "rough-notation": "^0.5.1",
