@@ -8,9 +8,7 @@ const DEFAULT_RESOURCE_CONFIG = {
 } satisfies Record<string, string[]>
 
 const RESOURCE_SCRIPT_ID = 'vite-plugin-organize-resource'
-const RESOURCE_SCRIPT_PATTERN = new RegExp(
-  `[ \\t]*<script id="${RESOURCE_SCRIPT_ID}">[\\s\\S]*?<\\/script>\\r?\\n?`,
-)
+const RESOURCE_SCRIPT_PATTERN = new RegExp(`[ \\t]*<script id="${RESOURCE_SCRIPT_ID}">[\\s\\S]*?<\\/script>\\r?\\n?`)
 
 type ResourceConfig = Record<string, string | string[]>
 
@@ -42,8 +40,7 @@ const normalizeExtension = (value: string): string | null => {
   return normalized.startsWith('.') ? normalized : `.${normalized}`
 }
 
-const toSingleQuotedJsString = (value: string): string =>
-  `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
+const toSingleQuotedJsString = (value: string): string => `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
 
 const encodePathSegment = (segment: string): string => {
   try {

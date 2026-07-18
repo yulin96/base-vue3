@@ -9,11 +9,7 @@ export interface VitePluginMetaShareOption {
 }
 
 const escapeHtmlAttribute = (value: string): string =>
-  value
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+  value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
 const createMetaTag = (type: 'name' | 'property', key: string, content?: string): string | null => {
   if (!content) return null
@@ -65,4 +61,3 @@ export function vitePluginMetaShare(option: VitePluginMetaShareOption): Plugin {
     },
   }
 }
-
