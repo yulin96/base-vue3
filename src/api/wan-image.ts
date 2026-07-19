@@ -14,7 +14,7 @@ export function useWanImageRequest() {
 
   const generate = (image: File) => {
     return post<ResData<WanImageResult>>(
-      `${devModel ? 'http://127.0.0.1:3002/image' : 'https://api.yul.ink/image-cn'}`,
+      `${devModel ? 'http://127.0.0.1:3002/imagev2' : 'https://api.yul.ink/imagev2'}`,
       { image },
       { timeout: 200000 },
       'FormData',
