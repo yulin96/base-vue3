@@ -114,19 +114,15 @@ number-flow-vue {
   --number-flow-mask-width: 0px;
 }
 
-/* @font-face {
-  font-family: aliBaBa;
-  src:
-    url('https://oss.eventnet.cn/H5/zz/public/fonts/AlibabaPuHuiTi-3-55-Regular-s/AlibabaPuHuiTi-3-55-Regular-s.woff2')
-      format('woff2'),
-    url('https://oss.eventnet.cn/H5/zz/public/fonts/AlibabaPuHuiTi-3-55-Regular-s/AlibabaPuHuiTi-3-55-Regular-s.ttf')
-      format('truetype');
+@font-face {
+  font-family: siying;
+  src: url('../fonts/司源赢宋.ttf') format('truetype');
   font-display: swap;
 }
 
 * {
   font-family:
-    aliBaBa,
+    siying,
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
@@ -138,4 +134,4 @@ number-flow-vue {
     'Open Sans',
     'Helvetica Neue',
     sans-serif;
-} */
+}

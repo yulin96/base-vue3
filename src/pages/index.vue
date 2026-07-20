@@ -12,7 +12,9 @@ useGsapContext('.index', () => {
 <template>
   <div class="size-full">
     <section class="scroll-box index">
-      <main class="content"></main>
+      <main class="content center bg-[#e5d1b6]">
+        <div class="text-120">品牌</div>
+      </main>
     </section>
   </div>
 </template>
