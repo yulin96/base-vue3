@@ -8,17 +8,19 @@ import { toast } from 'vue-sonner'
  * @param option 压缩选项
  * @returns 返回一个 Promise，该 Promise 在用户选择图片后解析为 File 对象
  */
-export function getUserImage(option?: Compressor.Options) {
-  return selectUserFile('image/*').then(async (file) => {
-    if (!file) return
-
-    try {
-      const compressedFile = await compressPhoto(file, option)
-      return blobToFile(compressedFile, `${v4()}.jpg`)
-    } catch {
-      toast.warning('请上传有效的图片文件')
-    }
-  })
+export async function getUserImage(option?: Compressor.Options) {
+  const file = await selectUserFile('image/*')
+  if (!file) return
+  try {
+    const compressedFile = await compressPhoto(file, option)
+    const sourceExtension = file.name.match(/\.([^.]+)$/)?.[1]
+    const mimeExtension = compressedFile.type.match(/^image\/([^;+]+)/)?.[1]
+    const extension =
+      compressedFile.type === file.type ? sourceExtension || mimeExtension : mimeExtension || sourceExtension
+    return blobToFile(compressedFile, `${v4()}${extension ? `.${extension}` : ''}`)
+  } catch {
+    toast.warning('请上传有效的图片文件')
+  }
 }
 
 export function getUserVideo() {
