@@ -84,7 +84,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cross-env": "^10.1.0",
-    "eslint": "^10.7.0",
+    "eslint": "^10.8.0",
     "eslint-plugin-vue": "^10.10.0",
     "npm-run-all2": "^9.0.2",
     "postcss-preset-env": "^11.3.2",
