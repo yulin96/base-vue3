@@ -12,9 +12,7 @@ const uploadInput = ref<HTMLInputElement>()
 const cameraInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
-const resultUrl = ref(
-  'https://1yue-event.oss-cn-beijing.aliyuncs.com/imagev2/2026/07/27/75534e5e-d62c-4ae3-aeeb-d031f71926a2.png?x-oss-credential=LTAI5tRHxe5yvAKZvBZ8ReSX%2F20260727%2Fcn-beijing%2Foss%2Faliyun_v4_request&x-oss-date=20260727T100744Z&x-oss-expires=3600&x-oss-signature-version=OSS4-HMAC-SHA256&x-oss-signature=af6c7c9b74c1a261f95c7d38258dd397abe8d83869abb1a92d55186a44fef3d3',
-)
+const resultUrl = ref('')
 const errorMessage = ref('')
 const compressing = ref(false)
 const { generate, loading } = useWanImageRequest()
