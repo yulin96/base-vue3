@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
             <!--  -->
             <img
               class="absolute bottom-30 z-20 w-500"
-              src="https://oss.eventnet.cn/mm/oss-root/hw2607_20260722/assets/53-TSKhm2R6.png"
+              src="https://oss.eventnet.cn/mm/signle/2/body2.png?x-oss-process=image/quality,q_80"
             />
             <div class="absolute bottom-330 z-90 w-160">
               <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
