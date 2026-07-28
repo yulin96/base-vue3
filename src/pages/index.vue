@@ -13,7 +13,9 @@ const cameraInput = ref<HTMLInputElement>()
 const resultInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
-const resultUrl = ref('')
+const resultUrl = ref(
+  'https://1yue-event.oss-cn-beijing.aliyuncs.com/imagev2/2026/07/28/ed0db87c-5334-4131-9574-ef16403430f2.png?x-oss-credential=LTAI5tRHxe5yvAKZvBZ8ReSX%2F20260728%2Fcn-beijing%2Foss%2Faliyun_v4_request&x-oss-date=20260728T114540Z&x-oss-expires=3600&x-oss-signature-version=OSS4-HMAC-SHA256&x-oss-signature=4729234108959538730afbcb4134e9deb49b3d42508c7894c7d562d2e7af0ec2',
+)
 const resultObjectUrl = ref('')
 const errorMessage = ref('')
 const compressing = ref(false)
@@ -229,7 +231,7 @@ onBeforeUnmount(() => {
               class="absolute bottom-30 z-20 -ml-2 w-700"
               src="https://oss.eventnet.cn/mm/temp/da38485504982be7f4fe460376b9f08d.png"
             />
-            <div class="absolute bottom-270 z-10 w-350">
+            <div class="absolute bottom-390 z-10 w-220">
               <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
             </div>
           </div>
