@@ -10,15 +10,43 @@ definePage({ meta: { index: 10 } })
 
 const uploadInput = ref<HTMLInputElement>()
 const cameraInput = ref<HTMLInputElement>()
+const resultInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
 const resultUrl = ref('')
+const resultObjectUrl = ref('')
 const errorMessage = ref('')
 const compressing = ref(false)
 const { generate, loading } = useWanImageRequest()
 
 const openUpload = () => uploadInput.value?.click()
 const openCamera = () => cameraInput.value?.click()
+const openResultUpload = () => resultInput.value?.click()
+
+const clearResultObjectUrl = () => {
+  if (!resultObjectUrl.value) return
+
+  URL.revokeObjectURL(resultObjectUrl.value)
+  resultObjectUrl.value = ''
+}
+
+const selectResultImage = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    failToast('请选择图片文件')
+    return
+  }
+
+  clearResultObjectUrl()
+  resultObjectUrl.value = URL.createObjectURL(file)
+  resultUrl.value = resultObjectUrl.value
+  errorMessage.value = ''
+}
 
 const selectImage = async (event: Event) => {
   const input = event.target as HTMLInputElement
@@ -56,6 +84,7 @@ const selectImage = async (event: Event) => {
 
     selectedFile.value = compressedFile
     previewUrl.value = URL.createObjectURL(compressedFile)
+    clearResultObjectUrl()
     resultUrl.value = ''
     errorMessage.value = ''
   } catch (error) {
@@ -69,6 +98,7 @@ const generateImage = async () => {
   if (!selectedFile.value || loading.value) return
 
   errorMessage.value = ''
+  clearResultObjectUrl()
   resultUrl.value = ''
 
   try {
@@ -88,6 +118,7 @@ const generateImage = async () => {
 
 onBeforeUnmount(() => {
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+  clearResultObjectUrl()
 })
 </script>
 
@@ -164,6 +195,16 @@ onBeforeUnmount(() => {
         >
           {{ loading ? '正在生成…' : '开始生成' }}
         </button>
+
+        <button
+          type="button"
+          class="rounded-26 text-24 mt-16 h-82 w-full border-2 border-[#b9b4aa] bg-white/70 font-medium text-[#4d4943] active:scale-[0.99] disabled:opacity-50"
+          :disabled="loading || compressing"
+          @click="openResultUpload"
+        >
+          上传结果图
+        </button>
+        <input ref="resultInput" class="hidden" type="file" accept="image/*" @change="selectResultImage" />
 
         <p v-if="errorMessage" class="rounded-20 text-22 mt-20 bg-[#fff0ee] px-20 py-18 leading-[1.5] text-[#ad3e32]">
           {{ errorMessage }}
