@@ -13,7 +13,7 @@ const cameraInput = ref<HTMLInputElement>()
 const resultInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
-const resultUrl = ref('')
+const resultUrl = ref('https://coss.event1.cn/hanjc/oceanstor/fridge/output_20260728191509_dab25fde1c844adc.png')
 const resultObjectUrl = ref('')
 const errorMessage = ref('')
 const compressing = ref(false)
@@ -229,7 +229,7 @@ onBeforeUnmount(() => {
               class="absolute bottom-30 z-20 -ml-2 w-700"
               src="https://oss.eventnet.cn/mm/temp/da38485504982be7f4fe460376b9f08d.png"
             />
-            <div class="absolute bottom-400 z-10 w-230">
+            <div class="absolute bottom-380 z-10 w-230">
               <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
             </div>
           </div>
