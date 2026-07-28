@@ -13,7 +13,9 @@ const cameraInput = ref<HTMLInputElement>()
 const resultInput = ref<HTMLInputElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
-const resultUrl = ref('')
+const resultUrl = ref(
+  'https://1yue-event.oss-cn-beijing.aliyuncs.com/imagev2/2026/07/28/006e9735-271c-4430-8dce-42a4f9208d6f.png?x-oss-credential=LTAI5tRHxe5yvAKZvBZ8ReSX%2F20260728%2Fcn-beijing%2Foss%2Faliyun_v4_request&x-oss-date=20260728T110659Z&x-oss-expires=3600&x-oss-signature-version=OSS4-HMAC-SHA256&x-oss-signature=7d9f17eefb78cc98f1bcc26c7810cde9644f6f43658a60d48ee45ab3b65b725f',
+)
 const resultObjectUrl = ref('')
 const errorMessage = ref('')
 const compressing = ref(false)
@@ -222,14 +224,14 @@ onBeforeUnmount(() => {
           </div>
 
           <div
-            class="rounded-30 center relative h-600 w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
+            class="rounded-30 center relative h-660 w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
           >
             <!--  -->
             <img
-              class="absolute bottom-30 z-20 w-500"
-              src="https://oss.eventnet.cn/mm/signle/2/body2.png?x-oss-process=image/quality,q_80"
+              class="absolute bottom-30 z-20 -ml-2 w-700"
+              src="https://oss.eventnet.cn/mm/temp/da38485504982be7f4fe460376b9f08d.png"
             />
-            <div class="absolute bottom-330 z-90 w-160">
+            <div class="absolute bottom-400 z-10 w-230">
               <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
             </div>
           </div>
