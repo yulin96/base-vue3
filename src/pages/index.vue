@@ -103,7 +103,7 @@ const generateImage = async () => {
 
   try {
     const response = await generate(selectedFile.value)
-    const imageUrl = response.data?.images?.[0]
+    const imageUrl = response?.data?.output_image || response.data?.images?.[0]
 
     if (!imageUrl) throw new Error('接口未返回生成图片')
     resultUrl.value = imageUrl
@@ -229,7 +229,7 @@ onBeforeUnmount(() => {
               class="absolute bottom-30 z-20 -ml-2 w-700"
               src="https://oss.eventnet.cn/mm/temp/da38485504982be7f4fe460376b9f08d.png"
             />
-            <div class="absolute bottom-380 z-10 w-230">
+            <div class="absolute bottom-270 z-10 w-350">
               <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
             </div>
           </div>

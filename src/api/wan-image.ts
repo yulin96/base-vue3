@@ -14,7 +14,7 @@ export function useWanImageRequest() {
 
   const generate = (image: File) => {
     return post<ResData<WanImageResult>>(
-      `${devModel ? 'http://127.0.0.1:3002/imagev2' : 'https://api.yul.ink/imagev2'}`,
+      `${location.href.includes('__test__') ? 'https://hjc.event1.cn/api/oceanstor/bust/generate' : devModel ? 'http://127.0.0.1:3002/imagev2' : 'https://api.yul.ink/imagev2'}`,
       { image },
       { timeout: 200000 },
       'FormData',
