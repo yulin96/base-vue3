@@ -10,7 +10,6 @@ export interface WanImageResult {
 }
 
 const params = new URLSearchParams(location.search)
-const version = params.get('v') || ''
 
 export function useWanImageRequest() {
   const { post, lock } = useLockRequest(false, 0)

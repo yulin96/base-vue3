@@ -174,6 +174,9 @@ onBeforeUnmount(() => {
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   clearResultObjectUrl()
 })
+
+const params = new URLSearchParams(location.search)
+const version = params.get('v') || ''
 </script>
 
 <template>
@@ -249,7 +252,7 @@ onBeforeUnmount(() => {
           :disabled="!selectedFile || loading || compressing || cropping"
           @click="generateImage"
         >
-          {{ cropping ? '正在裁剪…' : loading ? '正在生成…' : '开始生成' }}
+          {{ cropping ? '正在裁剪…' : loading ? '正在生成…' : '开始生成' }}{{ version ? ` (${version})` : '' }}
         </button>
 
         <button
