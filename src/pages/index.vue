@@ -3,7 +3,8 @@ import { useWanImageRequest } from '@/api/wan-image'
 import { failToast } from '@/plugins/vant/toast'
 import { compressPhoto } from '@/utils/file/compressImage'
 import { isAxiosError } from 'axios'
-import { onBeforeUnmount, ref } from 'vue'
+import html2canvas from 'html2canvas'
+import { nextTick, onBeforeUnmount, ref } from 'vue'
 
 defineOptions({ name: 'Index' })
 definePage({ meta: { index: 10 } })
@@ -11,12 +12,14 @@ definePage({ meta: { index: 10 } })
 const uploadInput = ref<HTMLInputElement>()
 const cameraInput = ref<HTMLInputElement>()
 const resultInput = ref<HTMLInputElement>()
+const cropArea = ref<HTMLDivElement>()
 const selectedFile = ref<File>()
 const previewUrl = ref('')
 const resultUrl = ref('')
 const resultObjectUrl = ref('')
 const errorMessage = ref('')
 const compressing = ref(false)
+const cropping = ref(false)
 const { generate, loading } = useWanImageRequest()
 
 const openUpload = () => uploadInput.value?.click()
@@ -94,15 +97,64 @@ const selectImage = async (event: Event) => {
   }
 }
 
+const canvasToBlob = (canvas: HTMLCanvasElement) =>
+  new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob)
+        else reject(new Error('裁剪图片失败'))
+      },
+      'image/jpeg',
+      0.92,
+    )
+  })
+
+const createCroppedFile = async () => {
+  const area = cropArea.value
+  const sourceFile = selectedFile.value
+  const image = area?.querySelector('img')
+
+  if (!area || !sourceFile || !image) throw new Error('图片预览尚未准备完成')
+
+  if (!image.complete) {
+    await new Promise<void>((resolve, reject) => {
+      image.addEventListener('load', () => resolve(), { once: true })
+      image.addEventListener('error', () => reject(new Error('图片预览加载失败')), { once: true })
+    })
+  }
+
+  if (!image.naturalWidth || !area.clientWidth) throw new Error('图片预览尚未准备完成')
+
+  await nextTick()
+  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+
+  const targetSize = 1024
+  const canvas = await html2canvas(area, {
+    backgroundColor: null,
+    scale: targetSize / area.clientWidth,
+    useCORS: true,
+    logging: false,
+  })
+  const blob = await canvasToBlob(canvas)
+  const fileName = sourceFile.name.replace(/\.[^.]+$/, '') || 'upload'
+
+  return new File([blob], `${fileName}-cropped.jpg`, {
+    type: blob.type,
+    lastModified: Date.now(),
+  })
+}
+
 const generateImage = async () => {
-  if (!selectedFile.value || loading.value) return
+  if (!selectedFile.value || loading.value || cropping.value) return
 
   errorMessage.value = ''
   clearResultObjectUrl()
   resultUrl.value = ''
+  cropping.value = true
 
   try {
-    const response = await generate(selectedFile.value)
+    const croppedFile = await createCroppedFile()
+    const response = await generate(croppedFile)
     const imageUrl = response?.data?.output_image || response.data?.images?.[0]
 
     if (!imageUrl) throw new Error('接口未返回生成图片')
@@ -113,6 +165,8 @@ const generateImage = async () => {
       : undefined
 
     errorMessage.value = responseMessage || (error instanceof Error ? error.message : '生成失败，请稍后重试')
+  } finally {
+    cropping.value = false
   }
 }
 
@@ -128,7 +182,9 @@ onBeforeUnmount(() => {
       <main class="page-shell mx-auto flex min-h-screen w-full flex-col px-32 pt-20">
         <section class="rounded-32 mt-10 bg-white p-16 shadow-[0_18px_55px_rgba(67,52,39,0.09)]">
           <div class="rounded-24 relative aspect-square w-full overflow-hidden bg-[#ece8e0]">
-            <img v-if="previewUrl" :src="previewUrl" class="size-full object-cover" alt="用户上传图片预览" />
+            <div v-if="previewUrl" ref="cropArea" class="size-full">
+              <MediaImageScale :src="previewUrl" />
+            </div>
 
             <button
               v-else
@@ -190,10 +246,10 @@ onBeforeUnmount(() => {
         <button
           type="button"
           class="rounded-26 text-26 mt-24 h-96 w-full bg-[#20201d] font-semibold text-white shadow-[0_16px_30px_rgba(32,32,29,0.18)] active:scale-[0.99] disabled:bg-[#b9b4aa] disabled:shadow-none"
-          :disabled="!selectedFile || loading || compressing"
+          :disabled="!selectedFile || loading || compressing || cropping"
           @click="generateImage"
         >
-          {{ loading ? '正在生成…' : '开始生成' }}
+          {{ cropping ? '正在裁剪…' : loading ? '正在生成…' : '开始生成' }}
         </button>
 
         <button
