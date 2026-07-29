@@ -23,7 +23,7 @@ export function useWanImageRequest() {
       url = `http://127.0.0.1:3002/imagev2`
     } else {
       const version = params.get('v') || ''
-      url = `https://api.yul.ink/imagev2${version ? `-${version}` : ''}`
+      url = `https://node-aiphoto.event1.cn/imagev2${version ? `-${version}` : ''}`
     }
   }
 
