@@ -15,13 +15,21 @@ const version = params.get('v') || ''
 export function useWanImageRequest() {
   const { post, lock } = useLockRequest(false, 0)
 
+  const href = location.href
+  let url = ''
+  if (href.includes('__test__')) {
+    url = 'https://hjc.event1.cn/api/oceanstor/bust/generate'
+  } else {
+    if (devModel) {
+      url = `http://127.0.0.1:3002/imagev2`
+    } else {
+      const version = params.get('v') || ''
+      url = `https://api.yul.ink/imagev2${version ? `-${version}` : ''}`
+    }
+  }
+
   const generate = (image: File) => {
-    return post<ResData<WanImageResult>>(
-      `${location.href.includes('__test__') ? 'https://hjc.event1.cn/api/oceanstor/bust/generate' : devModel ? `http://127.0.0.1:3002/imagev2${version ? `?-${version}` : ''}` : `https://api.yul.ink/imagev2${version ? `?-${version}` : ''}`}`,
-      { image },
-      { timeout: 200000 },
-      'FormData',
-    )
+    return post<ResData<WanImageResult>>(url, { image }, { timeout: 200000 }, 'FormData')
   }
 
   return { generate, loading: lock }
