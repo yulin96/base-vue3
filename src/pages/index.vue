@@ -2,6 +2,7 @@
 import { useWanImageRequest } from '@/api/wan-image'
 import { failToast } from '@/plugins/vant/toast'
 import { compressPhoto } from '@/utils/file/compressImage'
+import { uploadFile } from '@/utils/file/uploadFile'
 import { isAxiosError } from 'axios'
 import html2canvas from 'html2canvas'
 import { nextTick, onBeforeUnmount, ref } from 'vue'
@@ -154,7 +155,17 @@ const generateImage = async () => {
 
   try {
     const croppedFile = await createCroppedFile()
-    const response = await generate(croppedFile)
+    const [uploadError, uploadedImageUrl] = await uploadFile({
+      id: 'ZHPT',
+      file: croppedFile,
+      loading: true,
+    })
+
+    if (uploadError || !uploadedImageUrl) {
+      throw uploadError instanceof Error ? uploadError : new Error('图片上传失败')
+    }
+
+    const response = await generate(uploadedImageUrl)
     const imageUrl = response?.data?.output_image || response.data?.images?.[0]
 
     if (!imageUrl) throw new Error('接口未返回生成图片')

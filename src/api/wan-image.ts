@@ -26,8 +26,8 @@ export function useWanImageRequest() {
     }
   }
 
-  const generate = (image: File) => {
-    return post<ResData<WanImageResult>>(url, { image }, { timeout: 200000 }, 'FormData')
+  const generate = (imageUrl: string) => {
+    return post<ResData<WanImageResult>>(url, { imageUrl }, { timeout: 200000 }, 'FormData')
   }
 
   return { generate, loading: lock }
