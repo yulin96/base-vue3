@@ -20,9 +20,9 @@ export function useWanImageRequest() {
     url = 'https://hjc.event1.cn/api/oceanstor/bust/generate'
   } else {
     if (devModel) {
-      url = `http://127.0.0.1:3002/ali/ai-avatar`
+      url = `http://127.0.0.1:3002/ai/gen-avatar`
     } else {
-      url = `https://node-aiphoto.event1.cn/ali/ai-avatar`
+      url = `https://node-aiphoto.event1.cn/ai/gen-avatar`
     }
   }
 
