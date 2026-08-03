@@ -292,15 +292,12 @@ const version = params.get('v') || ''
           </div>
 
           <div
-            class="rounded-30 center relative h-660 w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
+            class="rounded-30 center relative h-800 w-full overflow-hidden bg-white shadow-[0_18px_55px_rgba(67,52,39,0.09)]"
           >
             <!--  -->
-            <img
-              class="absolute bottom-30 z-20 -ml-2 w-700"
-              src="https://oss.eventnet.cn/mm/temp/da38485504982be7f4fe460376b9f08d.png"
-            />
-            <div class="absolute bottom-390 z-10 w-240">
-              <img :src="resultUrl" class="rounded-22 w-full object-contain" alt="AI 生成结果" />
+            <div class="center relative h-750 w-full overflow-hidden">
+              <img class="absolute top-14 size-260" :src="resultUrl" />
+              <img class="absolute bottom-0 z-20 size-900" src="../assets/images/poster/bp.png" />
             </div>
           </div>
           <p class="text-20 mt-16 text-center leading-[1.5] text-[#8a857c]">
