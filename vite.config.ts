@@ -1,14 +1,14 @@
 import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
-import { buildCheck } from './build/buildCheck'
+import { buildCheck } from './build/buildCheck.ts'
 
 import legacy from '@vitejs/plugin-legacy'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import { vitePluginDeployFtp, vitePluginDeployOss } from 'vite-plugin-upload'
-import { vitePluginMetaShare } from './build/metaShare'
-import { vitePluginOrganizeResource } from './build/organizeResource'
+import { vitePluginMetaShare } from './build/metaShare.ts'
+import { vitePluginOrganizeResource } from './build/organizeResource.ts'
 
 import tailwindcss from '@tailwindcss/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
@@ -162,7 +162,7 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       tsconfigPaths: true,
       alias: {
-        '@': path.resolve(__dirname, 'src'),
+        '@': path.resolve(import.meta.dirname, 'src'),
       },
     },
     base: './',
@@ -173,7 +173,7 @@ export default defineConfig(({ command, mode }) => {
       reportCompressedSize: false,
       rolldownOptions: {
         input: {
-          index: path.resolve(__dirname, 'index.html'),
+          index: path.resolve(import.meta.dirname, 'index.html'),
         },
         output: {
           minify: {
