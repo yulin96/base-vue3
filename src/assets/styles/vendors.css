@@ -60,6 +60,8 @@ body {
     max-width: 100%;
     background: unset;
     margin-top: -2vh;
+
+    font-size: calc(var(--base-scale, 1) * 14 * 1px);
   }
 }
 
