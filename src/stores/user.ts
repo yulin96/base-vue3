@@ -26,7 +26,13 @@ export const useStore = defineStore(
     const user = ref(createInitialState())
 
     const clear = () => {
-      user.value = createInitialState()
+      const initialState = createInitialState()
+
+      for (const key of Object.keys(user.value)) {
+        Reflect.deleteProperty(user.value, key)
+      }
+
+      Object.assign(user.value, initialState)
     }
 
     return { user, clear }
