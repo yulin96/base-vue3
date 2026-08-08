@@ -24,7 +24,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@lucide/vue": "^1.29.0",
+    "@lucide/vue": "^1.30.0",
     "@number-flow/vue": "^0.5.2",
     "@tsparticles/engine": "^4.3.2",
     "@vant/area-data": "^2.1.0",
