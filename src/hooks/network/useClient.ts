@@ -174,7 +174,7 @@ export const useClient = <T = unknown>(
     retryCount.value++
 
     retryTimer = window.setTimeout(() => {
-      linkROP()
+      connect()
     }, retryDelay)
   }
 
@@ -202,14 +202,6 @@ export const useClient = <T = unknown>(
       console.error('连接失败:', error)
       scheduleRetry()
     }
-  }
-
-  // 手动重连方法
-  const reconnect = () => {
-    if (destroyed) return
-    retryCount.value = 0
-    clearRetryTimer()
-    linkROP()
   }
 
   // 事件处理函数注册
@@ -281,14 +273,8 @@ export const useClient = <T = unknown>(
     })
   }
 
-  // ROP准备就绪处理
-  const ROPReady = () => {
-    if (destroyed) return
-    setupEventHandlers()
-    linkROP()
-
-    // 监听页面可见性变化
-    if (autoReconnectOnVisibility) {
+  const setupVisibilityWatcher = () => {
+    if (autoReconnectOnVisibility && !visibilityWatcher) {
       const visibility = useDocumentVisibility()
       visibilityWatcher = watch(visibility, (newVisibility) => {
         if (newVisibility === 'visible' && connectionStatus.value !== 'connected') {
@@ -296,6 +282,31 @@ export const useClient = <T = unknown>(
         }
       })
     }
+  }
+
+  const connect = () => {
+    if (destroyed) return
+
+    void ensureRopScript(scriptUrl)
+      .then(() => {
+        if (destroyed) return
+        setupEventHandlers()
+        setupVisibilityWatcher()
+        linkROP()
+      })
+      .catch((error) => {
+        if (destroyed) return
+        console.error('ROP客户端脚本加载失败', error)
+        scheduleRetry()
+      })
+  }
+
+  // 手动重连方法
+  const reconnect = () => {
+    if (destroyed) return
+    retryCount.value = 0
+    clearRetryTimer()
+    connect()
   }
 
   // 清理资源
@@ -317,14 +328,7 @@ export const useClient = <T = unknown>(
   // 组件卸载时清理
   onBeforeUnmount(destroy)
 
-  void ensureRopScript(scriptUrl)
-    .then(() => {
-      ROPReady()
-    })
-    .catch((error) => {
-      console.error('ROP客户端脚本加载失败', error)
-      connectionStatus.value = 'error'
-    })
+  connect()
 
   return {
     data: readonly(data),

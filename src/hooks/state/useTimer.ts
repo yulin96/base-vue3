@@ -12,6 +12,8 @@ export interface UseTimerOptions {
   interval?: number
 }
 
+type TimerStatus = 'idle' | 'running' | 'paused'
+
 export function useTimer(options: UseTimerOptions | number = {}) {
   const config = typeof options === 'number' ? { initialTime: options } : options
 
@@ -24,9 +26,9 @@ export function useTimer(options: UseTimerOptions | number = {}) {
 
   const currentTime = ref(initialTime)
   const timerId = ref<number | undefined>(undefined)
+  const status = ref<TimerStatus>('idle')
 
-  // 通过计算属性推导活跃状态
-  const isActive = computed(() => timerId.value !== undefined)
+  const isActive = computed(() => status.value !== 'idle')
 
   // 计算属性，避免不必要的响应式更新
   const timerText = computed(() => {
@@ -37,20 +39,15 @@ export function useTimer(options: UseTimerOptions | number = {}) {
   const progress = computed(() => toFixedNumber((initialTime - currentTime.value) / initialTime, 2))
   const percentage = computed(() => toFixedNumber((currentTime.value / initialTime) * 100, 2))
 
-  // 重置定时器状态
-  const resetTimer = () => {
+  const clearTimer = () => {
     if (timerId.value !== undefined) {
       clearInterval(timerId.value)
       timerId.value = undefined
     }
-    currentTime.value = initialTime
   }
 
-  const startTimer = (): void => {
-    if (isActive.value) return
-
-    currentTime.value = initialTime
-
+  const runTimer = () => {
+    status.value = 'running'
     timerId.value = window.setInterval(() => {
       currentTime.value--
 
@@ -58,6 +55,20 @@ export function useTimer(options: UseTimerOptions | number = {}) {
         resetTimer()
       }
     }, interval)
+  }
+
+  // 重置定时器状态
+  const resetTimer = () => {
+    clearTimer()
+    currentTime.value = initialTime
+    status.value = 'idle'
+  }
+
+  const startTimer = (): void => {
+    if (isActive.value) return
+
+    currentTime.value = initialTime
+    runTimer()
   }
 
   const stopTimer = () => {
@@ -66,23 +77,15 @@ export function useTimer(options: UseTimerOptions | number = {}) {
 
   // 暂停定时器（保持当前状态）
   const pauseTimer = () => {
-    if (timerId.value !== undefined) {
-      clearInterval(timerId.value)
-      timerId.value = undefined
-    }
+    if (status.value !== 'running') return
+    clearTimer()
+    status.value = 'paused'
   }
 
   // 恢复定时器
   const resumeTimer = () => {
-    if (isActive.value || currentTime.value <= 0) return
-
-    timerId.value = window.setInterval(() => {
-      currentTime.value--
-
-      if (currentTime.value <= 0) {
-        resetTimer()
-      }
-    }, interval)
+    if (status.value !== 'paused' || currentTime.value <= 0) return
+    runTimer()
   }
 
   // 组件卸载时清理定时器

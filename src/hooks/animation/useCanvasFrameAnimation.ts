@@ -71,6 +71,10 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     objectFit = 'contain',
   } = options
 
+  if (!Number.isFinite(fps) || fps <= 0) {
+    throw new Error('fps must be a finite number greater than 0')
+  }
+
   const maxFrameIndex = frames.length - 1
   const validCoverFrame = Math.max(0, Math.min(coverFrame, maxFrameIndex))
   const validStartFrame = Math.max(0, Math.min(startFrame, maxFrameIndex))
@@ -657,8 +661,8 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   // 🔴 优化1：setFps 同步更新缓存的帧间隔
   const setFps = (newFps: number) => {
-    if (newFps <= 0) {
-      console.warn('fps must be greater than 0')
+    if (!Number.isFinite(newFps) || newFps <= 0) {
+      console.warn('fps must be a finite number greater than 0')
       return
     }
     state.currentFps = newFps
