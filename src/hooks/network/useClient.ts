@@ -193,8 +193,8 @@ export const useClient = <T = unknown>(
 
       // 进入频道
       window.ROP.Enter(
-        pub || 'pub_357ce949f839716f0487fa733b49d3f8',
-        sub || 'sub_3ffbe7827a221c20387302a165211dc3',
+        pub?.trim() || 'pub_357ce949f839716f0487fa733b49d3f8',
+        sub?.trim() || 'sub_3ffbe7827a221c20387302a165211dc3',
         generateSessionId(),
         true,
       )
@@ -219,7 +219,7 @@ export const useClient = <T = unknown>(
       if (subIsString) {
         ROP.Subscribe(subScribes as string)
       } else {
-        ;(subScribes as string[]).forEach((topic) => ROP.Subscribe(topic))
+        ;(subScribes as string[]).forEach((topic) => ROP.Subscribe(topic?.trim()))
       }
     })
 
