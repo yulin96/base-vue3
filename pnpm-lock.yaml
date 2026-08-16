@@ -139,8 +139,8 @@ importers:
         specifier: ^4.3.3
         version: 4.3.3(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0))
       '@tsconfig/node24':
-        specifier: ^24.0.4
-        version: 24.0.4
+        specifier: ^24.0.5
+        version: 24.0.5
       '@types/ali-oss':
         specifier: ^6.23.3
         version: 6.23.3
@@ -238,8 +238,8 @@ importers:
         specifier: ^0.4.1
         version: 0.4.1(@types/node@24.13.3)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0))
       vue-tsc:
-        specifier: ^3.3.9
-        version: 3.3.9(typescript@5.9.3)
+        specifier: ^3.3.10
+        version: 3.3.10(typescript@5.9.3)
 
 packages:
 
@@ -1718,8 +1718,8 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tsconfig/node24@24.0.4':
-    resolution: {integrity: sha512-2A933l5P5oCbv6qSxHs7ckKwobs8BDAe9SJ/Xr2Hy+nDlwmLE1GhFh/g/vXGRZWgxBg9nX/5piDtHR9Dkw/XuA==}
+  '@tsconfig/node24@24.0.5':
+    resolution: {integrity: sha512-DWC54fGPuhZgg3Ighg4Y/A/bA3ZdB5hnzAuv/MkQ/X85sVsBsMQxu8t7khutdYeiNksBbFdDyeqv1HSW2Zl8aA==}
 
   '@tsparticles/engine@4.3.2':
     resolution: {integrity: sha512-k4U7uahhxt7bPjEPHu+qrJXjHRysy/QMN+2/KK4d0/V7CElt5/oeR+H9QB95Osy/PtUCCi6EH/LS7k0443qlJA==}
@@ -1927,8 +1927,8 @@ packages:
       typescript:
         optional: true
 
-  '@vue/language-core@3.3.9':
-    resolution: {integrity: sha512-in/68oAa4BCtVY6n/nkuhLIkV8DHYd2UivedJ6cMZ6UYtlq9jaoaSNUBHYCVO44z3nKg7MdE5OBoHKt5SxeBKQ==}
+  '@vue/language-core@3.3.10':
+    resolution: {integrity: sha512-CR7ByBbgPHqhxrioKPOcZBqttaozzLNwtkCzXQ+uF8gLPHnUe03srPnGpdtHD3zp+bq5iyVkZ1WNx7W564RPwg==}
 
   '@vue/reactivity@3.5.41':
     resolution: {integrity: sha512-rznsqKM0np0x18EjzF8x88MpEhdNsffbvFbckLL5+oUKz1BxAImEmO7J1ArRYSyo6aQaVoBDp7jEkT91OOxydA==}
@@ -4134,8 +4134,8 @@ packages:
       nuxt:
         optional: true
 
-  vue-tsc@3.3.9:
-    resolution: {integrity: sha512-TS3Y1ux/IRoE8OCP2PpACAeOseuIs0UvWrcr7u+w3PmfY+SlCfEf8zjrBgnQksHUgLpthi5vHlffcQTQTdPBZA==}
+  vue-tsc@3.3.10:
+    resolution: {integrity: sha512-YaDVxcW+CGtaOt3pZahMG5jYPx0hsUTxyEoPOTSMebcGUXP9lIBabQ14vfKMORb2CqqK5CxsNo/d1d+4IQwiKg==}
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.0'
@@ -5767,7 +5767,7 @@ snapshots:
       tailwindcss: 4.3.3
       vite: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0)
 
-  '@tsconfig/node24@24.0.4': {}
+  '@tsconfig/node24@24.0.5': {}
 
   '@tsparticles/engine@4.3.2': {}
 
@@ -6050,11 +6050,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vue/language-core@3.3.9':
+  '@vue/language-core@3.3.10':
     dependencies:
       '@volar/language-core': 2.4.28
-      '@vue/compiler-dom': 3.5.40
-      '@vue/shared': 3.5.40
+      '@vue/compiler-dom': 3.5.41
+      '@vue/shared': 3.5.41
       alien-signals: 3.2.1
       muggle-string: 0.4.1
       path-browserify: 1.0.1
@@ -8134,10 +8134,10 @@ snapshots:
 
   vue-sonner@2.0.9: {}
 
-  vue-tsc@3.3.9(typescript@5.9.3):
+  vue-tsc@3.3.10(typescript@5.9.3):
     dependencies:
       '@volar/typescript': 2.4.28(typescript@5.9.3)
-      '@vue/language-core': 3.3.9
+      '@vue/language-core': 3.3.10
       typescript: 5.9.3
 
   vue@3.5.41(typescript@5.9.3):
