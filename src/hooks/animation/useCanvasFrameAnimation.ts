@@ -1,4 +1,4 @@
-import { v4 } from 'uuid'
+import { nanoid } from 'nanoid'
 import { nextTick, onMounted, onUnmounted, reactive, readonly, useTemplateRef } from 'vue'
 
 export interface FrameAnimationOptions {
@@ -97,7 +97,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     console.warn(`修正后: loopStart=${validLoopStart}, loopEnd=${validLoopEnd}`)
   }
 
-  const key = v4()
+  const key = nanoid()
   const canvas = useTemplateRef<HTMLCanvasElement>(key)
 
   // 状态管理

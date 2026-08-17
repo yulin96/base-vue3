@@ -1,5 +1,5 @@
 import { useScroll } from '@vueuse/core'
-import { v4 } from 'uuid'
+import { nanoid } from 'nanoid'
 import { onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, useTemplateRef } from 'vue'
 
 interface ISlideOptions {
@@ -13,7 +13,7 @@ interface ISlideOptions {
 export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100 }: ISlideOptions) => {
   const startMove = ref({ pageY: 0, once: true })
 
-  const key = v4()
+  const key = nanoid()
   const ele = useTemplateRef<HTMLElement>(key)
   const { arrivedState } = useScroll(ele, { offset: { bottom: 0 } })
 

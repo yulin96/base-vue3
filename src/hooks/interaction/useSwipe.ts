@@ -1,8 +1,8 @@
-import { v4 } from 'uuid'
+import { nanoid } from 'nanoid'
 import { isRef, onBeforeUnmount, onMounted, useTemplateRef, type TemplateRef } from 'vue'
 
 export function useSwipe(onSwipe?: (dir: 'left' | 'right') => void, originKey?: string | TemplateRef<HTMLElement>) {
-  const key = typeof originKey === 'string' ? originKey : `dom-${v4()}`
+  const key = typeof originKey === 'string' ? originKey : `dom-${nanoid()}`
 
   const dom = isRef(originKey) ? originKey : useTemplateRef<HTMLElement>(key)
 

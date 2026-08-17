@@ -1,7 +1,7 @@
 import { sleep } from '@/utils/common'
 import OSS from 'ali-oss'
 import axios, { toFormData } from 'axios'
-import { v4 } from 'uuid'
+import { nanoid } from 'nanoid'
 import { toast } from 'vue-sonner'
 
 type IUploadOption = {
@@ -62,7 +62,7 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
       },
     })
 
-    const key = `${uploadDir}${start}-${v4()}.${getExtension(file)}`
+    const key = `${uploadDir}${start}-${nanoid()}.${getExtension(file)}`
 
     await client.multipartUpload(key, file, {
       progress(progress) {

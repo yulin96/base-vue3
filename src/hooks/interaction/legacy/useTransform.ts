@@ -1,4 +1,4 @@
-import { v4 } from 'uuid'
+import { nanoid } from 'nanoid'
 import { onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
 
 type TransformOptions = {
@@ -15,7 +15,7 @@ type TransformOptions = {
 }
 
 export function useTransform(options: TransformOptions) {
-  const key = v4()
+  const key = nanoid()
 
   const { scale, position } = options
   const { default: defaultScale = 1, min: minScale = 1, max: maxScale = 5 } = scale || {}

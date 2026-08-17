@@ -1,8 +1,8 @@
-import { v4 } from 'uuid'
+import { nanoid } from 'nanoid'
 import { nextTick, onActivated, onBeforeUnmount, onDeactivated, useTemplateRef } from 'vue'
 
 export function useRecordingLocation(initialKey?: string) {
-  const key = initialKey || v4()
+  const key = initialKey || nanoid()
   const moveRef = useTemplateRef<HTMLElement>(key)
 
   let top = 0

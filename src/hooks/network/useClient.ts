@@ -1,5 +1,5 @@
 import { useDocumentVisibility } from '@vueuse/core'
-import { v4 as uuidv4 } from 'uuid'
+import { nanoid } from 'nanoid'
 import { onBeforeUnmount, readonly, ref, shallowRef, watch } from 'vue'
 
 type ROPEventCallback<TArgs extends unknown[] = unknown[]> = (...args: TArgs) => void
@@ -135,7 +135,7 @@ export const useClient = <T = unknown>(
   let visibilityWatcher: (() => void) | null = null
 
   // 生成唯一会话ID
-  const generateSessionId = () => `suid_${uuidv4()}`
+  const generateSessionId = () => `suid_${nanoid()}`
 
   // 清理定时器
   const clearRetryTimer = () => {

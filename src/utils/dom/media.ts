@@ -1,6 +1,6 @@
 import { blobToFile } from '@/utils/convert/file'
 import { compressPhoto } from '@/utils/file/compressImage'
-import { v4 } from 'uuid'
+import { nanoid } from 'nanoid'
 import { toast } from 'vue-sonner'
 
 /**
@@ -17,7 +17,7 @@ export async function getUserImage(option?: Compressor.Options) {
     const mimeExtension = compressedFile.type.match(/^image\/([^;+]+)/)?.[1]
     const extension =
       compressedFile.type === file.type ? sourceExtension || mimeExtension : mimeExtension || sourceExtension
-    return blobToFile(compressedFile, `${v4()}${extension ? `.${extension}` : ''}`)
+    return blobToFile(compressedFile, `${nanoid()}${extension ? `.${extension}` : ''}`)
   } catch {
     toast.warning('请上传有效的图片文件')
   }

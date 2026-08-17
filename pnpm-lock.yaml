@@ -89,6 +89,9 @@ importers:
       lucky-canvas:
         specifier: ^1.7.27
         version: 1.7.27
+      nanoid:
+        specifier: ^6.0.1
+        version: 6.0.1
       pinia:
         specifier: ^4.0.3
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@5.9.3)(vue@3.5.41(typescript@5.9.3))
@@ -104,9 +107,6 @@ importers:
       typed.js:
         specifier: ^3.0.0
         version: 3.0.0
-      uuid:
-        specifier: ^14.0.1
-        version: 14.0.1
       vant:
         specifier: ^4.10.0
         version: 4.10.0(vue@3.5.41(typescript@5.9.3))
@@ -3133,6 +3133,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@6.0.1:
+    resolution: {integrity: sha512-3wVS3i51pE2pi1k5FFL/95BGfVS0kSsvDVuGXHOtxox/TywUmtgq+3qiTOTbs9J7KfHaXPiN171k/A6dBnaXFw==}
+    engines: {node: ^22 || ^24 || >=26}
+    hasBin: true
+
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
@@ -4001,10 +4006,6 @@ packages:
 
   utrie@1.0.2:
     resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
-
-  uuid@14.0.1:
-    resolution: {integrity: sha512-6ZxzVpzDXDa3bJWaHilVayA+BH/1zmxCJoVgvmqJnid/gPoKHxUrS/aC/T6LGQtNHT+XHG9fXPJB4d+IrU30Ew==}
-    hasBin: true
 
   vant@4.10.0:
     resolution: {integrity: sha512-sJ85BY1QFSX0aESqyS0FGouXCXp8hbpj9o32ug0d8C1tKpx/0x41JBgXgS4HRTe6SfebQOLWcc0B4E0A+RWdHA==}
@@ -7112,6 +7113,8 @@ snapshots:
 
   nanoid@3.3.16: {}
 
+  nanoid@6.0.1: {}
+
   natural-compare@1.4.0: {}
 
   node-hex@1.0.1: {}
@@ -8018,8 +8021,6 @@ snapshots:
   utrie@1.0.2:
     dependencies:
       base64-arraybuffer: 1.0.2
-
-  uuid@14.0.1: {}
 
   vant@4.10.0(vue@3.5.41(typescript@5.9.3)):
     dependencies:
