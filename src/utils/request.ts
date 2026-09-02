@@ -1,3 +1,4 @@
+import { devModel } from '@/config/env'
 import { normalizePostRequest, type FormDataOrJson, type PostRequestConfig } from '@/utils/request-payload'
 import axios, { type AxiosRequestConfig } from 'axios'
 
@@ -5,7 +6,7 @@ export type IFormDataOrJSON = FormDataOrJson
 type Dict = Record<string, unknown>
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_APP_API_URL,
+  baseURL: import.meta.env.VITE_APP_API_URL.replace('c26.event1.cn', devModel ? 'c26-test.event1.cn' : 'c26.event1.cn'),
 })
 
 instance.interceptors.request.use((config) => {
