@@ -68,7 +68,7 @@ body .van-popup--center .van-loading__line:before {
 }
 
 body .van-overlay {
-  backdrop-filter: blur(calc(var(--base-scale, 1) * 2 * 1px));
+  /* backdrop-filter: blur(calc(var(--base-scale, 1) * 2 * 1px)); */
 }
 
 /* body .van-toast__text {
