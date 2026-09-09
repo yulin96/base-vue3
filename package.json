@@ -24,7 +24,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@lucide/vue": "^1.41.0",
+    "@lucide/vue": "^1.42.0",
     "@number-flow/vue": "^0.5.2",
     "@tsparticles/engine": "^4.4.0",
     "@vant/area-data": "^2.2.0",
@@ -65,7 +65,7 @@
     "weixin-js-sdk": "^1.6.5"
   },
   "devDependencies": {
-    "@clack/prompts": "^1.7.0",
+    "@clack/prompts": "^1.8.0",
     "@eslint/compat": "^2.1.1",
     "@minko-fe/postcss-pxtorem": "^1.5.0",
     "@tailwindcss/vite": "^4.3.3",
@@ -85,9 +85,9 @@
     "clsx": "^2.1.1",
     "cross-env": "^10.1.0",
     "eslint": "^10.10.0",
-    "eslint-plugin-vue": "^10.10.0",
+    "eslint-plugin-vue": "^10.11.0",
     "npm-run-all2": "^9.0.3",
-    "postcss-preset-env": "^11.5.1",
+    "postcss-preset-env": "^11.5.2",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "rollup-plugin-visualizer": "^7.1.1",
