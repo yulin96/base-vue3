@@ -97,6 +97,7 @@ html {
 
 ## 请求与业务代码
 
+- 新增或修改业务接口及其页面、组件、hook 调用时，必须先阅读并遵守 [接口编写与调用规范](src/api/README.md)。默认沿用 `apiXxx`、每接口独立模块级请求锁、`[err, res]` 返回值，以及调用方先判请求错误再判业务码的写法。
 - 请求统一走 `src/utils/request.ts`。
 - 防重复提交优先使用 `src/hooks/network/useLockRequest.ts`。
 - 新增接口优先放到 `src/api`，并补充对应类型。
