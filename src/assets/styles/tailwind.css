@@ -5,6 +5,7 @@
 
 @import './size.css';
 @import './theme.css';
+@import './global.css';
 
 @utility text-* {
   font-size: calc(--value(integer) * 1px);
