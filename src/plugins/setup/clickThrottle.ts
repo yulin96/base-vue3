@@ -10,6 +10,7 @@ window.addEventListener(
     const target = (e.target as HTMLElement).closest('[btn], [btn3d]') as HTMLElement
 
     if (!target) return
+    if (target.hasAttribute('ig')) return
 
     if (getComputedStyle(target).pointerEvents === 'none') {
       e.stopImmediatePropagation()
