@@ -22,23 +22,23 @@ body {
   }
 
   .van-toast.center_toast {
-    --van-toast-font-size: calc(var(--base-scale, 1) * 16px);
-    --van-toast-line-height: calc(var(--base-scale, 1) * 22px);
-    --van-toast-icon-size: calc(var(--base-scale, 1) * 36px);
-    --van-toast-default-width: calc(var(--base-scale, 1) * 120px);
-    --van-toast-default-min-height: calc(var(--base-scale, 1) * 112px);
-    --van-toast-text-min-width: calc(var(--base-scale, 1) * 96px);
-    --van-loading-spinner-size: calc(var(--base-scale, 1) * 30px);
+    --van-toast-font-size: calc(var(--base-scale, 1) * 32px);
+    --van-toast-line-height: calc(var(--base-scale, 1) * 44px);
+    --van-toast-icon-size: calc(var(--base-scale, 1) * 72px);
+    --van-toast-default-width: calc(var(--base-scale, 1) * 240px);
+    --van-toast-default-min-height: calc(var(--base-scale, 1) * 224px);
+    --van-toast-text-min-width: calc(var(--base-scale, 1) * 192px);
+    --van-loading-spinner-size: calc(var(--base-scale, 1) * 60px);
     box-sizing: border-box;
-    padding: calc(var(--base-scale, 1) * 8px) calc(var(--base-scale, 1) * 16px);
+    padding: calc(var(--base-scale, 1) * 16px) calc(var(--base-scale, 1) * 32px);
     color: #fff;
     background: #000a;
     backdrop-filter: saturate(180%) blur(12px);
     border: none;
-    border-radius: calc(var(--base-scale, 1) * 12 * 1px);
+    border-radius: calc(var(--base-scale, 1) * 24 * 1px);
     box-shadow: #0000001f 0 3px calc(var(--base-scale, 1) * 8 * 1px);
-    max-width: min(calc(var(--base-scale, 1) * 480px), calc(100vw - 32px));
-    max-height: calc(100vh - 32px);
+    max-width: min(calc(var(--base-scale, 1) * 960px), calc(100vw - 64px));
+    max-height: calc(100vh - 64px);
     min-width: 0;
     overflow-y: auto;
     word-break: normal;
@@ -47,7 +47,7 @@ body {
 
   .center_toast .van-toast__text {
     max-width: 100%;
-    margin-top: calc(var(--base-scale, 1) * 8px);
+    margin-top: calc(var(--base-scale, 1) * 16px);
   }
 
   .center_toast.van-toast--text .van-toast__text,
@@ -57,13 +57,13 @@ body {
 
   .center_toast .van-toast__loading {
     flex-shrink: 0;
-    padding: calc(var(--base-scale, 1) * 4px);
+    padding: calc(var(--base-scale, 1) * 8px);
   }
 
   .center_toast.van-toast--html .van-toast__text > img {
     flex-shrink: 0;
-    height: calc(var(--base-scale, 1) * 26px) !important;
-    margin-right: calc(var(--base-scale, 1) * 6px) !important;
+    height: calc(var(--base-scale, 1) * 52px) !important;
+    margin-right: calc(var(--base-scale, 1) * 12px) !important;
   }
 
   .center_toast.van-toast--html .van-toast__text > p {
@@ -102,7 +102,7 @@ body {
 }
 
 body .van-popup--center .van-loading__line:before {
-  border-radius: calc(var(--base-scale, 1) * 12 * 1px);
+  border-radius: calc(var(--base-scale, 1) * 24 * 1px);
 }
 
 body .van-overlay {
@@ -114,21 +114,21 @@ body .van-overlay {
 } */
 
 body .van-dialog {
-  --van-dialog-font-size: calc(var(--base-scale, 1) * 20px);
-  --van-dialog-header-line-height: calc(var(--base-scale, 1) * 28px);
-  --van-dialog-message-font-size: calc(var(--base-scale, 1) * 16px);
-  --van-dialog-message-line-height: calc(var(--base-scale, 1) * 24px);
-  --van-dialog-button-height: calc(var(--base-scale, 1) * 48px);
+  --van-dialog-font-size: calc(var(--base-scale, 1) * 40px);
+  --van-dialog-header-line-height: calc(var(--base-scale, 1) * 56px);
+  --van-dialog-message-font-size: calc(var(--base-scale, 1) * 32px);
+  --van-dialog-message-line-height: calc(var(--base-scale, 1) * 48px);
+  --van-dialog-button-height: calc(var(--base-scale, 1) * 96px);
   display: flex;
   flex-direction: column;
   top: 50%;
-  width: calc(var(--base-scale, 1) * 360px);
-  max-width: calc(100vw - 32px);
-  max-height: calc(100vh - 32px);
+  width: calc(var(--base-scale, 1) * 720px);
+  max-width: calc(100vw - 64px);
+  max-height: calc(100vh - 64px);
   margin-top: 0;
   overflow: hidden;
   border: none;
-  border-radius: calc(var(--base-scale, 1) * 22 * 1px);
+  border-radius: calc(var(--base-scale, 1) * 44 * 1px);
   /* corner-shape: squircle; */
   background: radial-gradient(ellipse at 100% 100%, rgba(52, 75, 182, 0.24), transparent 58%), #fffffff9;
   box-shadow:
@@ -159,12 +159,12 @@ body .van-dialog {
 
 body .van-dialog__header {
   flex-shrink: 0;
-  padding: calc(var(--base-scale, 1) * 28px) calc(var(--base-scale, 1) * 24px) 0;
+  padding: calc(var(--base-scale, 1) * 56px) calc(var(--base-scale, 1) * 48px) 0;
   color: #202534;
 }
 
 body .van-dialog__header--isolated {
-  padding-bottom: calc(var(--base-scale, 1) * 28px);
+  padding-bottom: calc(var(--base-scale, 1) * 56px);
 }
 
 body .van-dialog__content {
@@ -175,13 +175,13 @@ body .van-dialog__content {
 
 body .van-dialog .van-dialog__message {
   max-height: none;
-  padding: calc(var(--base-scale, 1) * 24px);
+  padding: calc(var(--base-scale, 1) * 48px);
   overflow: visible;
   overflow-wrap: anywhere;
 }
 
 body .van-dialog__message--has-title {
-  padding: calc(var(--base-scale, 1) * 16px) calc(var(--base-scale, 1) * 24px) calc(var(--base-scale, 1) * 28px) !important;
+  padding: calc(var(--base-scale, 1) * 32px) calc(var(--base-scale, 1) * 48px) calc(var(--base-scale, 1) * 56px) !important;
   color: #3f4757;
 }
 
@@ -190,16 +190,16 @@ body .van-dialog__footer {
 }
 
 body .van-dialog--round-button .van-dialog__footer {
-  gap: calc(var(--base-scale, 1) * 12px);
-  padding: 0 calc(var(--base-scale, 1) * 24px) calc(var(--base-scale, 1) * 24px);
+  gap: calc(var(--base-scale, 1) * 24px);
+  padding: 0 calc(var(--base-scale, 1) * 48px) calc(var(--base-scale, 1) * 48px);
   background: transparent;
 }
 
 body .van-dialog__footer .van-button {
   min-width: 0;
   margin: 0;
-  font-size: calc(var(--base-scale, 1) * 16px);
-  line-height: calc(var(--base-scale, 1) * 24px);
+  font-size: calc(var(--base-scale, 1) * 32px);
+  line-height: calc(var(--base-scale, 1) * 48px);
 }
 
 body .van-dialog--round-button .van-dialog__footer .van-button {
@@ -249,7 +249,7 @@ body .van-dialog--round-button .van-dialog__footer .van-dialog__cancel .van-butt
 }
 
 body .van-action-bar-button--first.van-dialog__confirm {
-  width: calc(var(--base-scale, 1) * 240px) !important;
+  width: calc(var(--base-scale, 1) * 480px) !important;
   max-width: 100%;
   flex: unset !important;
   margin-left: auto;
@@ -258,7 +258,7 @@ body .van-action-bar-button--first.van-dialog__confirm {
 
 body .van-dialog--round-button .van-dialog__confirm,
 body .van-dialog--round-button .van-dialog__cancel {
-  height: calc(var(--base-scale, 1) * 48px);
+  height: calc(var(--base-scale, 1) * 96px);
 }
 
 body .van-button:active:before {
@@ -266,10 +266,10 @@ body .van-button:active:before {
 }
 
 body .van-notify {
-  --van-notify-font-size: calc(var(--base-scale, 1) * 16px);
-  --van-notify-line-height: calc(var(--base-scale, 1) * 24px);
-  --van-notify-padding: calc(var(--base-scale, 1) * 12px) calc(var(--base-scale, 1) * 16px);
-  max-height: calc(100vh - 32px);
+  --van-notify-font-size: calc(var(--base-scale, 1) * 32px);
+  --van-notify-line-height: calc(var(--base-scale, 1) * 48px);
+  --van-notify-padding: calc(var(--base-scale, 1) * 24px) calc(var(--base-scale, 1) * 32px);
+  max-height: calc(100vh - 64px);
   overflow-y: auto;
   overflow-wrap: anywhere;
   box-shadow:
@@ -324,7 +324,7 @@ body .dialog-popup-leave-to {
 
 body [data-rich-colors='true'][data-sonner-toast][data-styled='true'] {
   overflow: hidden;
-  border-radius: calc(var(--base-scale, 1) * 16px);
+  border-radius: calc(var(--base-scale, 1) * 32px);
   /* corner-shape: squircle; */
   background:
     radial-gradient(ellipse at 100% 100%, rgba(var(--sonner-accent-rgb), 0.16), transparent 46%),
@@ -362,7 +362,7 @@ body [data-rich-colors='true'][data-sonner-toast][data-type='error'] {
 }
 
 body [data-sonner-toaster] {
-  width: min(calc(var(--base-scale, 1) * 356px), calc(100vw - 32px));
+  width: min(calc(var(--base-scale, 1) * 640px), calc(100vw - 64px));
 }
 
 body [data-sonner-toaster][data-x-position='center'] {
@@ -373,21 +373,21 @@ body [data-sonner-toaster][data-x-position='center'] {
 
 body [data-sonner-toast][data-styled='true'] {
   width: 100%;
-  padding: calc(var(--base-scale, 1) * 16px);
-  gap: calc(var(--base-scale, 1) * 8px);
-  border-radius: calc(var(--base-scale, 1) * 16px);
-  font-size: calc(var(--base-scale, 1) * 14px);
+  padding: calc(var(--base-scale, 1) * 32px);
+  gap: calc(var(--base-scale, 1) * 16px);
+  border-radius: calc(var(--base-scale, 1) * 32px);
+  font-size: calc(var(--base-scale, 1) * 28px);
   line-height: 1.5;
 }
 
 body [data-sonner-toast][data-styled='true'] [data-content] {
   min-width: 0;
-  gap: calc(var(--base-scale, 1) * 2px);
+  gap: calc(var(--base-scale, 1) * 4px);
 }
 
 body [data-sonner-toast][data-styled='true'] [data-icon] {
-  width: calc(var(--base-scale, 1) * 20px);
-  height: calc(var(--base-scale, 1) * 20px);
+  width: calc(var(--base-scale, 1) * 40px);
+  height: calc(var(--base-scale, 1) * 40px);
   margin: 0;
 }
 
@@ -398,10 +398,10 @@ body [data-sonner-toast][data-styled='true'] [data-icon] svg {
 }
 
 body [data-sonner-toast][data-styled='true'] [data-button] {
-  height: calc(var(--base-scale, 1) * 32px);
-  padding: 0 calc(var(--base-scale, 1) * 10px);
-  border-radius: calc(var(--base-scale, 1) * 8px);
-  font-size: calc(var(--base-scale, 1) * 14px);
+  height: calc(var(--base-scale, 1) * 64px);
+  padding: 0 calc(var(--base-scale, 1) * 20px);
+  border-radius: calc(var(--base-scale, 1) * 16px);
+  font-size: calc(var(--base-scale, 1) * 28px);
 }
 
 .process-toast {
