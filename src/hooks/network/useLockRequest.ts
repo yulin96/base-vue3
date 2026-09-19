@@ -5,7 +5,7 @@ import type { AxiosRequestConfig } from 'axios'
 import { readonly } from 'vue'
 import { toast } from 'vue-sonner'
 
-export function useLockRequest(disableLock = false, delay = 500) {
+export function useLockRequest(disableLock = false, delay = 500, options: { silent?: boolean } = {}) {
   const [status, lock, unLock] = useLock()
 
   const makeRequest = async <T>(requestFn: () => Promise<T>): Promise<T> => {
@@ -18,7 +18,7 @@ export function useLockRequest(disableLock = false, delay = 500) {
     try {
       return await requestFn()
     } catch (error) {
-      if (!isCanceledRequest(error)) {
+      if (!options.silent && !isCanceledRequest(error)) {
         toast.warning('正在处理中...')
       }
       throw error

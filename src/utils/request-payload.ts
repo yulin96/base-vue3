@@ -9,10 +9,11 @@ type RequestData = Record<string, unknown>
 export type PostRequestConfig = InternalAxiosRequestConfig & {
   postDataType?: FormDataOrJson
   postEncryptAction?: string
+  postEncrypt?: boolean
 }
 
 export function normalizePostRequest(config: PostRequestConfig) {
-  return isPostEncryptEnabled ? encryptPostRequest(config) : buildPlainPostRequest(config)
+  return isPostEncryptEnabled && config.postEncrypt !== false ? encryptPostRequest(config) : buildPlainPostRequest(config)
 }
 
 function encryptPostRequest(config: PostRequestConfig) {

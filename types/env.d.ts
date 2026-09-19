@@ -7,6 +7,7 @@ declare global {
 
   interface ImportMetaEnv {
     readonly VITE_APP_API_URL: string
+    readonly VITE_APP_STATS_PROJECT_ID: string
     readonly VITE_APP_LOCALSTORAGE_NAME: string
     readonly VITE_APP_MAIN_COLOR: string
     readonly VITE_DROP_CONSOLE: string

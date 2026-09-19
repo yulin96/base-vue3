@@ -76,6 +76,35 @@ if (res.code != 200) return toast.warning(res?.message || res?.msg || '正在处
 
 ## 现有特殊用法
 
+互动埋点是独立例外：`src/api/stats.ts` 使用 `useLockRequest(true, 0, { silent: true })`，允许真实事件连续并发且不显示请求失败 toast。
+通过请求层的 `postEncrypt: false` 保持外部统计接口的普通 JSON 协议，其他业务请求的锁、提示和加密默认不变。
+`.env` 的 `VITE_APP_STATS_PROJECT_ID` 配置统计项目短 ID；留空、无效或明确离线时不发送请求，不自动重试或补传历史。
+API 仍返回 `[err, res]` 元组，业务失败通过 `res.code` 判断。
+
+互动页面统一使用下面的双通道入口，不再单独调用 API 或重复增加本地计数：
+
+```ts
+import { recordInteractionStat, getLocalInteractionStats, archiveAndClearLocalInteractionStats } from '@/utils/interactionStats'
+
+// 每轮开始时只调用一次；开始、完成、打印等事件由业务的真实完成节点触发。
+const { localError, remote } = recordInteractionStat('开始')
+// 此处立即继续互动，不需要 await remote。
+// localError 非空时由统计面板提示本机保存失败；不要因此阻塞互动。
+void remote.then(([err, res]) => {
+  if (err) return
+  if (res.code !== 200) return
+  // 云端已接收；不再次增加本地计数。
+})
+
+const local = getLocalInteractionStats() // daily、totals、archives，供本地面板使用
+// 只在用户点击“清除统计”时调用，并捕获存储失败，成功前不重置面板。
+// const archive = archiveAndClearLocalInteractionStats()
+```
+
+本机统计使用 `VITE_APP_LOCALSTORAGE_NAME` 隔离，按北京时间分日；云端项目 ID 可后续配置，不改变本地存储 key。
+本地归档清零不清空云端。离线记录不会自动补传，因为当前服务端不支持历史日期和幂等去重。
+当前工具不包含页面统计面板或业务事件绑定，各互动项目应按实际流程接入；多窗口需指定唯一计数窗口。
+
 `apiMenus` 使用 `[boolean, MenuData | null]`，`replaceToWithMenus` 包含菜单跳转及提示，`getOpenId` 返回布尔结果并更新用户状态。这些是已有特定业务封装，维护时保留其调用契约；新增普通业务接口默认使用上面的 `[err, res]` 模板，不照搬它们的返回形式或业务副作用。
 
 ## 完成前核对
