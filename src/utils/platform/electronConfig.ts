@@ -1,6 +1,27 @@
 import { electronApi } from '@/config/env'
 
-const listKeys = ['list1', 'list2', 'list3', 'list4', 'list5', 'list6', 'list7', 'list8', 'list9', 'list10'] as const
+const listKeys = [
+  'list1',
+  'list2',
+  'list3',
+  'list4',
+  'list5',
+  'list6',
+  'list7',
+  'list8',
+  'list9',
+  'list10',
+  'list11',
+  'list12',
+  'list13',
+  'list14',
+  'list15',
+  'list16',
+  'list17',
+  'list18',
+  'list19',
+  'list20',
+] as const
 
 export type ElectronListKey = (typeof listKeys)[number]
 export type ElectronListConfig = Pick<AppConfig, ElectronListKey>

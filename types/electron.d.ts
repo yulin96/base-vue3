@@ -138,6 +138,16 @@ type AppConfig = WindowConfig & {
   list8: string
   list9: string
   list10: string
+  list11: string
+  list12: string
+  list13: string
+  list14: string
+  list15: string
+  list16: string
+  list17: string
+  list18: string
+  list19: string
+  list20: string
 }
 
 type AppConfigPatch = Omit<Partial<AppConfig>, 'exitButton'> & {
