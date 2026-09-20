@@ -11,6 +11,10 @@ type PrintPagePreset =
   | 'Tabloid'
   | 'photo-5in'
   | 'photo-6in'
+  | 'dnp-5in'
+  | 'dnp-6in'
+  | 'dnp-7in'
+  | 'dnp-8in'
 
 type PrintPageSize =
   | PrintPagePreset
@@ -83,7 +87,13 @@ type PrintResult = {
   failureReason?: string
 }
 
+type PrintPrinter = {
+  name: string
+  displayName: string
+}
+
 type PrintAPI = {
+  getPrinters: () => Promise<PrintPrinter[]>
   print: (request: PrintRequest) => Promise<PrintResult>
   previewPrint: (request: PrintRequest) => Promise<void>
 }
@@ -116,6 +126,7 @@ type AppConfig = WindowConfig & {
   printCountdown: number
   autoUpdate: boolean
   autoLaunch: boolean
+  alwaysOnTop: boolean
   exitButton: ExitButtonConfig
   list1: string
   list2: string
@@ -189,7 +200,24 @@ type NetworkCheckResult = {
   error: string | null
 }
 
+type AppDiagnostics = {
+  version: string
+  electron: string
+  chromium: string
+  gpu: Record<string, string>
+  processes: { pid: number; type: string; memoryMB: number }[]
+  displays: {
+    id: number
+    primary: boolean
+    width: number
+    height: number
+    scaleFactor: number
+    refreshRate: number
+  }[]
+}
+
 type AppAPI = PrintAPI & {
+  getDiagnostics: () => Promise<AppDiagnostics>
   config: AppConfig
   defineConfig: (config: AppConfigPatch) => Promise<AppConfig>
   defineDisplayNames: (names: ConfigDisplayNames) => Promise<ConfigDisplayNames>
@@ -202,6 +230,7 @@ type AppAPI = PrintAPI & {
   getConfig: () => Promise<AppConfig>
   getConfigEditorOptions: () => Promise<ConfigEditorOptions>
   getConfigFile: () => Promise<{
+    version: string
     path: string
     content: string
     values: Record<string, unknown>
