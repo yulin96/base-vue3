@@ -73,7 +73,7 @@
     "@types/ali-oss": "^6.23.3",
     "@types/canvas-confetti": "^1.9.0",
     "@types/crypto-js": "^4.2.2",
-    "@types/node": "^24.13.5",
+    "@types/node": "^24.13.6",
     "@types/qrcode": "^1.5.6",
     "@vitejs/plugin-legacy": "^8.2.3",
     "@vitejs/plugin-vue": "^6.0.9",
@@ -84,7 +84,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cross-env": "^10.1.0",
-    "eslint": "^10.10.0",
+    "eslint": "^10.11.0",
     "eslint-plugin-vue": "^10.11.0",
     "npm-run-all2": "^9.0.3",
     "postcss-preset-env": "^11.5.3",
@@ -104,5 +104,5 @@
     "vite-plugin-upload": "^0.4.3",
     "vue-tsc": "^3.3.11"
   },
-  "packageManager": "pnpm@12.4.2"
+  "packageManager": "pnpm@12.5.1"
 }
