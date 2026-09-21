@@ -4,7 +4,7 @@ import { computed, onMounted, ref, useTemplateRef, watch } from 'vue'
 
 const { list } = defineProps<{ list: { key: string | number; value: string }[] }>()
 
-const selectValue = defineModel<string>()
+const selectValue = defineModel<string>({ required: true })
 
 const panelRef = useTemplateRef<HTMLElement>('panelRef')
 
