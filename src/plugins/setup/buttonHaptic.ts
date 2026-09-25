@@ -5,6 +5,7 @@ import { getIOSVersion, isIOS } from '@/utils/platform/ua'
 const HAPTIC_SELECTOR = '[tap]'
 const HAPTIC_DURATION = 10
 const IOS_SWITCH_MIN_VERSION = 18
+const IOS_SWITCH_ID = 'base-button-haptic-switch'
 let isButtonHapticSetup = false
 
 export function triggerButtonHaptic(pattern: number | number[] = HAPTIC_DURATION) {
@@ -17,13 +18,12 @@ const addIOSHapticSwitch = (button: HTMLElement) => {
 
   button.classList.add('btn-haptic-host')
 
-  const hapticSwitch = document.createElement('input')
-  hapticSwitch.className = 'btn-haptic-switch'
-  hapticSwitch.type = 'checkbox'
-  hapticSwitch.setAttribute('switch', '')
-  hapticSwitch.setAttribute('aria-label', button.getAttribute('aria-label') || button.textContent?.trim() || '按钮')
+  const hapticLabel = document.createElement('label')
+  hapticLabel.className = 'btn-haptic-trigger'
+  hapticLabel.htmlFor = IOS_SWITCH_ID
+  hapticLabel.setAttribute('aria-hidden', 'true')
 
-  button.appendChild(hapticSwitch)
+  button.appendChild(hapticLabel)
   button.dataset.hapticReady = 'true'
 }
 
@@ -42,6 +42,15 @@ export function setupButtonHaptic() {
   })
 
   if (!isIOS() || (getIOSVersion() ?? 0) < IOS_SWITCH_MIN_VERSION) return
+
+  const hapticSwitch = document.createElement('input')
+  hapticSwitch.id = IOS_SWITCH_ID
+  hapticSwitch.className = 'btn-haptic-switch'
+  hapticSwitch.type = 'checkbox'
+  hapticSwitch.tabIndex = -1
+  hapticSwitch.setAttribute('switch', '')
+  hapticSwitch.setAttribute('aria-hidden', 'true')
+  document.body.appendChild(hapticSwitch)
 
   setupIOSButtons(document)
   new MutationObserver((mutations) => {
