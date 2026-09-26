@@ -154,12 +154,6 @@ type AppConfig = WindowConfig & {
   list20: string
 }
 
-type AppConfigPatch = Omit<Partial<AppConfig>, 'exitButton'> & {
-  resourceUrl?: string
-  ossManifestUrl?: string
-  exitButton?: Partial<ExitButtonConfig>
-}
-
 type AppConfigFieldName = keyof AppConfig | 'resourceUrl' | 'ossManifestUrl'
 
 type ConfigDisplayNames = Partial<Record<AppConfigFieldName, string>>
@@ -242,7 +236,6 @@ type AppAPI = PrintAPI & {
   installClientUpdate: () => Promise<boolean>
   getDiagnostics: () => Promise<AppDiagnostics>
   config: AppConfig
-  defineConfig: (config: AppConfigPatch) => Promise<AppConfig>
   defineDisplayNames: (names: ConfigDisplayNames) => Promise<ConfigDisplayNames>
   hideConfig: (names: ConfigHideTarget) => Promise<ConfigEditorOptions>
   hideAllConfig: () => Promise<ConfigEditorOptions>
@@ -252,13 +245,6 @@ type AppAPI = PrintAPI & {
   getConfigDisplayNames: () => Promise<ConfigDisplayNames>
   getConfig: () => Promise<AppConfig>
   getConfigEditorOptions: () => Promise<ConfigEditorOptions>
-  getConfigFile: () => Promise<{
-    version: string
-    path: string
-    content: string
-    values: Record<string, unknown>
-  }>
-  saveConfigFile: (config: Record<string, unknown>) => Promise<{ path: string }>
   restart: () => Promise<void>
   checkOnline: () => Promise<NetworkCheckResult>
 } & ScreenAPI
