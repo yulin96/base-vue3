@@ -226,7 +226,14 @@ type AppDiagnostics = {
   }[]
 }
 
+type InteractionStatInitRequest = { projectId: string }
+type InteractionStatInitResult = { initialized: boolean; error: string | null }
+type InteractionStatRequest = { projectId: string; event: string }
+type InteractionStatResult = { saved: boolean; error: string | null }
+
 type AppAPI = PrintAPI & {
+  initInteractionStats: (request: InteractionStatInitRequest) => Promise<InteractionStatInitResult>
+  recordInteractionStat: (request: InteractionStatRequest) => Promise<InteractionStatResult>
   getDiagnostics: () => Promise<AppDiagnostics>
   config: AppConfig
   defineConfig: (config: AppConfigPatch) => Promise<AppConfig>

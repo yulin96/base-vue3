@@ -1,3 +1,5 @@
+import { electronApi } from '@/config/env'
+import { initInteractionStats } from '@/utils/interactionStats'
 import '@/plugins/setup/buttonEffect'
 import { setupButtonHaptic } from '@/plugins/setup/buttonHaptic'
 import '@/plugins/setup/clickThrottle'
@@ -13,4 +15,10 @@ const title = import.meta.env.VITE_APP_TITLE
 if (title) {
   document.title = title + '​'
   document.title = title
+}
+
+if (electronApi && import.meta.env.VITE_APP_STATS_PROJECT_ID?.trim()) {
+  void initInteractionStats().then(({ initialized, error }) => {
+    if (!initialized) console.error('统计初始化失败：', error)
+  })
 }
