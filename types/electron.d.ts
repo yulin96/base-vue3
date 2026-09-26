@@ -156,6 +156,30 @@ type AppConfig = WindowConfig & {
 
 type AppConfigFieldName = keyof AppConfig | 'resourceUrl' | 'ossManifestUrl'
 
+type ProjectFieldKey = Extract<keyof AppConfig, `list${number}`>
+type ProjectFieldType = 'text' | 'number' | 'switch' | 'select'
+type ProjectFieldDefinition = {
+  name?: string
+  type?: ProjectFieldType
+  default?: string
+  options?: string[]
+}
+type ProjectFieldDefinitions = Partial<Record<ProjectFieldKey, ProjectFieldDefinition>>
+type ProjectFieldSources = Partial<Record<ProjectFieldKey, 'default' | 'user'>>
+type ProjectFieldErrors = Partial<Record<ProjectFieldKey, string>>
+type ProjectFieldsResult = { config: AppConfig; errors: ProjectFieldErrors }
+type ProjectFieldEdits = {
+  revision: string
+  changed: ProjectFieldKey[]
+  reset: ProjectFieldKey[]
+}
+type ProjectFieldsView = {
+  definitions: ProjectFieldDefinitions
+  sources: ProjectFieldSources
+  errors: ProjectFieldErrors
+  revision: string
+}
+
 type ConfigDisplayNames = Partial<Record<AppConfigFieldName, string>>
 
 type ConfigGroupName =
@@ -236,6 +260,7 @@ type AppAPI = PrintAPI & {
   installClientUpdate: () => Promise<boolean>
   getDiagnostics: () => Promise<AppDiagnostics>
   config: AppConfig
+  defineProjectFields: (fields: ProjectFieldDefinitions) => Promise<ProjectFieldsResult>
   defineDisplayNames: (names: ConfigDisplayNames) => Promise<ConfigDisplayNames>
   hideConfig: (names: ConfigHideTarget) => Promise<ConfigEditorOptions>
   hideAllConfig: () => Promise<ConfigEditorOptions>

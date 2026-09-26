@@ -142,14 +142,16 @@ html {
 - 项目运行在配套 `base-electron` 客户端时，统一从 `src/config/env.ts` 导入 `electronApi`；不要在业务代码里自行封装 IPC，也不要直接假定 `window.api` 一定存在。
 - `electronApi` 在普通浏览器中可能是 `undefined`，且类型声明允许客户端只提供部分接口。调用时使用可选链，并对有业务影响的 Promise 失败进行明确处理。
 - 客户端接口类型位于 `types/electron.d.ts`。客户端升级或新增 preload 接口后，先对照 `base-electron/src/preload/index.ts` 和 `base-electron/src/shared/app-types.d.ts` 同步类型，再在业务代码中使用。
-- `list1`～`list20` 的名称优先使用 `src/utils/platform/electronConfig.ts` 的 `setupElectronConfig` 集中声明并读取实际配置，使用方式见 [Electron 配置说明](src/utils/platform/electronConfig.md)。在项目初始化入口调用，多窗口复用同一份声明；返回值不会自动同步配置面板后续修改。
+- `list1`～`list20` 的名称、类型和默认值优先使用 `src/utils/platform/electronConfig.ts` 的 `setupElectronConfig` 集中声明并读取应用默认值后的实际配置，使用方式见 [Electron 配置说明](src/utils/platform/electronConfig.md)。在项目初始化入口调用，多窗口复用同一份声明；返回值不会自动同步配置面板后续修改。
 - 业务明确允许配置失败后继续时，可使用 `await setupElectronConfig(...).catch(() => null)`，字段通过 `config?.list1 ?? ''` 读取；Vue `<script setup>` 顶层 `await` 必须先确认父级有 `<Suspense>` 边界。
-- H5 不写入客户端配置或托管默认值；`defineConfig` 已移除，`getConfigFile`、`saveConfigFile` 仅限客户端设置窗口。初始默认值由 Electron 提供，项目参数在 F12 设置；业务内部的缺省值不写回客户端。
-- 客户端按完整 `resourceUrl` 隔离 list1～list20，查询参数和 # 内容也参与识别。F12 保存成功后立即重启；更换地址的同次保存不应用旧 list 表单值。旧托管记录不再影响实际配置。
+- H5 仅通过 `defineProjectFields` 声明 list1～list20，不恢复 `defineConfig` 或任意配置写入。支持 text、number、switch、select，所有实际值和 default 为字符串，开关固定 '1'/'0'；不填 type 默认文本，不填 default 不更新值。
+- 来源显式记录 default/user；缺失字段跟随默认值，用户编辑（即使等于旧默认值）保留，F12 恢复默认保存后重新跟随。旧配置无来源记录时按用户值保留，包括空字符串。
+- 类型变化保留不兼容用户值，新声明保存后通过 `{ config, errors }` 返回问题；`setupElectronConfig` 遇到 errors 会抛错，业务应等待 F12 修正后继续。字段声明不重启，使用返回配置初始化；多窗口复用同一份声明，冲突报错。
+- 客户端按完整 `resourceUrl` 隔离 list1～list20 及其字段声明和来源，查询参数和 # 内容也参与识别。F12 保存成功后立即重启；更换地址的同次保存不应用旧 list 表单值。旧托管记录不再影响实际配置。
 - 配置面板定制优先复用客户端现有接口：
-  - `defineDisplayNames(names)` 修改配置字段在面板中的显示名称，常用于为 `list1` 到 `list20` 设置业务名称；它不修改配置值；
+  - `defineDisplayNames(names)` 可修改全部配置项（含 list1～list20）的显示名称；非空名称优先于字段声明中的名称，不修改类型、默认值和配置值；
   - `hideConfig(targets)` 可隐藏字段、`exitButton` 子字段或配置分组；`hideAllConfig()` 会关闭并禁用本次运行期间的整个配置面板；
-  - 上述显示名称和隐藏状态只保存在客户端主进程内存中，客户端重启后需由业务页面重新设置。`hideAllConfig()` 本次运行内没有恢复接口，调用前必须确认这是明确需求。
+  - `defineDisplayNames` 设置的显示名称和隐藏状态只保存在客户端主进程内存中，客户端重启后需由业务页面重新设置。`hideAllConfig()` 本次运行内没有恢复接口，调用前必须确认这是明确需求。
 - `electronApi.config` 是 preload 加载时的启动快照，不会自动刷新；需要最新配置时调用 `getConfig()`。默认值写入后，多数启动配置不会自动热更新，立即切换全屏应使用 `enterFullscreen()` 或 `exitFullscreen()`。
 - 打印使用 `previewPrint(request)` 或 `print(request)`；打印预览不能代替目标打印机、实际纸张、驱动方向和静默打印的实机验证。
 - 多窗口通信使用 `getScreenIndex()`、`sendToScreen()` 和 `onScreenMessage()`。组件卸载时必须调用监听函数返回的取消函数；`sendToScreen()` 返回 `true` 只表示消息已投递，不代表目标业务处理成功。
