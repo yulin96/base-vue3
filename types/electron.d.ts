@@ -1,3 +1,7 @@
+type ClientUpdateStatus =
+  | { status: 'available'; version: string }
+  | { status: 'unsupported' | 'offline' | 'current' | 'error' | 'updating' }
+
 type PrintPagePreset =
   | 'A0'
   | 'A1'
@@ -234,6 +238,8 @@ type InteractionStatResult = { saved: boolean; error: string | null }
 type AppAPI = PrintAPI & {
   initInteractionStats: (request: InteractionStatInitRequest) => Promise<InteractionStatInitResult>
   recordInteractionStat: (request: InteractionStatRequest) => Promise<InteractionStatResult>
+  checkClientUpdate: () => Promise<ClientUpdateStatus>
+  installClientUpdate: () => Promise<boolean>
   getDiagnostics: () => Promise<AppDiagnostics>
   config: AppConfig
   defineConfig: (config: AppConfigPatch) => Promise<AppConfig>
