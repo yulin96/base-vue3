@@ -76,7 +76,7 @@
     "@types/canvas-confetti": "^1.9.0",
     "@types/crypto-js": "^4.2.2",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^24.13.6",
+    "@types/node": "^24.19.0",
     "@types/qrcode": "^1.5.6",
     "@vitejs/plugin-legacy": "^8.2.3",
     "@vitejs/plugin-vue": "^6.0.9",
