@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": ["tests/**/*.ts", "types/**/*"],
+  "exclude": [],
+  "compilerOptions": {
+    "types": ["node", "jsdom", "pinia-plugin-persistedstate", "weixin-js-sdk"],
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo"
+  }
+}
