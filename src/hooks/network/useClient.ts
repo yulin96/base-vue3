@@ -114,6 +114,7 @@ export const useClient = <T = unknown>(
   pub?: string,
   sub?: string,
   options: UseClientOptions = {},
+  onMessage?: (message: T) => void,
 ) => {
   const {
     retryDelay = 1200,
@@ -241,6 +242,7 @@ export const useClient = <T = unknown>(
     })
 
     addEventHandler(ROP, 'publish_data', (message: unknown, topic: string) => {
+      if (destroyed) return
       // 只处理订阅的主题消息
       if ((subIsString ? topic === subScribes : subScribes.includes(topic)) && message) {
         try {
@@ -259,6 +261,7 @@ export const useClient = <T = unknown>(
           // 数据类型检查和设置
           if (parsedMessage !== null && parsedMessage !== undefined) {
             data.value = parsedMessage as T
+            onMessage?.(parsedMessage as T)
           }
         } catch (error) {
           console.error('消息处理失败:', error)

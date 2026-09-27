@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useEventListener, useToggle } from '@vueuse/core'
-import { onMounted, onUnmounted, useTemplateRef } from 'vue'
+import { onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
 
 const {
   playIcon = 'https://oss.eventnet.cn/H5/zz/public/svg/music/music_play.svg',
@@ -69,7 +69,7 @@ onMounted(() => {
   if (audioRef.value) registerMediaSession(audioRef.value)
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   // 清理微信 JSBridge 事件监听器
   if (weixinJSBridgeListener) {
     document.removeEventListener('WeixinJSBridgeReady', weixinJSBridgeListener)
