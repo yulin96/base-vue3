@@ -34,8 +34,26 @@ export const replaceTo = async (path: RouteLocationRaw, replaceCurrent = false) 
   setHistoryStack(stack)
 }
 
-export const goBack = async (fallbackPath?: RouteLocationRaw) => {
+/** 不传目标时返回上一页；指定目标成功后回退对应历史，目标不在栈中则清空历史。 */
+export const goBack = async (target?: RouteLocationRaw) => {
   const stack = getHistoryStack()
+
+  if (target !== undefined) {
+    const failure = await router.replace(target)
+    if (failure) return failure
+
+    const targetIndex = stack.lastIndexOf(router.currentRoute.value.fullPath)
+    setHistoryStack(targetIndex >= 0 ? stack.slice(0, targetIndex) : [])
+    return
+  }
+
+  const originalLength = stack.length
+  const currentPath = router.currentRoute.value.fullPath
+
+  while (stack.length > 0 && stack[stack.length - 1] === currentPath) {
+    stack.pop()
+  }
+  if (stack.length !== originalLength) setHistoryStack(stack)
 
   if (stack.length > 0) {
     const prevPath = stack[stack.length - 1]
@@ -45,10 +63,6 @@ export const goBack = async (fallbackPath?: RouteLocationRaw) => {
     stack.pop()
     setHistoryStack(stack)
     return
-  }
-
-  if (fallbackPath) {
-    return router.replace(fallbackPath)
   }
 
   return router.replace({ name: '/' })

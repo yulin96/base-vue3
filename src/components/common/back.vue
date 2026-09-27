@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import router from '@/router'
+import { goBack } from '@/router'
 import { useStore } from '@/stores/user'
 import { isPcMode } from '@/utils/platform/ua'
 import { useWindowSize } from '@vueuse/core'
 import { ref, watch } from 'vue'
 import type { RouteNamedMap } from 'vue-router/auto-routes'
 
-const { back = '/', size = 46 } = defineProps<{ back?: keyof RouteNamedMap; size?: number }>()
+const { back = undefined, size = 46 } = defineProps<{ back?: keyof RouteNamedMap; size?: number }>()
 
 const { user } = useStore()
 if (user.backXY.x == 0) user.backXY = { x: innerWidth - size - 12, y: innerHeight - 200 }
@@ -16,8 +16,8 @@ const pcMode = ref(isPcMode())
 const { width, height } = useWindowSize()
 watch(width, () => (pcMode.value = isPcMode()))
 
-const clickBack = async () => {
-  router.replace({ name: back })
+const clickBack = () => {
+  return goBack(back === undefined ? undefined : { name: back })
 }
 </script>
 
