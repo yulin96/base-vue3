@@ -1,8 +1,5 @@
-import './clickThrottle.css'
-
 const clickRecord = new WeakMap<HTMLElement, number>()
 const DEFAULT_DELAY = 600
-const LOCK_CLASS = 'base-click-throttle-locked'
 
 window.addEventListener(
   'click',
@@ -11,12 +8,6 @@ window.addEventListener(
 
     if (!target) return
     if (target.hasAttribute('ig')) return
-
-    if (getComputedStyle(target).pointerEvents === 'none') {
-      e.stopImmediatePropagation()
-      e.preventDefault()
-      return
-    }
 
     const delay = DEFAULT_DELAY
     const lastClickTime = clickRecord.get(target) || 0
@@ -27,10 +18,6 @@ window.addEventListener(
       e.preventDefault()
     } else {
       clickRecord.set(target, now)
-      target.classList.add(LOCK_CLASS)
-      window.setTimeout(() => {
-        target.classList.remove(LOCK_CLASS)
-      }, delay)
     }
   },
   true,

@@ -123,7 +123,8 @@ export const useClient = <T = unknown>(
     autoReconnectOnVisibility = true,
   } = options
 
-  const subIsString = typeof subScribes === 'string'
+  const normalizedSubScribes = Array.isArray(subScribes) ? subScribes.map((topic) => topic.trim()) : subScribes
+  const subIsString = typeof normalizedSubScribes === 'string'
   const data = shallowRef<T>()
   const connectionStatus = ref<ConnectionStatus>('disconnected')
   const retryCount = ref(0)
@@ -218,9 +219,9 @@ export const useClient = <T = unknown>(
       clearRetryTimer()
 
       if (subIsString) {
-        ROP.Subscribe(subScribes as string)
+        ROP.Subscribe(normalizedSubScribes as string)
       } else {
-        ;(subScribes as string[]).forEach((topic) => ROP.Subscribe(topic?.trim()))
+        ;(normalizedSubScribes as string[]).forEach((topic) => ROP.Subscribe(topic))
       }
     })
 
@@ -244,7 +245,7 @@ export const useClient = <T = unknown>(
     addEventHandler(ROP, 'publish_data', (message: unknown, topic: string) => {
       if (destroyed) return
       // 只处理订阅的主题消息
-      if ((subIsString ? topic === subScribes : subScribes.includes(topic)) && message) {
+      if ((subIsString ? topic === normalizedSubScribes : normalizedSubScribes.includes(topic)) && message) {
         try {
           // 尝试解析JSON，如果失败则直接使用原始消息
           let parsedMessage: unknown

@@ -25,6 +25,8 @@ const splitDependencies: Record<string, string> = {
   vueuse: '@vueuse/core',
 }
 
+const vantPackagePath = path.join('node_modules', 'vant')
+
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd())
   const isTestDeploy = mode === 'deploy-test'
@@ -212,7 +214,7 @@ export default defineConfig(({ command, mode }) => {
             },
           }),
           pxtorem({
-            rootValue: (root) => ((root?.file ?? '').indexOf('node_modules/vant') !== -1 ? 5 : 10),
+            rootValue: (root) => (path.normalize(root?.file ?? '').includes(vantPackagePath) ? 5 : 10),
             propList: ['*'],
             selectorBlackList: ['.ignore', 'pc'],
             exclude(filePath) {

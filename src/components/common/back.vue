@@ -1,15 +1,19 @@
 <script setup lang="ts">
+import { appStorageName } from '@/config/env'
 import { goBack } from '@/router'
 import { useStore } from '@/stores/user'
 import { isPcMode } from '@/utils/platform/ua'
-import { useWindowSize } from '@vueuse/core'
+import { useStorage, useWindowSize } from '@vueuse/core'
 import { ref, watch } from 'vue'
 import type { RouteNamedMap } from 'vue-router/auto-routes'
 
 const { back = undefined, size = 46 } = defineProps<{ back?: keyof RouteNamedMap; size?: number }>()
 
 const { user } = useStore()
-if (user.backXY.x == 0) user.backXY = { x: innerWidth - size - 12, y: innerHeight - 200 }
+const legacyBackXY = Reflect.get(user, 'backXY') as { x: number; y: number } | undefined
+const backXY = useStorage(`${appStorageName}_BACK_XY`, legacyBackXY ?? { x: 0, y: 0 })
+if (legacyBackXY) Reflect.deleteProperty(user, 'backXY')
+if (backXY.value.x === 0) backXY.value = { x: innerWidth - size - 12, y: innerHeight - 200 }
 
 const pcMode = ref(isPcMode())
 
@@ -24,7 +28,7 @@ const clickBack = () => {
 <template>
   <van-floating-bubble
     v-if="!pcMode"
-    v-model:offset="user.backXY"
+    v-model:offset="backXY"
     :style="{ '--van-floating-bubble-size': `${size}px` }"
     axis="xy"
     magnetic="x"

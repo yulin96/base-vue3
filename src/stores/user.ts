@@ -17,8 +17,6 @@ export const useStore = defineStore(
       info: {} as Partial<Record<string, unknown>>,
       wxInfo: {} as Partial<IWxInfo>,
 
-      backXY: { x: 0, y: 0 },
-
       other: {} as Partial<Record<string, unknown>>,
       ignore: {} as Partial<Record<string, unknown>>,
     })

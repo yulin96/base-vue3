@@ -6,10 +6,12 @@ let appWidth = 0
 let appHeight = 0
 
 function getAppHeight() {
-  if (!appHeight || appWidth !== innerWidth || innerHeight > appHeight) {
-    appWidth = innerWidth
+  const widthDifference = Math.abs(appWidth - innerWidth)
+
+  if (!appHeight || innerHeight > appHeight || (widthDifference <= 300 && innerHeight < appHeight)) {
     appHeight = innerHeight
   }
+  appWidth = innerWidth
 
   return appHeight
 }
