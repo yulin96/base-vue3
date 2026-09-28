@@ -29,6 +29,41 @@
 
 ## 快速开始
 
+使用配套脚手架 [create-base-vue](https://github.com/yulin96/create-base-vue) 创建项目：
+
+```bash
+npx create-base-vue
+```
+
+根据提示选择移动端 H5 或 PC 固定比例项目。创建成功后，按终端显示的 `cd` 命令进入项目目录，再执行 `pnpm install`、`pnpm dev`。
+
+## 脚手架同步维护
+
+`base-vue3` 是模板源码，`create-base-vue` 的入口为 `bin/create-base-vue.js`，通常位于同级目录。脚手架从 GitHub 的 `yulin96/base_vite_vue3` 拉取模板，再按文件路径和代码片段进行转换，并非直接复制本地基础库。因此本地模板改动需推送到模板远端后，才会被后续创建使用。
+
+修改以下位置时，核对脚手架对应逻辑，避免文件移动或写法变化后转换静默失效：
+
+| 基础库位置 | 脚手架对应函数 | 需要同步核对的内容 |
+| --- | --- | --- |
+| `package.json` | `updatePackageName` | 项目名称字段 |
+| `.env` | `updateEnv` | `VITE_APP_TITLE`、`VITE_APP_LOCALSTORAGE_NAME` 的字段名和赋值格式；新增项目专属配置是否也需要初始化 |
+| `src/main.ts`、`src/plugins/setup/setRem.ts` | `commentSetRemImport` | PC 模式禁用移动端初始化；入口迁移或导入方式变化时同步调整 |
+| `vite.config.ts` | `commentPxtorem` | PC 模式禁用 `pxtorem(...)`；调用名称及配置结构变化时核对匹配逻辑 |
+| `src/assets/styles/main.css`、`rem.m.css` | `updateMainCss` | PC 模式禁用 `./rem.m.css` 导入 |
+| `src/assets/styles/tailwind.css`、`size.css` | `updateTailwindCss` | PC 模式禁用 `./size.css`，并将整数尺寸的 `1px` 换算改为 `0.25rem` |
+| `src/assets/styles/theme.css` | `updateThemeCss` | `--spacing: 1px`、画布宽高变量和根字号计算块 |
+| `AGENTS.md`、`AGENTS-PC.md` | `replaceAgents`、`customizeProject` | PC 规范替换根规范；两种模式生成后都移除 `AGENTS-PC.md` |
+| `renovate.json`、`.github/workflows` | `cleanupTemplateFiles` | 模板专用配置和工作流的清理范围 |
+
+维护要求：
+
+- 新增需要按项目初始化、按 mobile/pc 切换或从生成项目移除的配置时，同步补充生成逻辑及本清单。
+- 只修改普通业务组件或工具函数时，不要求无关修改脚手架。
+- 转换逻辑变更后，最小验证应覆盖 mobile/pc 两种生成结果，确认该改的内容已修改、该保留的内容仍保留。语法检查不能证明模板转换有效。
+- 验证生成时使用本地模式，不创建远端仓库、不推送、不执行 build；明确区分本地模板验证与 GitHub 当前模板的验证。
+
+## 手动启动基础库
+
 ### 1) 环境准备
 
 - Node.js LTS（建议 20+）
