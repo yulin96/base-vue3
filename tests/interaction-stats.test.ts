@@ -22,6 +22,15 @@ function client() {
   return api
 }
 
+test('可选分组规范化后透传，非法分组不发送', async () => {
+  const api = client()
+  const { recordInteractionStat } = await import('@/utils/interactionStats')
+  await recordInteractionStat(' 进入 ', ' 屏幕1 ')
+  expect(api.recordInteractionStat).toHaveBeenCalledExactlyOnceWith({ projectId: '23456789', title: '屏幕1', event: '进入' })
+  for (const title of ['', ' ', '😀'.repeat(65)]) expect((await recordInteractionStat('进入', title)).saved).toBe(false)
+  expect(api.recordInteractionStat).toHaveBeenCalledTimes(1)
+})
+
 test('自动初始化一次并转发 projectId 和去除首尾空格的事件', async () => {
   const api = client()
   const { recordInteractionStat } = await import('@/utils/interactionStats')

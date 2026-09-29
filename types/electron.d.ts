@@ -250,7 +250,7 @@ type AppDiagnostics = {
 
 type InteractionStatInitRequest = { projectId: string }
 type InteractionStatInitResult = { initialized: boolean; error: string | null }
-type InteractionStatRequest = { projectId: string; event: string }
+type InteractionStatRequest = { projectId: string; title?: string; event: string }
 type InteractionStatResult = { saved: boolean; error: string | null }
 
 type AppAPI = PrintAPI & {

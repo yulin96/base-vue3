@@ -76,6 +76,8 @@ if (res.code != 200) return toast.warning(res?.message || res?.msg || '正在处
 
 ## 现有特殊用法
 
+统计分组 `title` 可选：普通项目继续 `recordInteractionStat('进入')`；仅多屏等必要场景或明确要求分组时使用 `recordInteractionStat('进入', '屏幕1')`。分组名称去除首尾空白后为 1–64 个 Unicode 字符，同名事件在不同分组独立统计；不要默认按页面或路由自动加分组。F8 展示分组、每日及每小时明细。客户端需同步升级以支持 title。
+
 互动统计由 Electron 统一保存和上报，基础库不直接请求统计接口、不再维护本地统计面板。
 `.env` 的 `VITE_APP_STATS_PROJECT_ID` 填写真实项目短 ID（由 `POST https://mm.event1.cn/stats/project` 创建项目获取）。`src/plugins/appInit.ts` 在 Electron 环境且配置 ID 后自动初始化项目，重启或刷新后也会重新声明；初始化不计数、不上报。
 
@@ -98,7 +100,7 @@ void recordInteractionStat('开始').then(({ saved, error }) => {
 
 事件封装返回 `Promise<{ saved: boolean; error: string | null }>`，只表示 Electron 本地保存结果。
 普通浏览器或旧客户端缺少接口、项目 ID 无效时明确返回失败，不启用浏览器兜底。
-本地按 projectId 隔离并按北京时间分日；F8 查看已初始化的项目，重启或刷新后初始化完成即可查看历史，不需要产生新事件；完整页面导航重新初始化，页面内路由切换保留关联。未初始化或当前没有统计数据时 F8 不弹窗，读取失败仍显示错误。
+本地按 projectId 隔离并按北京时间逐小时保存并汇总到天；F8 查看已初始化的项目，重启或刷新后初始化完成即可查看历史，不需要产生新事件；完整页面导航重新初始化，页面内路由切换保留关联。未初始化或当前没有统计数据时 F8 不弹窗，读取失败仍显示错误。
 “清除全部”归档并清空当前项目本地统计，不影响云端。旧 H5 数据不迁移、不删除。
 Electron 有网时尝试上报一次，失败不重试、离线不补传；本机数量与云端数量可能不同。
 
