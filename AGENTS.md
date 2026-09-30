@@ -108,6 +108,7 @@
 
 ## 构建与发布
 
+- 具体项目的页面、活动流程和业务逻辑默认不新增测试，除非用户明确要求；通用、可复用的组件、hooks、工具函数和基础库能力新增或修改时，需要编写或更新针对性单元测试。按代码职责判断，不仅按所在目录判断。
 - 单元测试使用 Vitest v5，放在 `tests/**/*.test.ts`；`pnpm test:unit` 用于监听，`pnpm test:unit:run` 用于单次执行。使用 jsdom 和 Vue Test Utils，不替代浏览器或实机验证。
 - 测试直接导入业务模块，使用 Vitest mock 隔离网络、Electron 和平台能力；不要通过字符串替换源码或 `node:vm` 执行测试。`vitest.config.ts` 独立配置，不加载上传和资源处理插件。
 

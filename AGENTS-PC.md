@@ -169,6 +169,7 @@ html {
 
 ## 构建与发布
 
+- 具体项目的页面、活动流程和业务逻辑默认不新增测试，除非用户明确要求；通用、可复用的组件、hooks、工具函数和基础库能力新增或修改时，需要编写或更新针对性单元测试。按代码职责判断，不仅按所在目录判断。
 - 修改完成后，如果不是纯文档或说明，且有终端权限，直接运行合适的 lint、类型检查或针对性测试；否则提示用户执行 `pnpm check`。
 - 普通构建优先使用 `pnpm build`，正式上传优先使用 `pnpm build:deploy`，测试上传优先使用 `pnpm build:deploy:test`。
 - 只有明确需要跳过检查时，才使用 `pnpm build:only`、`pnpm deploy:prod` 或 `pnpm deploy:test`。
