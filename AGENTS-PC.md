@@ -103,7 +103,7 @@ html {
 - 统计分组 `title` 可选：普通项目继续 `recordInteractionStat('进入')`；仅多屏等必要场景或明确要求分组时使用 `recordInteractionStat('进入', '屏幕1')`。分组名称去除首尾空白后为 1–64 个 Unicode 字符，同名事件在不同分组独立统计；不要默认按页面或路由自动加分组。F8 展示分组、每日及每小时明细。客户端需同步升级以支持 title。
 
 - 统计由配套 Electron 客户端负责，基础库只发送事件，不提供 P 键面板、localStorage 统计或直接线上上报。
-- `.env` 的 `VITE_APP_STATS_PROJECT_ID` 必须配置真实项目短 ID，通过 `POST https://mm.event1.cn/stats/project` 提交项目名称获取；模板不填测试 ID。`src/plugins/appInit.ts` 在 Electron 中配置 ID 后自动调用薄封装 `initInteractionStats()`，每次页面启动声明项目，不计数、不上报。返回 `Promise<{ initialized: boolean; error: string | null }>`；失败明确记录，普通浏览器不自动初始化。
+- `.env` 的 `VITE_APP_STATS_PROJECT_ID` 必须配置真实项目短 ID，由管理员在 `https://mm.event1.cn/admin/` 项目列表创建并复制；模板不填测试 ID。云端 `/stats/record` 仅接受已有 projectId，不按名称创建项目；创建、编辑和清空云端统计统一在后台操作，公开查询保留 `GET /stats/:projectId`。`src/plugins/appInit.ts` 在 Electron 中配置 ID 后自动调用薄封装 `initInteractionStats()`，每次页面启动声明项目，不计数、不上报。返回 `Promise<{ initialized: boolean; error: string | null }>`；失败明确记录，普通浏览器不自动初始化。
 - 业务统一调用 `recordInteractionStat(event, title?)`（`src/utils/interactionStats.ts`）；每次调用等待同一初始化 Promise 完成后携带 projectId，返回 `Promise<{ saved: boolean; error: string | null }>`，只表示本地保存结果，不等待网络完成。处理失败结果，但不要阻塞游玩或自动重试。
 - 每次调用计数一次，事件使用统一中文名称；业务负责真实行为节点及同一轮防重。没有用户去重时按人次统计，打印预览不能当作打印成功。多窗口可并发计数，但同一行为不可重复发送。
 - Electron 本地仅按 projectId 隔离，与资源地址和 `VITE_APP_LOCALSTORAGE_NAME` 无关；同 ID 共用统计。按北京时间逐小时保存并汇总到天，保留今日、累计及日期倒序明细。

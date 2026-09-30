@@ -79,7 +79,7 @@ if (res.code != 200) return toast.warning(res?.message || res?.msg || '正在处
 统计分组 `title` 可选：普通项目继续 `recordInteractionStat('进入')`；仅多屏等必要场景或明确要求分组时使用 `recordInteractionStat('进入', '屏幕1')`。分组名称去除首尾空白后为 1–64 个 Unicode 字符，同名事件在不同分组独立统计；不要默认按页面或路由自动加分组。F8 展示分组、每日及每小时明细。客户端需同步升级以支持 title。
 
 互动统计由 Electron 统一保存和上报，基础库不直接请求统计接口、不再维护本地统计面板。
-`.env` 的 `VITE_APP_STATS_PROJECT_ID` 填写真实项目短 ID（由 `POST https://mm.event1.cn/stats/project` 创建项目获取）。`src/plugins/appInit.ts` 在 Electron 环境且配置 ID 后自动初始化项目，重启或刷新后也会重新声明；初始化不计数、不上报。
+`.env` 的 `VITE_APP_STATS_PROJECT_ID` 填写真实项目短 ID，由管理员在 `https://mm.event1.cn/admin/` 项目列表创建并复制。云端 `/stats/record` 仅接受已有 projectId，不按名称创建项目；创建、编辑和清空云端统计统一在后台操作，公开查询保留 `GET /stats/:projectId`。`src/plugins/appInit.ts` 在 Electron 环境且配置 ID 后自动初始化项目，重启或刷新后也会重新声明；初始化不计数、不上报。
 
 ```ts
 import { initInteractionStats, recordInteractionStat } from '@/utils/interactionStats'
