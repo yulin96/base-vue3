@@ -76,19 +76,14 @@ if (res.code != 200) return toast.warning(res?.message || res?.msg || '正在处
 
 ## 现有特殊用法
 
-统计分组 `title` 可选：普通项目继续 `recordInteractionStat('进入')`；仅多屏等必要场景或明确要求分组时使用 `recordInteractionStat('进入', '屏幕1')`。分组名称去除首尾空白后为 1–64 个 Unicode 字符，同名事件在不同分组独立统计；不要默认按页面或路由自动加分组。F8 展示分组、每日及每小时明细。客户端需同步升级以支持 title。
+统计分组 `title` 可选：普通项目使用 `recordInteractionStat('进入')`；仅多屏等必要场景或明确要求分组时使用 `recordInteractionStat('进入', '屏幕1')`。分组名称去除首尾空白后为 1–64 个 Unicode 字符，同名事件在不同分组独立统计；不要默认按页面或路由自动加分组。F8 展示分组、每日及每小时明细。
 
-互动统计由 Electron 统一保存和上报，基础库不直接请求统计接口、不再维护本地统计面板。
-`.env` 的 `VITE_APP_STATS_PROJECT_ID` 填写真实项目短 ID，由管理员在 `https://mm.event1.cn/admin/` 项目列表创建并复制。云端 `/stats/record` 仅接受已有 projectId，不按名称创建项目；创建、编辑和清空云端统计统一在后台操作，公开查询保留 `GET /stats/:projectId`。`src/plugins/appInit.ts` 在 Electron 环境且配置 ID 后自动初始化项目，重启或刷新后也会重新声明；初始化不计数、不上报。
+互动统计由 Electron 统一保存和上报，基础库发送事件和可选分组，项目归属由客户端配置决定。
 
 ```ts
-import { initInteractionStats, recordInteractionStat } from '@/utils/interactionStats'
+import { recordInteractionStat } from '@/utils/interactionStats'
 
-// 默认 appInit 已自动调用；自定义启动入口需主动调用，重复调用复用同一 Promise。
-const { initialized, error: initError } = await initInteractionStats()
-// initialized 为 false 时处理 initError；初始化失败不自动重试。
-
-// 在真实行为节点调用；每轮对应事件只发一次，自动等待初始化，不等待网络。
+// 在真实行为节点调用；每轮对应事件只发一次，不等待网络。
 void recordInteractionStat('开始').then(({ saved, error }) => {
   if (!saved) {
     // 将 error 交给项目维护状态处理，不自动重试、不阻塞互动。
@@ -96,13 +91,15 @@ void recordInteractionStat('开始').then(({ saved, error }) => {
 })
 ```
 
-直接使用客户端 API 时，先 `electronApi.initInteractionStats({ projectId })`，检查 `initialized`，再调用 `recordInteractionStat({ projectId, event })`。未初始化或项目 ID 不匹配时拒绝记录。
+直接使用客户端 API 时调用 `electronApi.recordInteractionStat({ event: '开始' })`，必要时添加 `title` 分组。返回 `Promise<{ saved: boolean; error: string | null }>`，只表示 Electron 本地保存结果。
 
-事件封装返回 `Promise<{ saved: boolean; error: string | null }>`，只表示 Electron 本地保存结果。
-普通浏览器或旧客户端缺少接口、项目 ID 无效时明确返回失败，不启用浏览器兜底。
-本地按 projectId 隔离并按北京时间逐小时保存并汇总到天；F8 查看已初始化的项目，重启或刷新后初始化完成即可查看历史，不需要产生新事件；完整页面导航重新初始化，页面内路由切换保留关联。未初始化或当前没有统计数据时 F8 不弹窗，读取失败仍显示错误。
-“清除全部”归档并清空当前项目本地统计，不影响云端。旧 H5 数据不迁移、不删除。
-Electron 有网时尝试上报一次，失败不重试、离线不补传；本机数量与云端数量可能不同。
+项目 ID 在 Electron F12 配置，选择项目时自动填入；手动修改地址会清空旧 ID。有效 8 位 ID 按 ID 隔离并联网即时上报；格式正确但云端不存在时保留本地数据，上报失败，不转匿名。云端仅接受后台已有 ID，不按名称创建项目。
+无 ID 或格式错误时使用匿名统计，按去除首尾空白的完整资源地址隔离，多屏共享归属，仅保存在本机。无配置地址时按实际开发或本地入口隔离。匿名与正式历史分开，不合并或补传。
+
+本地按北京时间逐小时保存并汇总到天；F8 直接查看当前客户端配置对应的正式或匿名项目，重启或刷新后无需新事件。当前统计与归档均为空时不弹窗，读取失败显示错误。
+“清除全部”归档并清空当前项目本地统计，不影响云端；匿名也支持归档和 Excel 导出。
+正式 ID 有网时尝试上报一次，失败不重试、离线不补传；匿名不联网。本机数量与云端数量可能不同。
+普通浏览器或缺少记录接口的客户端返回明确失败，不启用浏览器兜底。
 
 `apiMenus` 使用 `[boolean, MenuData | null]`，`replaceToWithMenus` 包含菜单跳转及提示，`getOpenId` 返回布尔结果并更新用户状态。这些是已有特定业务封装，维护时保留其调用契约；新增普通业务接口默认使用上面的 `[err, res]` 模板，不照搬它们的返回形式或业务副作用。
 

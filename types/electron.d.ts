@@ -122,6 +122,7 @@ type WindowConfig = {
 }
 
 type AppConfig = WindowConfig & {
+  projectId: string
   test: boolean
   hideCursor: boolean
   disableZoom: boolean
@@ -248,13 +249,10 @@ type AppDiagnostics = {
   }[]
 }
 
-type InteractionStatInitRequest = { projectId: string }
-type InteractionStatInitResult = { initialized: boolean; error: string | null }
-type InteractionStatRequest = { projectId: string; title?: string; event: string }
+type InteractionStatRequest = { title?: string; event: string }
 type InteractionStatResult = { saved: boolean; error: string | null }
 
 type AppAPI = PrintAPI & {
-  initInteractionStats: (request: InteractionStatInitRequest) => Promise<InteractionStatInitResult>
   recordInteractionStat: (request: InteractionStatRequest) => Promise<InteractionStatResult>
   checkClientUpdate: () => Promise<ClientUpdateStatus>
   installClientUpdate: () => Promise<boolean>

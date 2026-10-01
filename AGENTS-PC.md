@@ -100,18 +100,18 @@ html {
 
 ## 大屏互动统计
 
-- 统计分组 `title` 可选：普通项目继续 `recordInteractionStat('进入')`；仅多屏等必要场景或明确要求分组时使用 `recordInteractionStat('进入', '屏幕1')`。分组名称去除首尾空白后为 1–64 个 Unicode 字符，同名事件在不同分组独立统计；不要默认按页面或路由自动加分组。F8 展示分组、每日及每小时明细。客户端需同步升级以支持 title。
-
-- 统计由配套 Electron 客户端负责，基础库只发送事件，不提供 P 键面板、localStorage 统计或直接线上上报。
-- `.env` 的 `VITE_APP_STATS_PROJECT_ID` 必须配置真实项目短 ID，由管理员在 `https://mm.event1.cn/admin/` 项目列表创建并复制；模板不填测试 ID。云端 `/stats/record` 仅接受已有 projectId，不按名称创建项目；创建、编辑和清空云端统计统一在后台操作，公开查询保留 `GET /stats/:projectId`。`src/plugins/appInit.ts` 在 Electron 中配置 ID 后自动调用薄封装 `initInteractionStats()`，每次页面启动声明项目，不计数、不上报。返回 `Promise<{ initialized: boolean; error: string | null }>`；失败明确记录，普通浏览器不自动初始化。
-- 业务统一调用 `recordInteractionStat(event, title?)`（`src/utils/interactionStats.ts`）；每次调用等待同一初始化 Promise 完成后携带 projectId，返回 `Promise<{ saved: boolean; error: string | null }>`，只表示本地保存结果，不等待网络完成。处理失败结果，但不要阻塞游玩或自动重试。
-- 每次调用计数一次，事件使用统一中文名称；业务负责真实行为节点及同一轮防重。没有用户去重时按人次统计，打印预览不能当作打印成功。多窗口可并发计数，但同一行为不可重复发送。
-- Electron 本地仅按 projectId 隔离，与资源地址和 `VITE_APP_LOCALSTORAGE_NAME` 无关；同 ID 共用统计。按北京时间逐小时保存并汇总到天，保留今日、累计及日期倒序明细。
-- F8 打开或隐藏当前业务页面初始化项目的本机统计。重启、刷新或完整页面导航后重新初始化即可查看历史，不需要新事件；页面内路由切换保留关联。未初始化或当前没有统计数据时，F8 不弹窗；读取失败仍显示错误，不提供项目选择。
-- “清除全部”只归档并清空当前项目本地统计，归档失败保留原数据，不调用云端删除接口。
-- Electron 联网时独立尝试上报一次，离线、超时及失败不回滚本地、不重试、不补传。云端多设备合并，数量不保证与本机一致。
-- 普通浏览器、缺少接口的旧客户端及无效 projectId 返回明确失败，不降级到浏览器存储或直接请求。旧 H5 localStorage 数据不迁移也不删除。
-- 直接使用客户端接口时，先调用 `electronApi.initInteractionStats({ projectId })`，再发送同 ID 事件；未初始化或 ID 不匹配会失败。接口类型变动同步 `types/electron.d.ts`；详细接入方式见 `src/api/README.md`。
+- Electron 客户端负责统计保存和上报，基础库只发送事件。
+- 业务调用 `recordInteractionStat(event, title?)`（`src/utils/interactionStats.ts`），直接透传事件和可选分组，项目归属由客户端配置决定。返回 `Promise<{ saved: boolean; error: string | null }>`，只表示本地保存结果，不等待网络。处理失败结果，不阻塞互动或自动重试。
+- 直接调用客户端时使用 `electronApi.recordInteractionStat({ event, title? })`。接口类型变动同步 `types/electron.d.ts`。
+- 项目 ID 由 Electron F12 配置，选择项目自动填入；手动修改地址会清空旧 ID。有效 8 位 ID 按 ID 隔离并联网即时上报，同 ID 可跨资源地址累计。
+- 无 ID 或格式错误时，仅在 Electron 本地按完整资源地址隔离匿名统计；地址只去除首尾空白，保留查询参数和片段，多屏共享同一项目。无配置地址时使用实际开发或本地入口。匿名与正式历史分开，不自动合并或补传。
+- 格式正确但云端不存在的 ID 保留本地统计，上报失败，不转匿名。云端 `/stats/record` 仅接受已有 projectId，不按名称创建项目；项目管理及云端清空在后台操作。
+- title 仅在多屏等必要场景或明确要求分组时传入，例如 `recordInteractionStat('进入', '屏幕1')`；普通项目省略。名称去除首尾空白后为 1–64 个 Unicode 字符，同名事件在不同分组独立统计，不默认按页面或路由加分组。
+- 每次调用计数一次，事件使用统一中文名称；业务负责真实行为节点及同一轮防重。打印预览不能当作打印成功，多窗口同一行为不可重复发送。
+- 按北京时间逐小时保存并汇总到天。F8 直接查看当前配置对应的正式或匿名统计；重启、刷新后无需新事件，当前统计与归档均为空不弹窗，读取失败显示错误。
+- “清除全部”只归档并清空当前项目本地统计，失败保留原数据，不调用云端删除接口；支持只读归档查看和 Excel 导出。
+- 正式 ID 联网独立尝试上报一次；离线、超时及失败不回滚本地、不重试、不补传。匿名不联网。云端多设备合并，数量不保证与本机一致。
+- 普通浏览器或缺少记录接口的客户端返回明确失败，不降级到浏览器存储或直接请求。
 
 ## 请求与业务代码
 
