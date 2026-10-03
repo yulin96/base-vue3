@@ -142,7 +142,7 @@ export default class FrameAnimation {
           this.currentIndex++
         } else {
           this.currentIndex = from
-          if (++this.cycles >= (this.option.loopNum ?? Infinity)) {
+          if (++this.cycles >= (this.option.loopNum ?? Infinity) || this.option.loop === false) {
             this.playing = false
             this.animationId = null
             return

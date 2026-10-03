@@ -123,6 +123,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   let loadingPromise: Promise<Array<HTMLImageElement | null>> | null = null
   let resizeObserver: ResizeObserver | null = null
   let playbackSessionId = 0
+  let playbackRequestId = 0
   let loadingSessionId = 0
   let lifecycleId = 0
   let destroyed = false
@@ -165,6 +166,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   }
 
   const finishPlayback = (runCallback = false) => {
+    playbackRequestId++
     state.isPlaying = false
     targetFrame = null
     cancelAnimationLoop()
@@ -382,6 +384,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   const preloadImagesInternal = async (suppressAutoplay: boolean): Promise<Array<HTMLImageElement | null>> => {
     const sessionId = ++loadingSessionId
+    const currentPlaybackRequestId = playbackRequestId
     loadedCount = 0
 
     try {
@@ -404,15 +407,20 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
       if (destroyed || sessionId !== loadingSessionId) return results
 
+      if (!results.some((img) => img !== null)) {
+        throw new Error('Failed to load any frame')
+      }
+
       state.isLoaded = true
       images = results
 
-      if (autoplay && !state.isPlaying && !suppressAutoplay) {
+      if (autoplay && !state.isPlaying && !suppressAutoplay && currentPlaybackRequestId === playbackRequestId) {
         play(validStartFrame)
       }
 
       return results
     } catch (error) {
+      if (sessionId === loadingSessionId) loadingPromise = null
       console.error('Failed to preload all images:', error)
       throw error
     }
@@ -537,6 +545,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   // 播放控制方法
   const play = async (fromFrame?: number, onComplete?: () => void): Promise<void> => {
     const currentLifecycleId = lifecycleId
+    const currentPlaybackRequestId = ++playbackRequestId
 
     try {
       await ensureLoadedForPlayback()
@@ -545,7 +554,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       return
     }
 
-    if (destroyed || currentLifecycleId !== lifecycleId) return
+    if (destroyed || currentLifecycleId !== lifecycleId || currentPlaybackRequestId !== playbackRequestId) return
 
     if (typeof fromFrame === 'number') {
       state.currentFrame = Math.max(0, Math.min(fromFrame, frames.length - 1))
@@ -592,7 +601,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   const goToAndPlay = (frameIndex: number, onComplete?: () => void): Promise<void> => {
     goToFrame(frameIndex)
-    return play(undefined, onComplete)
+    return play(frameIndex, onComplete)
   }
 
   const goToAndStop = (frameIndex: number) => {
@@ -602,6 +611,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   const playToFrame = async (endFrame: number, onComplete?: () => void): Promise<void> => {
     const currentLifecycleId = lifecycleId
+    const currentPlaybackRequestId = ++playbackRequestId
 
     try {
       await ensureLoadedForPlayback()
@@ -610,7 +620,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       return
     }
 
-    if (destroyed || currentLifecycleId !== lifecycleId) return
+    if (destroyed || currentLifecycleId !== lifecycleId || currentPlaybackRequestId !== playbackRequestId) return
 
     const validEndFrame = Math.max(0, Math.min(endFrame, frames.length - 1))
 
@@ -643,12 +653,15 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   }
 
   const playFromToFrame = async (startFrame: number, endFrame: number, onComplete?: () => void): Promise<void> => {
+    const currentLifecycleId = lifecycleId
+    const currentPlaybackRequestId = ++playbackRequestId
     try {
       await ensureLoadedForPlayback()
     } catch (error) {
       console.error('Failed to preload all images:', error)
       return
     }
+    if (destroyed || currentLifecycleId !== lifecycleId || currentPlaybackRequestId !== playbackRequestId) return
     goToFrame(startFrame)
     return playToFrame(endFrame, onComplete)
   }
@@ -683,6 +696,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
   // 初始化
   const init = async () => {
+    const currentPlaybackRequestId = playbackRequestId
     try {
       destroyed = false
 
@@ -707,7 +721,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
         drawFrame(validCoverFrame)
       }
 
-      if (state.isLoaded && autoplay) {
+      if (state.isLoaded && autoplay && currentPlaybackRequestId === playbackRequestId) {
         play(validStartFrame)
       }
     } catch (error) {

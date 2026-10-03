@@ -1,6 +1,6 @@
 import { useDocumentVisibility } from '@vueuse/core'
 import { nanoid } from 'nanoid'
-import { onBeforeUnmount, readonly, ref, shallowRef, watch } from 'vue'
+import { effectScope, onBeforeUnmount, readonly, ref, shallowRef, watch, type EffectScope } from 'vue'
 
 type ROPEventCallback<TArgs extends unknown[] = unknown[]> = (...args: TArgs) => void
 
@@ -134,7 +134,7 @@ export const useClient = <T = unknown>(
 
   // 定时器引用，用于清理
   let retryTimer: number | undefined
-  let visibilityWatcher: (() => void) | null = null
+  let visibilityWatcher: EffectScope | null = null
 
   // 生成唯一会话ID
   const generateSessionId = () => `suid_${nanoid()}`
@@ -152,8 +152,12 @@ export const useClient = <T = unknown>(
     event: string,
     callback: ROPEventCallback<TArgs>,
   ) => {
-    ROP.On(event, callback)
-    removeEventCallbacks.push(() => ROP.Off?.(event, callback))
+    const handler: ROPEventCallback<TArgs> = (...args) => {
+      if (destroyed) return
+      callback(...args)
+    }
+    ROP.On(event, handler)
+    removeEventCallbacks.push(() => ROP.Off?.(event, handler))
   }
 
   const removeEventHandlers = () => {
@@ -243,7 +247,6 @@ export const useClient = <T = unknown>(
     })
 
     addEventHandler(ROP, 'publish_data', (message: unknown, topic: string) => {
-      if (destroyed) return
       // 只处理订阅的主题消息
       if ((subIsString ? topic === normalizedSubScribes : normalizedSubScribes.includes(topic)) && message) {
         try {
@@ -279,11 +282,14 @@ export const useClient = <T = unknown>(
 
   const setupVisibilityWatcher = () => {
     if (autoReconnectOnVisibility && !visibilityWatcher) {
-      const visibility = useDocumentVisibility()
-      visibilityWatcher = watch(visibility, (newVisibility) => {
-        if (newVisibility === 'visible' && connectionStatus.value !== 'connected') {
-          reconnect()
-        }
+      visibilityWatcher = effectScope()
+      visibilityWatcher.run(() => {
+        const visibility = useDocumentVisibility()
+        watch(visibility, (newVisibility) => {
+          if (newVisibility === 'visible' && connectionStatus.value !== 'connected') {
+            reconnect()
+          }
+        })
       })
     }
   }
@@ -317,7 +323,7 @@ export const useClient = <T = unknown>(
   const cleanup = () => {
     clearRetryTimer()
     if (visibilityWatcher) {
-      visibilityWatcher()
+      visibilityWatcher.stop()
       visibilityWatcher = null
     }
     removeEventHandlers()

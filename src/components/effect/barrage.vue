@@ -7,6 +7,7 @@ import {
   onBeforeUnmount,
   render,
   toRaw,
+  watch,
   type ComponentPublicInstance,
   type CSSProperties,
 } from 'vue'
@@ -28,6 +29,7 @@ const activeTasks = new Set<gsap.core.Tween>()
 const cardMountNodes = new Set<HTMLDivElement>()
 const cardBoxMap = new Map<number, HTMLElement>()
 const cardContentMap = new Map<number, Set<HTMLElement>>()
+const idleRows = new Map<number, number>()
 
 const setCardBox = (id: number, el: Element | ComponentPublicInstance | null) => {
   if (el instanceof HTMLElement) cardBoxMap.set(id, el)
@@ -53,21 +55,19 @@ const vw1 = innerWidth / 100
 
 const createCard = async (id: number, gap: number) => {
   if (disposed) return
+  idleRows.delete(id)
   const el = cardBoxMap.get(id)
   if (!el) return console.error('card box is null')
 
-  // 等待列表有数据，最多重试 10 次
-  let retries = 0
-  while (!conveyorList.length && retries++ < 10) {
+  if (!conveyorList.length) {
     conveyorList = [...toRaw(barrageList.value)]
-    if (!conveyorList.length) {
-      await sleep(1200)
-      if (disposed) return
-    }
   }
 
   const card = conveyorList.pop()
-  if (!card) return
+  if (!card) {
+    idleRows.set(id, gap)
+    return
+  }
 
   const div = document.createElement('div')
   div.classList.add(`card-item-${card.id}`)
@@ -136,6 +136,16 @@ const createCard = async (id: number, gap: number) => {
   activeTasks.add(moveTween)
 }
 
+watch(
+  () => barrageList.value.length,
+  () => {
+    if (!started || disposed || !barrageList.value.length) return
+    idleRows.forEach((gap, id) => {
+      createCard(id, gap)
+    })
+  },
+)
+
 const start = () => {
   if (started || disposed) return
   started = true
@@ -156,6 +166,7 @@ const stop = () => {
   cardMountNodes.clear()
   cardBoxMap.clear()
   cardContentMap.clear()
+  idleRows.clear()
 }
 
 onBeforeUnmount(() => {

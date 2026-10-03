@@ -46,6 +46,10 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
         startMove.value.once = false
       }
 
+      const distance = startMove.value.pageY - pageY
+      if (distance > 0 && !arrivedState.bottom) return
+      if (distance < 0 && !arrivedState.top && ele.value.scrollTop >= 0) return
+
       if (Math.abs(startMove.value.pageY - pageY) > slideNumber) {
         if (lock) return
         lock = true
