@@ -1,4 +1,5 @@
 import { useDocumentVisibility } from '@vueuse/core'
+import { services } from '@/config/services'
 import { nanoid } from 'nanoid'
 import { effectScope, onBeforeUnmount, readonly, ref, shallowRef, watch, type EffectScope } from 'vue'
 
@@ -119,7 +120,7 @@ export const useClient = <T = unknown>(
   const {
     retryDelay = 1200,
     maxRetries = 100,
-    scriptUrl = 'https://cdn.aodianyun.com/dms/rop_client.js',
+    scriptUrl = services.mqtt.scriptUrl,
     autoReconnectOnVisibility = true,
   } = options
 
@@ -198,12 +199,7 @@ export const useClient = <T = unknown>(
       connectionStatus.value = 'connecting'
 
       // 进入频道
-      window.ROP.Enter(
-        pub?.trim() || 'pub_357ce949f839716f0487fa733b49d3f8',
-        sub?.trim() || 'sub_3ffbe7827a221c20387302a165211dc3',
-        generateSessionId(),
-        true,
-      )
+      window.ROP.Enter(pub?.trim() || services.mqtt.pub, sub?.trim() || services.mqtt.sub, generateSessionId(), true)
     } catch (error) {
       console.error('连接失败:', error)
       scheduleRetry()

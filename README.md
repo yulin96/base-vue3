@@ -43,17 +43,18 @@ npx create-base-vue
 
 修改以下位置时，核对脚手架对应逻辑，避免文件移动或写法变化后转换静默失效：
 
-| 基础库位置 | 脚手架对应函数 | 需要同步核对的内容 |
-| --- | --- | --- |
-| `package.json` | `updatePackageName` | 项目名称字段 |
-| `.env` | `updateEnv` | `VITE_APP_TITLE`、`VITE_APP_LOCALSTORAGE_NAME` 的字段名和赋值格式；新增项目专属配置是否也需要初始化 |
-| `src/main.ts`、`src/plugins/setup/setRem.ts` | `commentSetRemImport` | PC 模式禁用移动端初始化；入口迁移或导入方式变化时同步调整 |
-| `vite.config.ts` | `commentPxtorem` | PC 模式禁用 `pxtorem(...)`；调用名称及配置结构变化时核对匹配逻辑 |
-| `src/assets/styles/main.css`、`rem.m.css` | `updateMainCss` | PC 模式禁用 `./rem.m.css` 导入 |
-| `src/assets/styles/tailwind.css`、`size.css` | `updateTailwindCss` | PC 模式禁用 `./size.css`，并将整数尺寸的 `1px` 换算改为 `0.25rem` |
-| `src/assets/styles/theme.css` | `updateThemeCss` | `--spacing: 1px`、画布宽高变量和根字号计算块 |
-| `AGENTS.md`、`AGENTS-PC.md` | `replaceAgents`、`customizeProject` | PC 规范替换根规范；两种模式生成后都移除 `AGENTS-PC.md` |
-| `renovate.json`、`.github/workflows` | `cleanupTemplateFiles` | 模板专用配置和工作流的清理范围 |
+| 基础库位置                                   | 脚手架对应函数                      | 需要同步核对的内容                                                                                                                                     |
+| -------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `package.json`                               | `updatePackageName`                 | 项目名称字段                                                                                                                                           |
+| `.env`、`.env.development`                   | `updateEnv`                         | `VITE_APP_TITLE`、`VITE_APP_LOCALSTORAGE_NAME` 的字段名和赋值格式；保留各环境文件，核对 `VITE_APP_API_URL`、`VITE_APP_MQTT_API_URL` 是否需要按项目填写 |
+| `src/config/services.ts`                     | 模板复制与项目初始化                | 保留集中服务配置；需要独立微信平台、上传服务或 MQTT 账号的项目在此填写默认参数                                                                         |
+| `src/main.ts`、`src/plugins/setup/setRem.ts` | `commentSetRemImport`               | PC 模式禁用移动端初始化；入口迁移或导入方式变化时同步调整                                                                                              |
+| `vite.config.ts`                             | `commentPxtorem`                    | PC 模式禁用 `pxtorem(...)`；调用名称及配置结构变化时核对匹配逻辑                                                                                       |
+| `src/assets/styles/main.css`、`rem.m.css`    | `updateMainCss`                     | PC 模式禁用 `./rem.m.css` 导入                                                                                                                         |
+| `src/assets/styles/tailwind.css`、`size.css` | `updateTailwindCss`                 | PC 模式禁用 `./size.css`，并将整数尺寸的 `1px` 换算改为 `0.25rem`                                                                                      |
+| `src/assets/styles/theme.css`                | `updateThemeCss`                    | `--spacing: 1px`、画布宽高变量和根字号计算块                                                                                                           |
+| `AGENTS.md`、`AGENTS-PC.md`                  | `replaceAgents`、`customizeProject` | PC 规范替换根规范；两种模式生成后都移除 `AGENTS-PC.md`                                                                                                 |
+| `renovate.json`、`.github/workflows`         | `cleanupTemplateFiles`              | 模板专用配置和工作流的清理范围                                                                                                                         |
 
 维护要求：
 
@@ -105,25 +106,44 @@ pnpm dev
 
 项目基于 `VITE_*` 变量运行，默认示例见根目录 `.env`。
 
-| 变量名                       | 说明                                          |
-| ---------------------------- | --------------------------------------------- |
-| `VITE_APP_API_URL`           | 接口基础地址                                  |
-| `VITE_APP_LOCALSTORAGE_NAME` | 本地缓存前缀                                  |
-| `VITE_APP_MAIN_COLOR`        | 页面主背景色（CSS 变量 `--main-color`）       |
-| `VITE_APP_TITLE`             | 页面标题                                      |
-| `VITE_APP_ARMS`              | 是否启用 ARMS（`1` 开启）                     |
-| `VITE_DROP_CONSOLE`          | 构建时是否移除 `console/debugger`（`1` 移除） |
-| `VITE_APP_HM_BAIDU`          | 百度统计 ID                                   |
-| `VITE_APP_SHARE_TITLE`       | 微信分享标题                                  |
-| `VITE_APP_SHARE_DESC`        | 微信分享描述                                  |
-| `VITE_APP_SHARE_LINK`        | 微信分享链接                                  |
-| `VITE_APP_SHARE_IMGURL`      | 微信分享图片                                  |
-| `VITE_APP_AUTHOR`            | 注入到 `index.html` 的作者信息                |
-| `VITE_APP_CONTACT`           | 注入到 `index.html` 的联系信息                |
-| `VITE_OSS_ROOT_DIR`          | OSS 上传目录（用于发布插件开关）              |
-| `VITE_FTP_DIRNAME`           | FTP 上传目录（用于发布插件开关）              |
+| 变量名                       | 说明                                               |
+| ---------------------------- | -------------------------------------------------- |
+| `VITE_APP_API_URL`           | 业务接口基础地址；空值表示同源请求，按环境显式配置 |
+| `VITE_APP_MQTT_API_URL`      | MQTT 发送接口的完整地址                            |
+| `VITE_APP_LOCALSTORAGE_NAME` | 本地缓存前缀                                       |
+| `VITE_APP_MAIN_COLOR`        | 页面主背景色（CSS 变量 `--main-color`）            |
+| `VITE_APP_TITLE`             | 页面标题                                           |
+| `VITE_APP_ARMS`              | 是否启用 ARMS（`1` 开启）                          |
+| `VITE_DROP_CONSOLE`          | 构建时是否移除 `console/debugger`（`1` 移除）      |
+| `VITE_APP_HM_BAIDU`          | 百度统计 ID                                        |
+| `VITE_APP_SHARE_TITLE`       | 微信分享标题                                       |
+| `VITE_APP_SHARE_DESC`        | 微信分享描述                                       |
+| `VITE_APP_SHARE_LINK`        | 微信分享链接                                       |
+| `VITE_APP_SHARE_IMGURL`      | 微信分享图片                                       |
+| `VITE_APP_AUTHOR`            | 注入到 `index.html` 的作者信息                     |
+| `VITE_APP_CONTACT`           | 注入到 `index.html` 的联系信息                     |
+| `VITE_OSS_ROOT_DIR`          | OSS 上传目录（用于发布插件开关）                   |
+| `VITE_FTP_DIRNAME`           | FTP 上传目录（用于发布插件开关）                   |
 
 > 注意：OSS/FTP 的密钥与账号由 `process.env` 读取（如 `zAccessKeyId`、`zH5FtpHost` 等），请通过 CI 或本地安全环境注入，不要写入仓库。
+
+## 服务配置
+
+服务地址和平台参数统一维护在 `src/config/services.ts`：菜单接口、微信签名及授权接口、微信平台名称、上传 STS 地址、OSS 接入域名、资源访问域名，以及 MQTT 客户端脚本和默认 pub/sub。
+
+业务请求读取 `VITE_APP_API_URL`，MQTT 发送读取 `VITE_APP_MQTT_API_URL`；请求模块直接使用配置地址，不自动替换域名。
+
+| 使用场景           | 环境文件                    | 默认请求地址                                     |
+| ------------------ | --------------------------- | ------------------------------------------------ |
+| `pnpm dev`         | `.env` + `.env.development` | 业务接口同源；MQTT 发送使用 `c26-test.event1.cn` |
+| 普通构建、正式上传 | `.env`                      | 业务接口同源；MQTT 发送使用 `c26.event1.cn`      |
+| 测试上传           | `.env`                      | 业务接口同源；MQTT 发送使用 `c26.event1.cn`      |
+
+业务接口和 MQTT 发送地址统一在 `.env` 中配置。开发环境有不同地址时，由 `.env.development` 覆盖；其中 `VITE_APP_API_URL` 注释行启用后可填写独立的开发接口地址。测试上传目录与后端环境分别配置，测试上传默认读取 `.env` 中的地址。
+
+上传的 `endpoint` 是 OSS 接入域名，`publicUrl` 是返回给页面的资源访问域名，两者可以不同；`publicUrl` 末尾不带 `/`。临时上传凭据、bucket、region 和目录由 STS 接口返回。
+
+`useMqtt(channel, onMessage, options)` 的第三个参数支持 `pub`、`sub` 和 `scriptUrl` 覆盖，未传入时读取集中配置。底层 `useClient` 的 pub/sub 参数保持相同用途。
 
 ## 项目结构
 
@@ -226,18 +246,18 @@ await electronApi?.hideConfig?.(['performance', 'exitButton.mark', 'list10'])
 
 ### 常用接口速查
 
-| 接口                                     | 说明                            | 使用注意                                |
-| ---------------------------------------- | ------------------------------- | --------------------------------------- |
-| `config`                                 | preload 加载时读取的配置快照    | 配置文件变化后不会自动更新              |
-| `getConfig()`                            | 重新读取并返回最新的标准化配置  | 需要最新值时优先使用                    |
-| `defineConfig(patch)`                    | 局部合并并保存支持的配置字段    | 多数启动配置需重启客户端后生效          |
-| `enterFullscreen()` / `exitFullscreen()` | 立即切换当前业务窗口全屏状态    | 返回值表示是否找到并处理了当前窗口      |
-| `previewPrint(request)`                  | 按打印参数打开预览              | 不能验证打印机驱动默认纸型和实际装纸    |
-| `print(request)`                         | 执行打印并返回 `PrintResult`    | 上线前需使用目标打印机和实际纸张验证    |
-| `getScreenIndex()`                       | 获取当前业务窗口从 1 开始的编号 | 无法识别当前窗口时返回 `null`           |
-| `sendToScreen(target, command, data?)`   | 向指定业务窗口发送消息          | `true` 只表示已投递，不表示业务处理成功 |
-| `onScreenMessage(listener)`              | 监听其他窗口发来的消息          | 返回取消函数，组件卸载时必须调用        |
-| `restart()` / `quit()`                   | 重启或退出客户端                | 调用前自行处理未保存数据并向用户确认    |
+| 接口                                     | 说明                                   | 使用注意                                        |
+| ---------------------------------------- | -------------------------------------- | ----------------------------------------------- |
+| `config`                                 | preload 加载时读取的配置快照           | 配置文件变化后不会自动更新                      |
+| `getConfig()`                            | 重新读取并返回最新的标准化配置         | 需要最新值时优先使用                            |
+| `defineProjectFields(fields)`            | 声明 list 字段名称、类型、默认值与选项 | 检查返回的 errors，使用返回的 config 初始化业务 |
+| `enterFullscreen()` / `exitFullscreen()` | 立即切换当前业务窗口全屏状态           | 返回值表示是否找到并处理了当前窗口              |
+| `previewPrint(request)`                  | 按打印参数打开预览                     | 不能验证打印机驱动默认纸型和实际装纸            |
+| `print(request)`                         | 执行打印并返回 `PrintResult`           | 上线前需使用目标打印机和实际纸张验证            |
+| `getScreenIndex()`                       | 获取当前业务窗口从 1 开始的编号        | 无法识别当前窗口时返回 `null`                   |
+| `sendToScreen(target, command, data?)`   | 向指定业务窗口发送消息                 | `true` 只表示已投递，不表示业务处理成功         |
+| `onScreenMessage(listener)`              | 监听其他窗口发来的消息                 | 返回取消函数，组件卸载时必须调用                |
+| `restart()` / `quit()`                   | 重启或退出客户端                       | 调用前自行处理未保存数据并向用户确认            |
 
 多窗口监听示例：
 

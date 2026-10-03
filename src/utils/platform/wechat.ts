@@ -1,3 +1,4 @@
+import { services } from '@/config/services'
 import { isWeChat } from '@/utils/platform/ua'
 import axios, { toFormData } from 'axios'
 
@@ -74,10 +75,10 @@ export async function ensureWechatSdkReady() {
   wxConfigPromise = (async () => {
     try {
       const { data } = await axios.post<{ data?: unknown }>(
-        'https://wechat.event1.cn/api/getJsSdk',
+        services.wechat.sdkUrl,
         toFormData({
           url,
-          name: 'hudongweipingtai',
+          name: services.wechat.name,
         }),
       )
 

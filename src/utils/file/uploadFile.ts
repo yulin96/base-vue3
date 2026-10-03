@@ -1,3 +1,4 @@
+import { services } from '@/config/services'
 import { sleep } from '@/utils/common'
 import OSS from 'ali-oss'
 import axios, { toFormData } from 'axios'
@@ -37,14 +38,14 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
   try {
     const {
       data: { data },
-    } = await axios.post('https://rally.event1.cn/bn9z/sts/oss', toFormData({ puid: id }))
+    } = await axios.post(services.upload.stsUrl, toFormData({ puid: id }))
 
     const { bucket, region, uploadDir, accessKeyId, accessKeySecret, stsToken } = data
 
     const client = new OSS({
       region: region.includes('oss-') ? region : `oss-${region}`,
       bucket,
-      endpoint: 'https://up.eventnet.cn',
+      endpoint: services.upload.endpoint,
       cname: true,
       authorizationV4: true,
       accessKeyId,
@@ -53,7 +54,7 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
       refreshSTSToken: async () => {
         const {
           data: { data: refreshData },
-        } = await axios.post('https://rally.event1.cn/bn9z/sts/oss', toFormData({ puid: id }))
+        } = await axios.post(services.upload.stsUrl, toFormData({ puid: id }))
         return {
           accessKeyId: refreshData.accessKeyId,
           accessKeySecret: refreshData.accessKeySecret,
@@ -78,7 +79,7 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
     }
 
     await sleep(2000)
-    const url = `https://up.eventnet.cn/${key}`
+    const url = `${services.upload.publicUrl}/${key}`
 
     if (test && !(await isResourceAvailable(url))) {
       showError('上传文件不符合规范，请更换文件重试')

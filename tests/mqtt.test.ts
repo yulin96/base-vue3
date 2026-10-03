@@ -1,15 +1,20 @@
 import { afterEach, expect, test, vi } from 'vitest'
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import { defineComponent } from 'vue'
-import { useMqtt } from '@/hooks/network/useMqtt'
-import type { UseClientOptions } from '@/hooks/network/useClient'
+import { useMqtt, type UseMqttOptions } from '@/hooks/network/useMqtt'
+
+vi.mock('@/config/services', () => ({
+  services: { mqtt: { pub: 'default-pub', sub: 'default-sub', scriptUrl: 'https://mqtt.example/client.js' } },
+}))
 
 enableAutoUnmount(afterEach)
 afterEach(() => {
   delete window.ROP
+  document.querySelectorAll('script[data-rop-client-script="true"]').forEach((script) => script.remove())
+  vi.useRealTimers()
 })
 
-async function setup(options: UseClientOptions = { autoReconnectOnVisibility: false }) {
+async function setup(options: UseMqttOptions = { autoReconnectOnVisibility: false }, clientLoaded = true) {
   const handlers = new Map<string, (...args: any[]) => void>()
   const api = {
     On: vi.fn((event: string, callback: (...args: any[]) => void) => {
@@ -19,7 +24,7 @@ async function setup(options: UseClientOptions = { autoReconnectOnVisibility: fa
     Subscribe: vi.fn(),
     Publish: vi.fn(),
   }
-  window.ROP = api
+  if (clientLoaded) window.ROP = api
   const onMessage = vi.fn()
   const wrapper = mount(
     defineComponent({
@@ -83,4 +88,34 @@ test('卸载移除可见性监听，恢复可见不会再连接', async () => {
   document.dispatchEvent(new Event('visibilitychange'))
   await flushPromises()
   expect(api.Enter).toHaveBeenCalledTimes(1)
+})
+
+test('连接使用集中配置的默认 pub/sub', async () => {
+  const { api, handlers } = await setup()
+  expect(api.Enter).toHaveBeenCalledExactlyOnceWith('default-pub', 'default-sub', expect.stringMatching(/^suid_/), true)
+  handlers.get('enter_suc')!()
+  expect(api.Subscribe).toHaveBeenCalledExactlyOnceWith('channel')
+})
+
+test('useMqtt 透传项目 pub/sub，保留去空白行为', async () => {
+  const { api, handlers } = await setup({
+    pub: ' project-pub ',
+    sub: ' project-sub ',
+    autoReconnectOnVisibility: false,
+  })
+  expect(api.Enter).toHaveBeenCalledExactlyOnceWith('project-pub', 'project-sub', expect.stringMatching(/^suid_/), true)
+  handlers.get('enter_suc')!()
+  expect(api.Subscribe).toHaveBeenCalledExactlyOnceWith('channel')
+})
+
+test('客户端尚未加载时使用集中配置的脚本地址', async () => {
+  vi.useFakeTimers()
+  const { api } = await setup({ autoReconnectOnVisibility: false }, false)
+  const script = document.querySelector<HTMLScriptElement>('script[data-rop-client-script="true"]')
+  expect(script?.src).toBe('https://mqtt.example/client.js')
+  window.ROP = api
+  script!.dispatchEvent(new Event('load'))
+  await flushPromises()
+  expect(api.Enter).toHaveBeenCalledExactlyOnceWith('default-pub', 'default-sub', expect.stringMatching(/^suid_/), true)
+  expect(vi.getTimerCount()).toBe(0)
 })

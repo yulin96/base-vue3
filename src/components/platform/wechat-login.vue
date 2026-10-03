@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { services } from '@/config/services'
 import { toUrl } from '@/utils/navigation'
 import { getOpenId } from '@/utils/platform/getOpenId'
 import { onMounted, ref } from 'vue'
@@ -11,7 +12,7 @@ const openLink = () => {
   if (!url) return console.error('url is required')
 
   toUrl(
-    `https://wechat.event1.cn/api/getCode?name=hudongweipingtai&action=${auto ? 2 : 1}&cUrl=${encodeURIComponent(url ?? window.location.origin + window.location.pathname)}`,
+    `${services.wechat.codeUrl}?name=${encodeURIComponent(services.wechat.name)}&action=${auto ? 2 : 1}&cUrl=${encodeURIComponent(url ?? window.location.origin + window.location.pathname)}`,
   )
 }
 

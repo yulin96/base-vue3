@@ -1,9 +1,15 @@
 import { useClient, type UseClientOptions } from '@/hooks/network/useClient'
 
+export interface UseMqttOptions extends UseClientOptions {
+  pub?: string
+  sub?: string
+}
+
 export const useMqtt = <T = unknown>(
   channel: string,
   onMessage?: (message: T) => void,
-  options: UseClientOptions = {},
+  options: UseMqttOptions = {},
 ) => {
-  return useClient<T>(channel, undefined, undefined, options, onMessage)
+  const { pub, sub, ...clientOptions } = options
+  return useClient<T>(channel, pub, sub, clientOptions, onMessage)
 }

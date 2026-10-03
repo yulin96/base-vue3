@@ -24,5 +24,5 @@ const lightEnabled = config.list2 === '1'
 - 客户端接口返回 `Promise<{ config: AppConfig; errors: Partial<Record<ProjectFieldKey, string>> }>`。errors 非空时说明新声明已保存、旧值仍待修正；本封装明确抛错，业务应暂停依赖这些字段的初始化。直接调用接口时同样需要检查 errors。
 - 声明不触发重启，业务使用返回值初始化，不使用 `electronApi.config` 的旧快照；F12 手动保存成功后仍重启。设置页打开期间若声明或值发生变化，保存会要求重新读取。
 - 普通浏览器使用声明默认值预览，未声明默认值返回空字符串，不持久化。Electron 缺少新接口时明确报错，不回退到旧配置写入接口。
-- `defineDisplayNames` 继续支持全部字段（含 list1～list20）；非空名称优先于字段声明中的名称，仅本次运行有效，不改变类型、默认值、来源或已保存值。隐藏字段功能保持不变。`defineConfig` 不恢复，资源地址及设备配置仍只能在 F12 修改。
+- `defineDisplayNames` 支持全部字段（含 list1～list20）；非空名称优先于字段声明中的名称，仅本次运行有效，不改变类型、默认值、来源或已保存值。资源地址及设备配置只能在 F12 修改。
 - Vue `<script setup>` 顶层 `await` 需要父级 `<Suspense>`。仅在业务明确允许配置失败后继续时使用 `.catch(() => null)`，不要把失败伪装成默认值已保存。

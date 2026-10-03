@@ -1,4 +1,5 @@
 import type { ResData } from '@/api/types'
+import { services } from '@/config/services'
 import { useLockRequest } from '@/hooks/network/useLockRequest'
 import { useStore } from '@/stores/user'
 import { useUrlSearchParams } from '@vueuse/core'
@@ -11,7 +12,6 @@ type OpenIdData = {
 }
 /**
  * 获取微信用户openid
- * @param name 平台名称
  * @returns 是否获取成功
  */
 export async function getOpenId(): Promise<boolean> {
@@ -23,7 +23,7 @@ export async function getOpenId(): Promise<boolean> {
   if (!proid) return false
 
   try {
-    const response = await postGetCode<ResData<OpenIdData>>('https://wechat.event1.cn/api/getCode', { proid })
+    const response = await postGetCode<ResData<OpenIdData>>(services.wechat.codeUrl, { proid })
     if (!response.data.openid) return false
 
     Object.assign(user.wxInfo, response.data)

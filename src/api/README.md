@@ -1,6 +1,6 @@
 # 接口编写与调用规范
 
-本文是本项目新增、修改业务接口时的默认约定，适用于 `src/api` 及其页面、组件、hook 调用方。以当前 `apiInit`、`apiTest` 和 `src/pages/index.vue` 的写法为基准；不要未经要求改成另一套请求架构。
+本文是本项目新增、修改业务接口时的默认约定，适用于 `src/api` 及其页面、组件、hook 调用方。以本文的 `apiExample` 和页面调用模板为写法示例；示例路径、字段和成功码需要按实际接口协议填写。
 
 ## 分层与命名
 
@@ -9,6 +9,7 @@
 - 统一复用 `src/api/types.ts` 的 `ResData<T>`：`code`、可选的 `msg` / `message`、`data`。`T` 表示 `data`，不是整个响应；额外顶层字段可以使用第二个泛型参数。
 - 调用链为：页面 → `apiXxx` → `useLockRequest` → `axiosGet` / `axiosPost`。普通业务页面不直接使用 Axios、fetch 或另建请求实例。
 - 请求地址、方法、字段和成功码以真实接口协议为准，不凭接口名称猜测。通常使用相对路径，由请求层提供基础地址；明确的外部接口才使用绝对地址。
+- 业务基础地址读取 `VITE_APP_API_URL`，服务地址和平台参数集中在 `src/config/services.ts`。请求地址统一在 `.env` 中配置，开发环境差异由 `.env.development` 覆盖，请求层不按域名自动切换服务。
 
 ## 接口模板
 
@@ -44,7 +45,7 @@ export const apiExample = (data?: Record<string, any>, config?: AxiosRequestConf
 - GET 使用同样结构，把 `postExample` 换成 `getExample`，参数名使用 `params`，调用 `getExample<ResData<TExample>>(path, params, config)`。
 - POST 参数名使用 `data`，第三个参数透传 `config`，便于调用方传入 `signal`、请求头或超时设置。不要丢弃配置或把配置混入业务数据。
 - 当前通用参数沿用 `Record<string, any>`；有明确固定字段时可以声明对应参数类型，必填参数不能写成可选。动态表单不要强塞进过窄类型。
-- 数据类型按实际响应填写，保留后端字段名和实际的空值、可选性。现有 `TTest = {}` 是占位，不能当作已明确接口的正式类型。
+- 数据类型按实际响应填写，保留后端字段名和实际的空值、可选性。空对象类型不能当作已明确接口的正式类型。
 - 这里的 `Error` 是现有类型标注，不会转换运行时错误。锁冲突实际抛出普通对象 `{ code: -9996, error: ... }`，因此不要假定所有 `err` 都有 `message` 或满足 `instanceof Error`；需要读取错误字段时先收窄类型。
 
 ## 页面调用模板
@@ -60,9 +61,9 @@ if (res.code != 200) return toast.warning(res?.message || res?.msg || '正在处
 // 此处使用 res.data 更新当前页面的业务状态。
 ```
 
-- 顺序固定为：先检查 `err`，再检查业务码，最后读取业务数据。当前页面以 `200` 为成功码；其他接口只有协议明确不同才调整。
+- 顺序固定为：先检查 `err`，再检查业务码，最后读取业务数据。模板中的 `200` 是示例成功码，实际成功码以接口协议为准。
 - `res` 已是服务端响应体，不是 AxiosResponse：业务码读 `res.code`，业务数据读 `res.data`，不要多套一层 `.data`。
-- 业务码失败仍属于请求成功返回，由页面判断；API 层不要擅自把非 `200` 改成请求异常。
+- 业务码失败仍属于请求成功返回，由页面判断；API 层不要擅自把业务失败改成请求异常。
 - 普通调用不再重复套一层仅用于捕获接口请求错误的 try/catch。未设置 `silent` 时，请求锁在 HTTP 响应状态码为 `500` 时显示“正在处理中...”；在 Axios 返回 `ERR_NETWORK` 且浏览器报告离线（`navigator.onLine === false`）时显示“网络已断开，请检查网络”。浏览器在线状态不能覆盖所有断网情况。取消、超时及其他错误不显示共享提示。调用方默认 `if (err) return`，避免重复 toast。锁冲突在请求前抛出，不经过这个共享 toast。
 - 页面自行负责成功后的提示、跳转、弹窗和状态更新，API 层只包装请求结果。有页面 loading 时应确保所有退出分支都恢复，可用 try/finally；请求锁不是完整的页面 loading 管理。
 
@@ -101,7 +102,17 @@ void recordInteractionStat('开始').then(({ saved, error }) => {
 正式 ID 有网时尝试上报一次，失败不重试、离线不补传；匿名不联网。本机数量与云端数量可能不同。
 普通浏览器或缺少记录接口的客户端返回明确失败，不启用浏览器兜底。
 
-`apiMenus` 使用 `[boolean, MenuData | null]`，`replaceToWithMenus` 包含菜单跳转及提示，`getOpenId` 返回布尔结果并更新用户状态。这些是已有特定业务封装，维护时保留其调用契约；新增普通业务接口默认使用上面的 `[err, res]` 模板，不照搬它们的返回形式或业务副作用。
+`apiMenus` 从 `src/api/index.ts` 导出，使用 `[boolean, MenuData | null]`；布尔结果表示菜单是否可用，默认地址读取 `services.menus.url`，也可以通过第二个参数指定地址。
+
+`replaceToWithMenus` 从 `src/utils/navigation.ts` 导出，负责菜单提示和跳转。第二个参数可以是回调或路由名称、路径，优先于服务端菜单地址；菜单不可用时不会执行回调或跳转。
+
+```ts
+import { replaceToWithMenus } from '@/utils/navigation'
+
+await replaceToWithMenus('活动入口', '/')
+```
+
+`src/utils/platform/getOpenId.ts` 的 `getOpenId` 返回布尔结果并更新用户状态。这些特定能力的调用契约分别维护；新增普通业务接口使用上面的 `[err, res]` 模板，由页面处理业务副作用。
 
 ## 完成前核对
 

@@ -1,3 +1,8 @@
+import { apiMenus } from '@/api'
+import { replaceTo, type RouterNameOrPath } from '@/router'
+import { isUrl } from '@/utils/validate'
+import { toast } from 'vue-sonner'
+
 /**
  * 跳转到指定页面
  * @param url - 目标URL
@@ -17,6 +22,18 @@ export function toUrl(url: string, options: { newTab?: boolean; replace?: boolea
   } catch (e) {
     console.error('页面导航失败:', e)
   }
+}
+
+export async function replaceToWithMenus(name: string, path?: (() => void) | RouterNameOrPath) {
+  const [status, res] = await apiMenus(name)
+  if (!status) return toast.info('敬请期待')
+
+  const url = path || res?.url || ''
+  if (!url) return toast.info('敬请期待!')
+
+  if (typeof url === 'function') return url()
+  if (isUrl(url)) return toUrl(url)
+  replaceTo(url)
 }
 
 /**
