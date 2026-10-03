@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
-import { CanceledError } from 'axios'
+import { AxiosError, AxiosHeaders, CanceledError } from 'axios'
 import { useLockRequest } from '@/hooks/network/useLockRequest'
 
 const mocks = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn(), warning: vi.fn() }))
@@ -7,8 +7,26 @@ vi.mock('@/utils/request', () => ({ axiosGet: mocks.get, axiosPost: mocks.post }
 vi.mock('vue-sonner', () => ({ toast: { warning: mocks.warning } }))
 beforeEach(() => {
   vi.useFakeTimers()
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
   mocks.get.mockReset()
   mocks.post.mockReset()
+  mocks.warning.mockReset()
+})
+
+test.each([
+  { error: new AxiosError('网络错误', 'ERR_NETWORK'), online: false, silent: false, toasts: 1 },
+  { error: new AxiosError('网络错误', 'ERR_NETWORK'), online: true, silent: false, toasts: 0 },
+  { error: new AxiosError('网络错误', 'ERR_NETWORK'), online: false, silent: true, toasts: 0 },
+  { error: new CanceledError('取消'), online: false, silent: false, toasts: 0 },
+  { error: new AxiosError('超时', 'ECONNABORTED'), online: false, silent: false, toasts: 0 },
+  { error: new Error('普通异常'), online: false, silent: false, toasts: 0 },
+])('网络提示：$error.message，online=$online，silent=$silent', async ({ error, online, silent, toasts }) => {
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(online)
+  mocks.post.mockRejectedValueOnce(error)
+  const request = useLockRequest(false, 0, { silent })
+  await expect(request.post('/submit')).rejects.toBe(error)
+  expect(request.lock.value).toBe(false)
+  expect(mocks.warning.mock.calls).toEqual(Array.from({ length: toasts }, () => ['网络已断开，请检查网络']))
 })
 afterEach(() => {
   vi.useRealTimers()
@@ -44,15 +62,31 @@ test('不同接口的请求锁相互独立，参数和配置完整透传', async
   expect(second.lock.value).toBe(false)
 })
 
+function httpError(status: number) {
+  return new AxiosError(`HTTP ${status}`, undefined, undefined, undefined, {
+    status,
+    statusText: '',
+    data: null,
+    headers: {},
+    config: { headers: new AxiosHeaders() },
+  })
+}
+
 test.each([
-  { error: new Error('断网'), silent: false, toasts: 1 },
+  { error: httpError(500), silent: false, toasts: 1 },
+  { error: httpError(500), silent: true, toasts: 0 },
+  ...[400, 401, 404, 502, 503].map((status) => ({ error: httpError(status), silent: false, toasts: 0 })),
+  { error: new AxiosError('断网', 'ERR_NETWORK'), silent: false, toasts: 0 },
+  { error: new AxiosError('超时', 'ECONNABORTED'), silent: false, toasts: 0 },
+  { error: new Error('普通异常'), silent: false, toasts: 0 },
   { error: new CanceledError('取消'), silent: false, toasts: 0 },
-  { error: new Error('后台请求失败'), silent: true, toasts: 0 },
-])('失败后解锁并遵守取消/静默提示约定：$error.message', async ({ error, silent, toasts }) => {
-  mocks.get.mockRejectedValueOnce(error).mockResolvedValueOnce({ code: 200 })
+])('失败后解锁且仅非静默 HTTP 500 提示：$error.message，silent=$silent', async ({ error, silent, toasts }) => {
+  mocks.get.mockRejectedValueOnce(error).mockResolvedValueOnce({ code: 500 })
   const request = useLockRequest(false, 0, { silent })
   await expect(request.get('/list')).rejects.toBe(error)
   expect(request.lock.value).toBe(false)
   expect(mocks.warning).toHaveBeenCalledTimes(toasts)
-  await expect(request.get('/list')).resolves.toEqual({ code: 200 })
+  expect(mocks.warning.mock.calls).toEqual(Array.from({ length: toasts }, () => ['正在处理中...']))
+  await expect(request.get('/list')).resolves.toEqual({ code: 500 })
+  expect(mocks.warning).toHaveBeenCalledTimes(toasts)
 })

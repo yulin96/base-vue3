@@ -1,7 +1,6 @@
 import { useLock } from '@/hooks/state/useLock'
 import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/utils/request'
-import { isCanceledRequest } from '@/utils/validate'
-import type { AxiosRequestConfig } from 'axios'
+import { isAxiosError, type AxiosRequestConfig } from 'axios'
 import { readonly } from 'vue'
 import { toast } from 'vue-sonner'
 
@@ -18,8 +17,12 @@ export function useLockRequest(disableLock = false, delay = 500, options: { sile
     try {
       return await requestFn()
     } catch (error) {
-      if (!options.silent && !isCanceledRequest(error)) {
-        toast.warning('正在处理中...')
+      if (!options.silent && isAxiosError(error)) {
+        if (error.response?.status === 500) {
+          toast.warning('正在处理中...')
+        } else if (error.code === 'ERR_NETWORK' && navigator.onLine === false) {
+          toast.warning('网络已断开，请检查网络')
+        }
       }
       throw error
     } finally {
