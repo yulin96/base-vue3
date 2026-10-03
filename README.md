@@ -143,6 +143,8 @@ pnpm dev
 
 上传的 `endpoint` 是 OSS 接入域名，`publicUrl` 是返回给页面的资源访问域名，两者可以不同；`publicUrl` 末尾不带 `/`。临时上传凭据、bucket、region 和目录由 STS 接口返回。
 
+`uploadFile` 在上传完成后返回，`loading` 提示使用实际上传进度。开启 `test: true` 时，上传完成后立即通过 HEAD 检查资源是否可访问，并等待检查结果后返回。
+
 `useMqtt(channel, onMessage, options)` 的第三个参数支持 `pub`、`sub` 和 `scriptUrl` 覆盖，未传入时读取集中配置。底层 `useClient` 的 pub/sub 参数保持相同用途。
 
 ## 项目结构

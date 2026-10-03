@@ -1,5 +1,4 @@
 import { services } from '@/config/services'
-import { sleep } from '@/utils/common'
 import OSS from 'ali-oss'
 import axios, { toFormData } from 'axios'
 import { nanoid } from 'nanoid'
@@ -17,7 +16,6 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
   const { id, file, start = 'zh', loading = false, test = false } = option
 
   let toastId: string | number | undefined
-  let updateTimer: number | undefined
   if (loading) {
     toastId = toast.loading('上传中...', {
       duration: Infinity,
@@ -67,18 +65,10 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
 
     await client.multipartUpload(key, file, {
       progress(progress) {
-        if (loading) updateLoadingToast(toastId, Math.floor(progress * 50))
+        if (loading) updateLoadingToast(toastId, Math.floor(progress * 100))
       },
     })
 
-    if (loading) {
-      let process = 50
-      updateTimer = window.setInterval(() => {
-        updateLoadingToast(toastId, (process += 5))
-      }, 500)
-    }
-
-    await sleep(2000)
     const url = `${services.upload.publicUrl}/${key}`
 
     if (test && !(await isResourceAvailable(url))) {
@@ -96,10 +86,6 @@ export async function uploadFile(option: IUploadOption): Promise<[null, string] 
   } catch (error) {
     showError('上传失败')
     return [error, null]
-  } finally {
-    if (updateTimer !== undefined) {
-      clearInterval(updateTimer)
-    }
   }
 }
 
