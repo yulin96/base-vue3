@@ -1,7 +1,7 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["types/**/*", "src/**/*", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*", "dist"],
+  "exclude": ["dist"],
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"]

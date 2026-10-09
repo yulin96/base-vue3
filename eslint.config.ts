@@ -2,7 +2,6 @@ import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 import pluginVue from 'eslint-plugin-vue'
 import { globalIgnores } from 'eslint/config'
-import pluginVitest from '@vitest/eslint-plugin'
 
 export default defineConfigWithVueTs(
   {
@@ -10,15 +9,10 @@ export default defineConfigWithVueTs(
     files: ['**/*.{vue,ts,mts,tsx}'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+  globalIgnores(['**/dist/**', '**/dist-ssr/**']),
 
   ...pluginVue.configs['flat/recommended'],
   vueTsConfigs.recommended,
-
-  {
-    ...pluginVitest.configs.recommended,
-    files: ['tests/**/*.test.ts'],
-  },
 
   skipFormatting,
 
