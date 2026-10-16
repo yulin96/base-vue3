@@ -253,11 +253,13 @@ type InteractionStatRequest = { title?: string; event: string }
 type InteractionStatResult = { saved: boolean; error: string | null }
 
 type AppAPI = PrintAPI & {
+  /** 按实际内容归属记录；旧内容或归属未知时仅存本机。 */
   recordInteractionStat: (request: InteractionStatRequest) => Promise<InteractionStatResult>
   checkClientUpdate: () => Promise<ClientUpdateStatus>
   installClientUpdate: () => Promise<boolean>
   getDiagnostics: () => Promise<AppDiagnostics>
   config: AppConfig
+  /** 已知内容保存到自身项目，未知归属仅本次运行有效。 */
   defineProjectFields: (fields: ProjectFieldDefinitions) => Promise<ProjectFieldsResult>
   defineDisplayNames: (names: ConfigDisplayNames) => Promise<ConfigDisplayNames>
   hideConfig: (names: ConfigHideTarget) => Promise<ConfigEditorOptions>
