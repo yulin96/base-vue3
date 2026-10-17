@@ -167,8 +167,8 @@ importers:
   .:
     dependencies:
       '@lucide/vue':
-        specifier: ^1.57.0
-        version: 1.57.0(vue@3.5.44(typescript@6.0.3))
+        specifier: ^1.58.0
+        version: 1.58.0(vue@3.5.44(typescript@6.0.3))
       '@number-flow/vue':
         specifier: ^0.5.2
         version: 0.5.2(vue@3.5.44(typescript@6.0.3))
@@ -1689,8 +1689,8 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@lucide/vue@1.57.0':
-    resolution: {integrity: sha512-l/D9mr+8Wb8uHl2vzHfcGVRkunJnq0NDmv8HFwXAL3UiYYxuNpDSd1uaCVqeR8+I1XY70dWA+R5W/pSpXWilMw==}
+  '@lucide/vue@1.58.0':
+    resolution: {integrity: sha512-HW7yrGw9OUC1TzldLep1d4p1Uc1OCRWLJwzKHm9C3V9Z4/9GADN84NDlyeTzgrcD8yxXs8/SVh8CpKFaA+OPRg==}
     peerDependencies:
       vue: '>=3.0.1'
 
@@ -5867,7 +5867,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lucide/vue@1.57.0(vue@3.5.44(typescript@6.0.3))':
+  '@lucide/vue@1.58.0(vue@3.5.44(typescript@6.0.3))':
     dependencies:
       vue: 3.5.44(typescript@6.0.3)
 
