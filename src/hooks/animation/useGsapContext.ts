@@ -1,7 +1,7 @@
 import gsap from 'gsap'
 import { onMounted, onUnmounted } from 'vue'
 
-export function useGsapContext(scope: string, setup: () => void) {
+export function useGsapContext(scope: string, setup: (context: gsap.Context) => void | (() => void)) {
   let ctx: gsap.Context | null = null
 
   const clear = () => {
@@ -18,8 +18,6 @@ export function useGsapContext(scope: string, setup: () => void) {
   }
 
   onMounted(init)
-  // onActivated(init)
-  // onDeactivated(clear)
   onUnmounted(() => {
     clear()
   })

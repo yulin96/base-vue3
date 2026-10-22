@@ -63,6 +63,16 @@ npx create-base-vue
 - 转换逻辑变更后，最小验证应覆盖 mobile/pc 两种生成结果，确认该改的内容已修改、该保留的内容仍保留。语法检查不能证明模板转换有效。
 - 验证生成时使用本地模式，不创建远端仓库、不推送、不执行 build；明确区分本地模板验证与 GitHub 当前模板的验证。
 
+## 手机端动画技能
+
+新增、调整或排查手机端 GSAP 动画时，按 `AGENTS.md` 使用 `mobile-gsap-motion`。全局安装到 Codex：
+
+```sh
+npx skills add yulin96/mobile-gsap-motion --global --agent codex --skill mobile-gsap-motion
+```
+
+安装后可在对话中使用 `$mobile-gsap-motion`。技能提供动画编排和可调示例，项目现有生命周期、业务行为与验证权限仍按本项目规范执行。其他安装方式见 [安装指南](https://github.com/yulin96/mobile-gsap-motion#全局安装)。
+
 ## 手动启动基础库
 
 ### 1) 环境准备
