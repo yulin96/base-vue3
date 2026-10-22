@@ -1,6 +1,5 @@
-import { useScroll } from '@vueuse/core'
 import { nanoid } from 'nanoid'
-import { onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, useTemplateRef } from 'vue'
+import { onActivated, onBeforeUnmount, onDeactivated, onMounted, useTemplateRef } from 'vue'
 
 interface ISlideOptions {
   prev?: () => void
@@ -11,11 +10,12 @@ interface ISlideOptions {
 }
 
 export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100 }: ISlideOptions) => {
-  const startMove = ref({ pageY: 0, once: true })
+  let touching = false
+  let prevStartY: number | null = null
+  let nextStartY: number | null = null
 
   const key = nanoid()
   const ele = useTemplateRef<HTMLElement>(key)
-  const { arrivedState } = useScroll(ele, { offset: { bottom: 0 } })
 
   let lock = false
   let boundElement: HTMLElement | null = null
@@ -31,47 +31,42 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
 
   const onStart = (event: TouchEvent) => {
     const touch = event.touches[0]
-    startMove.value.pageY = touch?.pageY ?? 0
-    startMove.value.once = !touch
-    resetLock()
+    onEnd()
+    if (!touch || !ele.value) return
+
+    touching = true
+    const { scrollTop, clientHeight, scrollHeight } = ele.value
+    prevStartY = scrollTop <= 0 ? touch.pageY : null
+    nextStartY = scrollTop + clientHeight >= scrollHeight - 1 ? touch.pageY : null
   }
 
   const onMove = (event: TouchEvent) => {
     const pageY = event.touches[0]?.pageY
-    if (pageY === undefined) return
-    if (!ele.value) return
-    if (arrivedState.top || arrivedState.bottom || ele.value.scrollTop < 0) {
-      if (startMove.value.once) {
-        startMove.value.pageY = pageY
-        startMove.value.once = false
-      }
+    if (pageY === undefined || !ele.value || !touching || lock) return
 
-      const distance = startMove.value.pageY - pageY
-      if (distance > 0 && !arrivedState.bottom) return
-      if (distance < 0 && !arrivedState.top && ele.value.scrollTop >= 0) return
+    const { scrollTop, clientHeight, scrollHeight } = ele.value
+    prevStartY = scrollTop <= 0 ? (prevStartY ?? pageY) : null
+    nextStartY = scrollTop + clientHeight >= scrollHeight - 1 ? (nextStartY ?? pageY) : null
 
-      if (Math.abs(startMove.value.pageY - pageY) > slideNumber) {
-        if (lock) return
-        lock = true
-        if (event.cancelable) {
-          event.preventDefault()
-        }
-        return startMove.value.pageY > pageY ? next?.() : prev?.()
-      }
+    const prevDistance = prevStartY === null ? 0 : prevStartY - pageY
+    const nextDistance = nextStartY === null ? 0 : nextStartY - pageY
+    const distance = nextDistance > 0 ? nextDistance : prevDistance < 0 ? prevDistance : 0
 
-      if (Math.abs(startMove.value.pageY - pageY) < 20) return
-
-      if (startMove.value.pageY > pageY) {
-        return nextScroll?.(Math.round(startMove.value.pageY - pageY))
-      } else if (startMove.value.pageY < pageY) {
-        return prevScroll?.(Math.round(startMove.value.pageY - pageY))
-      }
+    if (Math.abs(distance) > slideNumber) {
+      lock = true
+      if (event.cancelable) event.preventDefault()
+      return distance > 0 ? next?.() : prev?.()
     }
+
+    if (Math.abs(distance) < 20) return
+
+    return distance > 0 ? nextScroll?.(Math.round(distance)) : prevScroll?.(Math.round(distance))
   }
 
   const onEnd = () => {
-    startMove.value.pageY = 0
-    startMove.value.once = true
+    touching = false
+    prevStartY = null
+    nextStartY = null
     resetLock()
   }
 
@@ -112,7 +107,7 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
     boundElement.removeEventListener('touchcancel', onEnd)
     boundElement.removeEventListener('wheel', eleEffect)
     boundElement = null
-    resetLock()
+    onEnd()
   }
 
   onMounted(bindEvents)
@@ -125,9 +120,6 @@ export const useSlide = ({ prev, next, prevScroll, nextScroll, slideNumber = 100
   onBeforeUnmount(unbindEvents)
 
   onDeactivated(() => {
-    startMove.value.pageY = 0
-    startMove.value.once = true
-    resetLock()
     unbindEvents()
   })
 
