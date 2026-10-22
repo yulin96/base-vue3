@@ -146,6 +146,8 @@ html {
 
 ## Electron 客户端能力
 
+- 串口统一使用 `src/utils/platform/electronSerial.ts` 的 `electronSerial.send/receive`。编号固定为 1～20，绑定与通信参数在客户端 F12 设置，H5 无需声明设备或管理连接；卸载时取消监听，处理发送失败及接收错误，原始字节由业务分帧。
+
 - 项目运行在配套 `base-electron` 客户端时，统一从 `src/config/env.ts` 导入 `electronApi`；不要在业务代码里自行封装 IPC，也不要直接假定 `window.api` 一定存在。
 - `electronApi` 在普通浏览器中可能是 `undefined`，且类型声明允许客户端只提供部分接口。调用时使用可选链，并对有业务影响的 Promise 失败进行明确处理。
 - 客户端接口类型位于 `types/electron.d.ts`。客户端升级或新增 preload 接口后，先对照 `base-electron/src/preload/index.ts` 和 `base-electron/src/shared/app-types.d.ts` 同步类型，再在业务代码中使用。

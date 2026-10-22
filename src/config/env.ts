@@ -19,6 +19,7 @@ export const isTestURL = location.href.includes('__test__')
  * 使用约定（修改 Electron 相关业务前先阅读）：
  * - API 由客户端 preload 注入，普通浏览器中可能为 undefined，且客户端可能只提供部分接口；调用时使用可选链。
  * - 类型声明统一维护在 types/electron.d.ts。新增或升级客户端接口时，先与客户端 preload 和共享类型保持一致。
+ * - 串口使用 electronSerial.send/receive，编号 1～20；设备绑定与参数全部在客户端 F12 设置。
  * - electronApi.config 是 preload 加载时的启动快照，不会自动刷新；需要当前配置时使用 getConfig()。
  * - list1-list20 使用 setupElectronConfig / defineProjectFields 声明名称、类型、默认值；检查字段错误后使用返回配置。
  * - 配置文件读写仅限客户端 F12 设置窗口；list1-list20 按完整 resourceUrl 隔离。

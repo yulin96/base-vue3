@@ -212,6 +212,8 @@ base-vue3/
 
 ## Electron 客户端接口
 
+串口设备在客户端 F12 绑定固定编号 1～20，H5 只用 `electronSerial.send()` 和 `receive()`，无需声明设备。详见 [串口接入说明](src/utils/platform/electronSerial.md)。
+
 项目可作为配套 `base-electron` 客户端的业务页面运行。客户端通过 preload 暴露 `window.api`，本项目在 `src/config/env.ts` 中将其导出为 `electronApi`，完整调用类型见 `types/electron.d.ts`。
 
 普通浏览器中没有这些客户端能力，因此调用时应保留可选链：

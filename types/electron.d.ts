@@ -253,6 +253,7 @@ type InteractionStatRequest = { title?: string; event: string }
 type InteractionStatResult = { saved: boolean; error: string | null }
 
 type AppAPI = PrintAPI & {
+  serial: import('./serial').SerialAPI
   /** 按实际内容归属记录；旧内容或归属未知时仅存本机。 */
   recordInteractionStat: (request: InteractionStatRequest) => Promise<InteractionStatResult>
   checkClientUpdate: () => Promise<ClientUpdateStatus>
