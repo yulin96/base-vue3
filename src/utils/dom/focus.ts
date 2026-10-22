@@ -1,6 +1,8 @@
+import gsap from 'gsap'
+
 const focusMap = new WeakMap<Element, gsap.core.Timeline>()
 
-export function focusDom(name: string) {
+export function focusDom(name: string, { color = true }: { color?: boolean } = {}) {
   const dom = document.querySelector(`[${name}]`)
 
   if (dom) {
@@ -44,8 +46,12 @@ export function focusDom(name: string) {
           { duration: 0.1, x: 0 },
         ],
       })
-      .to(dom, { duration: 0.5, color: '#e7000b', borderColor: '#e7000b' }, '<')
-      .to(dom, { duration: 0.5, color: originalColor, borderColor: originalBorderColor }, '>1')
+
+    if (color) {
+      timeline
+        .to(dom, { duration: 0.5, color: '#e7000b', borderColor: '#e7000b' }, 0)
+        .to(dom, { duration: 0.5, color: originalColor, borderColor: originalBorderColor }, '>1')
+    }
 
     focusMap.set(dom, timeline)
   }
