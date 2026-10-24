@@ -300,8 +300,8 @@ importers:
         specifier: ^24.0.5
         version: 24.0.5
       '@types/ali-oss':
-        specifier: ^6.23.3
-        version: 6.23.3
+        specifier: ^6.23.4
+        version: 6.23.4
       '@types/canvas-confetti':
         specifier: ^1.9.0
         version: 1.9.0
@@ -1925,8 +1925,8 @@ packages:
   '@tsparticles/engine@4.4.0':
     resolution: {integrity: sha512-zUDykZ7qBqHYMXr6NveXg51kBlvfaQKMmWkMJ8nT7fC4dXdNayb1+TxOfAoqH9/U/u0Eyr0YE+72ai/ymS0uww==}
 
-  '@types/ali-oss@6.23.3':
-    resolution: {integrity: sha512-huSf6njkqhSeR37OMJTGMCyUg2d9Zp2AioefhYuUMeh0vNM+WybctrBor7bO/RcCbLCQI6sHn6NtPBIWALYVJg==}
+  '@types/ali-oss@6.23.4':
+    resolution: {integrity: sha512-WR0ml5hqj92KOPW0q8LlewHvveEJSnTfeL0VbSNM60PP1FIx6DdSx0rz/fCdDAkpS63BTZ1FYpGJ2GXsGMEtUQ==}
 
   '@types/canvas-confetti@1.9.0':
     resolution: {integrity: sha512-aBGj/dULrimR1XDZLtG9JwxX1b4HPRF6CX9Yfwh3NvstZEm1ZL7RBnel4keCPSqs1ANRu1u2Aoz9R+VmtjYuTg==}
@@ -6032,7 +6032,7 @@ snapshots:
 
   '@tsparticles/engine@4.4.0': {}
 
-  '@types/ali-oss@6.23.3': {}
+  '@types/ali-oss@6.23.4': {}
 
   '@types/canvas-confetti@1.9.0': {}
 
