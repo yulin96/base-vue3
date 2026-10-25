@@ -7,27 +7,23 @@ import { onBeforeUnmount } from 'vue'
 import { electronSerial } from '@/utils/platform/electronSerial'
 
 // 先监听，再发送，避免漏掉快速回包。
-const off = electronSerial.receive(1, ({ data, error }) => {
-  if (error) {
-    console.error('串口异常：', error)
-    return
-  }
-  console.log(data) // Uint8Array，按设备协议解析
-})
-onBeforeUnmount(off)
+let off = () => {}
+try {
+  off = electronSerial.receive(1, ({ data, error }) => {
+    if (error) return
+    // data 为 Uint8Array，按设备协议处理。
+  })
+} catch {}
+onBeforeUnmount(() => off())
 
 async function start() {
-  try {
-    await electronSerial.send(1, { hex: 'AA 01 00 FF' })
-  } catch (error) {
-    console.error('发送失败：', error)
-  }
+  await electronSerial.send(1, { hex: 'AA 01 00 FF' }).catch(() => {})
 }
 ```
 
 发送参数三选一：`{ hex: 'AA 01' }`、`{ text: 'start\r\n' }`（UTF-8）或 `{ bytes: new Uint8Array([0xAA, 1]) }`。十六进制必须是完整双位字节，可带空白；不自动添加换行、帧头或校验码。禁止空数据，单次最多 64 KiB；发送队列超限会拒绝。
 
-`send()` 返回 `Promise<void>`，成功表示写入并排空发送缓冲，不代表设备已执行；失败必须处理。普通浏览器缺少客户端接口时明确报错，不模拟成功。
+`send()` 返回 `Promise<void>`，成功表示写入并排空发送缓冲，不代表设备已执行；失败由业务调用边界静默处理，不提示、不输出警告日志。普通浏览器缺少客户端接口时同样静默跳过，不模拟设备成功。
 
 `receive()` 返回取消监听函数；组件卸载时调用。回调的 `error` 非空时为错误通知，此时 `data` 为空；正常数据是串口原始数据块，可能半包或粘包，业务自行缓存并按协议分帧。跨块文本应复用 `TextDecoder`，用 `decode(data, { stream: true })` 解码。
 

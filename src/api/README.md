@@ -85,14 +85,10 @@ if (res.code != 200) return toast.warning(res?.message || res?.msg || '正在处
 import { recordInteractionStat } from '@/utils/interactionStats'
 
 // 在真实行为节点调用；每轮对应事件只发一次，不等待网络。
-void recordInteractionStat('开始').then(({ saved, error }) => {
-  if (!saved) {
-    // 将 error 交给项目维护状态处理，不自动重试、不阻塞互动。
-  }
-})
+void recordInteractionStat('开始')
 ```
 
-直接使用客户端 API 时调用 `electronApi.recordInteractionStat({ event: '开始' })`，必要时添加 `title` 分组。返回 `Promise<{ saved: boolean; error: string | null }>`，只表示 Electron 本地保存结果。
+直接使用客户端 API 时调用 `electronApi.recordInteractionStat({ event: '开始' })`，必要时添加 `title` 分组。返回 `Promise<{ saved: boolean; error: string | null }>`，只表示 Electron 本地保存结果。统计失败静默结束，不提示、不输出警告日志、不阻塞页面、不自动重试；直接调用客户端时也要在调用边界静默处理 Promise 拒绝。
 
 项目 ID 在 Electron F12 配置，选择项目时自动填入；手动修改地址会清空旧 ID。有效 8 位 ID 按 ID 隔离并联网即时上报；格式正确但云端不存在时保留本地数据，上报失败，不转匿名。云端仅接受后台已有 ID，不按名称创建项目。
 无 ID 或格式错误时使用匿名统计，按去除首尾空白的完整资源地址隔离，多屏共享归属，仅保存在本机。无配置地址时按实际开发或本地入口隔离。匿名与正式历史分开，不合并或补传。

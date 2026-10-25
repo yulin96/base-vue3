@@ -119,7 +119,7 @@ html {
 ## 大屏互动统计
 
 - Electron 客户端负责统计保存和上报，基础库只发送事件。
-- 业务调用 `recordInteractionStat(event, title?)`（`src/utils/interactionStats.ts`），直接透传事件和可选分组，项目归属由客户端按实际运行内容决定；内容地址与设置一致时使用配置 ID，旧内容地址不同或归属未知时仅记录匿名本机统计，不向目标项目上报。返回 `Promise<{ saved: boolean; error: string | null }>`，只表示本地保存结果，不等待网络。处理失败结果，不阻塞互动或自动重试。
+- 业务调用 `recordInteractionStat(event, title?)`（`src/utils/interactionStats.ts`），直接透传事件和可选分组，项目归属由客户端按实际运行内容决定；内容地址与设置一致时使用配置 ID，旧内容地址不同或归属未知时仅记录匿名本机统计，不向目标项目上报。返回 `Promise<{ saved: boolean; error: string | null }>`，只表示本地保存结果，不等待网络。失败静默结束，不提示、不输出警告日志，不阻塞互动或自动重试。
 - 直接调用客户端时使用 `electronApi.recordInteractionStat({ event, title? })`。接口类型变动同步 `types/electron.d.ts`。
 - 项目 ID 由 Electron F12 配置，选择项目自动填入；手动修改地址会清空旧 ID。有效 8 位 ID 按 ID 隔离并联网即时上报，同 ID 可跨资源地址累计。
 - 无 ID、格式错误、内容地址不同或归属未知时，仅在 Electron 本地保存匿名统计；按实际内容完整资源地址隔离，只去除首尾空白，保留查询参数和片段。无地址或归属未知时使用实际开发入口或该组窗口首个本地入口，多屏共享同一项目。匿名与正式历史分开，不自动合并或补传。
@@ -146,7 +146,9 @@ html {
 ## 启动、状态与缓存
 
 - 启动初始化逻辑优先收口到 `src/plugins`、`src/utils` 或明确的初始化模块，`main.ts` 尽量只保留创建应用、注册插件、初始化和挂载。
-- 初始化失败不能静默吞掉后继续进入半初始化页面。
+- 非关键配置必须有明确默认值。普通浏览器直接使用默认值；Electron 配置读取失败、接口缺失、空值或值无效时静默使用默认值继续体验，不添加配置错误页、重试入口、弹窗或 toast，不要求用户先修正 F12。使用默认值完成初始化属于正常状态。
+- Electron 相关业务调用（配置、统计、打印、串口等）失败时统一静默处理，不显示失败提示，不输出 `console.warn` / `console.error`，不自动重试或阻塞普通浏览器体验；调用边界处理 Promise 拒绝并释放锁和 loading。失败不能当作成功，打印等成功后续动作只在真实成功时执行。
+- 其他核心初始化失败需按实际业务处理，不能继续进入半初始化页面。
 - 本地缓存 key 必须区分真实活动、项目或入口；不要让缺失的 `id`、`appid`、`projectId` 落入同一个共享缓存 key。
 - 更新持久化状态时，先判断是替换成新状态还是合并补字段；旧字段可能残留时，优先从默认对象重建后再写入。
 - 检查 `Object.assign`、展开合并和 `afterHydrate` 迁移逻辑中的旧数据残留及跨活动串数据风险。
@@ -164,20 +166,20 @@ html {
 - 串口统一使用 `src/utils/platform/electronSerial.ts` 的 `electronSerial.send/receive`。编号固定为 1～20，绑定与通信参数在客户端 F12 设置，H5 无需声明设备或管理连接；卸载时取消监听，处理发送失败及接收错误，原始字节由业务分帧。
 
 - 项目运行在配套 `base-electron` 客户端时，统一从 `src/config/env.ts` 导入 `electronApi`；不要在业务代码里自行封装 IPC，也不要直接假定 `window.api` 一定存在。
-- `electronApi` 在普通浏览器中可能是 `undefined`，且类型声明允许客户端只提供部分接口。调用时使用可选链，并对有业务影响的 Promise 失败进行明确处理。
+- `electronApi` 在普通浏览器中可能是 `undefined`，且类型声明允许客户端只提供部分接口。调用时使用可选链，并在业务调用边界静默处理 Promise 失败。
 - 客户端接口类型位于 `types/electron.d.ts`。客户端升级或新增 preload 接口后，先对照 `base-electron/src/preload/index.ts` 和 `base-electron/src/shared/app-types.d.ts` 同步类型，再在业务代码中使用。
 - `list1`～`list20` 的名称、类型和默认值优先使用 `src/utils/platform/electronConfig.ts` 的 `setupElectronConfig` 集中声明并读取应用默认值后的实际配置，使用方式见 [Electron 配置说明](src/utils/platform/electronConfig.md)。在项目初始化入口调用，多窗口复用同一份声明；返回值不会自动同步配置面板后续修改。
-- 业务明确允许配置失败后继续时，可使用 `await setupElectronConfig(...).catch(() => null)`，字段通过 `config?.list1 ?? ''` 读取；Vue `<script setup>` 顶层 `await` 必须先确认父级有 `<Suspense>` 边界。
+- 非关键 Electron 配置在初始化边界使用 `await setupElectronConfig(...).catch(() => null)` 处理失败，字段按业务类型及范围校验，无效时使用已声明默认值，不展示错误或阻止页面进入；Vue `<script setup>` 顶层 `await` 必须先确认父级有 `<Suspense>` 边界。
 - H5 仅通过 `defineProjectFields` 声明 list1～list20，不恢复 `defineConfig` 或任意配置写入。支持 text、number、switch、select，所有实际值和 default 为字符串，开关固定 '1'/'0'；不填 type 默认文本，不填 default 不更新值。
 - 来源显式记录 default/user；缺失字段跟随默认值，用户编辑（即使等于旧默认值）保留，F12 恢复默认保存后重新跟随。旧配置无来源记录时按用户值保留，包括空字符串。
-- 类型变化保留不兼容用户值，新声明保存后通过 `{ config, errors }` 返回问题；`setupElectronConfig` 遇到 errors 会抛错，业务应等待 F12 修正后继续。字段声明不重启，使用返回配置初始化；多窗口复用同一份声明，冲突报错。
+- 类型变化保留不兼容用户值，新声明保存后通过 `{ config, errors }` 返回问题；`setupElectronConfig` 遇到 errors 会抛错，项目初始化边界静默回退到声明默认值，页面继续可用。字段声明不重启，使用返回配置初始化；多窗口复用同一份声明，冲突报错。
 - 客户端按完整 `resourceUrl` 隔离 list1～list20 及其字段声明和来源，查询参数和 # 内容也参与识别。F12 保存成功后立即重启；更换地址的同次保存不应用旧 list 表单值。旧托管记录不再影响实际配置。
 - 配置面板定制优先复用客户端现有接口：
   - `defineDisplayNames(names)` 可修改全部配置项（含 list1～list20）的显示名称；非空名称优先于字段声明中的名称，不修改类型、默认值和配置值；
   - `hideConfig(targets)` 可隐藏字段、`exitButton` 子字段或配置分组；`hideAllConfig()` 会关闭并禁用本次运行期间的整个配置面板；
   - `defineDisplayNames` 设置的显示名称和隐藏状态只保存在客户端主进程内存中，客户端重启后需由业务页面重新设置。`hideAllConfig()` 本次运行内没有恢复接口，调用前必须确认这是明确需求。
 - `electronApi.config` 是 preload 加载时的启动快照，不会自动刷新；需要最新配置时调用 `getConfig()`。默认值写入后，多数启动配置不会自动热更新，立即切换全屏应使用 `enterFullscreen()` 或 `exitFullscreen()`。
-- 打印使用 `previewPrint(request)` 或 `print(request)`；打印预览不能代替目标打印机、实际纸张、驱动方向和静默打印的实机验证。
+- 打印使用 `previewPrint(request)` 或 `print(request)`；调用失败或接口缺失时静默结束，不显示失败提示，也不计成功。打印预览不能代替目标打印机、实际纸张、驱动方向和静默打印的实机验证。
 - 多窗口通信使用 `getScreenIndex()`、`sendToScreen()` 和 `onScreenMessage()`。组件卸载时必须调用监听函数返回的取消函数；`sendToScreen()` 返回 `true` 只表示消息已投递，不代表目标业务处理成功。
 - `quit()`、`restart()` 属于高影响操作，客户端不会代替业务检查未保存内容或显示确认框，调用前由页面完成保存和用户确认。
 
