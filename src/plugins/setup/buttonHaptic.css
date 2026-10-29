@@ -1,4 +1,4 @@
-:where(.btn-haptic-host) {
+:where([tap][data-haptic-ready='true']) {
   position: relative;
 }
 

@@ -16,8 +16,6 @@ export function triggerButtonHaptic(pattern: number | number[] = HAPTIC_DURATION
 const addIOSHapticSwitch = (button: HTMLElement) => {
   if (button.dataset.hapticReady === 'true' || button.matches('input, img')) return
 
-  button.classList.add('btn-haptic-host')
-
   const hapticLabel = document.createElement('label')
   hapticLabel.className = 'btn-haptic-trigger'
   hapticLabel.htmlFor = IOS_SWITCH_ID
