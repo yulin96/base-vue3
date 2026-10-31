@@ -73,7 +73,7 @@
     "@types/ali-oss": "^6.23.4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/crypto-js": "^4.2.2",
-    "@types/node": "^24.19.2",
+    "@types/node": "^26.6.6",
     "@types/qrcode": "^1.5.6",
     "@vitejs/plugin-legacy": "^8.2.3",
     "@vitejs/plugin-vue": "^6.0.10",
