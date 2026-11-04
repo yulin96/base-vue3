@@ -15,6 +15,7 @@ definePage({ meta: { index: 10 } })
 useGsapContext('.index', () => {})
 onMounted(() => {
   document.title = '联系人名片'
+  fillRandom()
 })
 
 const emptyContact: ContactInfo = { name: '', phone: '', email: '', company: '', title: '' }
