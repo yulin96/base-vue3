@@ -97,7 +97,7 @@ export default defineConfig(({ command, mode }) => {
         uploadDir: `mm/oss-root/${ossRootDir}`,
         skip: ['**/*.html', '**/pluginWebUpdateNotice/**'],
         overwrite: true,
-        autoDelete: true,
+        // autoDelete: true,
 
         configBase: `${process.env.zBucketAlias || ''}/mm/oss-root/${ossRootDir}`,
       }),
