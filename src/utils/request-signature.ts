@@ -20,6 +20,7 @@ mQIDAQAB
 -----END PUBLIC KEY-----`
 
 const encryptIns = createEncryptIns(rsaPublicKey)
+const chunkSize = encryptIns.maxEncryptBytes
 export function createApiSignature(data: Dict, action: string) {
   const timestamp = Date.now().toString()
   const nonce = Math.random().toString(36).substring(2, 15)
@@ -27,12 +28,11 @@ export function createApiSignature(data: Dict, action: string) {
   const payload = JSON.stringify({ ...data, action })
   const payloadEncoded = encodeURIComponent(payload)
 
-  const query =
-    payloadEncoded.length > 180
-      ? Array.from({ length: Math.ceil(payloadEncoded.length / 180) }, (_, index) =>
-          encryptIns.encrypt(payloadEncoded.slice(index * 180, (index + 1) * 180)),
-        ).join('|')
-      : encryptIns.encrypt(payloadEncoded)
+  const query = Array.from({ length: Math.ceil(payloadEncoded.length / chunkSize) }, (_, index) => {
+    const encrypted = encryptIns.encrypt(payloadEncoded.slice(index * chunkSize, (index + 1) * chunkSize))
+    if (!encrypted) throw new Error('请求参数加密失败')
+    return encrypted
+  }).join('|')
 
   devModel && console.log(payload)
   devModel && console.log(payloadEncoded)

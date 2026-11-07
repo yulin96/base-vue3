@@ -73,6 +73,7 @@ if (res.code != 200) return toast.warning(res?.message || res?.msg || '正在处
 - 不为了让重复点击通过而随意设置 `disableLock = true`。搜索、分页等需要并发或取消时，按业务处理取消和结果覆盖关系，锁不能替代竞态处理。
 - JSON 是 POST 默认格式；协议明确需要 FormData 时，使用 `postXxx<ResData<TXxx>>(path, data, config, 'FormData')`，由请求层转换，不在页面复制转换逻辑。
 - POST 签名、加密与载荷转换由 `src/utils/request.ts` 及其 `request-payload.ts`、`request-signature.ts` 依赖处理，不在接口函数内重复实现，也不自行拼签名字段。
+- RSA 载荷经 URI 编码后按 `createEncryptIns().maxEncryptBytes` 分段加密，密文以 `|` 拼接；单段上限由当前公钥的模数位数计算，1024 位为 117 字节，2048 位为 245 字节。加密失败会中止请求。
 - 不顺手增加全局业务码拦截、重试、鉴权、错误上报或通用 API 工厂；需要新增底层能力时另按明确需求处理。
 
 ## 现有特殊用法

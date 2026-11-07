@@ -6,7 +6,10 @@ import JSEncrypt from 'jsencrypt'
  * const encrypt = createEncryptIns('<publicKey>');
  * encrypt.encrypt('1231');
  */
-export function createEncryptIns(publicKey: string): { encrypt: (str: string) => string | false }
+export function createEncryptIns(publicKey: string): {
+  maxEncryptBytes: number
+  encrypt: (str: string) => string | false
+}
 /**
  * @example
  * // 使用公钥和私钥创建加密解密实例
@@ -17,13 +20,18 @@ export function createEncryptIns(publicKey: string): { encrypt: (str: string) =>
 export function createEncryptIns(
   publicKey: string,
   privateKey?: string,
-): { encrypt: (str: string) => string | false; decrypt: (str: string) => string | false }
+): {
+  maxEncryptBytes: number
+  encrypt: (str: string) => string | false
+  decrypt: (str: string) => string | false
+}
 
 export function createEncryptIns(publicKey: string, privateKey?: string) {
   const jsencrypt = new JSEncrypt()
   jsencrypt.setPublicKey(publicKey)
   if (privateKey) jsencrypt.setPrivateKey(privateKey)
   return {
+    maxEncryptBytes: Math.ceil(jsencrypt.getKey()['n'].bitLength() / 8) - 11,
     encrypt: (str: string) => {
       return jsencrypt.encrypt(str)
     },
