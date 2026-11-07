@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-07T06:38:09Z",
+  "title": "Design System: 现场体验问卷",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "操作橙"
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "选中橙"
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "暖白底"
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "深色文字"
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "辅助文字"
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "主按钮",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "问卷提交与规则确认使用的主要操作。",
+      "html": "<div class=\"ds-primary\" role=\"button\">提交问卷，参与抽奖</div>",
+      "css": ".ds-primary{display:flex;align-items:center;justify-content:center;min-height:102px;padding:24px 33px;background:#c04b23;color:#fffdf7;border-radius:13px;font-family:'PingFang SC','Noto Sans SC',-apple-system,sans-serif;font-size:29px;font-weight:550;cursor:pointer;transition:background .18s,transform .18s}.ds-primary:active{background:#c55025;transform:scale(.985)}"
+    },
+    {
+      "name": "问卷选项",
+      "kind": "custom",
+      "refersTo": "answer-option",
+      "description": "单选答案及其选中状态；多选使用方形标记。",
+      "html": "<div class=\"ds-options\"><div class=\"ds-option\" role=\"button\" aria-pressed=\"false\"><span class=\"ds-check\"></span>第一次</div><div class=\"ds-option ds-selected\" role=\"button\" aria-pressed=\"true\"><span class=\"ds-check\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m20 6-11 11-5-5\"/></svg></span>第二次</div></div>",
+      "css": ".ds-options{display:grid;gap:13px}.ds-option{display:flex;align-items:center;gap:17px;min-height:85px;padding:19px 23px;border:1px solid #e2dcd0;border-radius:11px;background:#fffdf8;color:#5e5a4f;font-family:'PingFang SC','Noto Sans SC',-apple-system,sans-serif;font-size:25px;transition:background .15s,border-color .15s}.ds-check{display:flex;align-items:center;justify-content:center;flex:none;width:29px;height:29px;border:1px solid #9c9180;border-radius:50%}.ds-selected{border-color:#d75b2c;background:#fcf0e5;color:#ab4a23}.ds-selected .ds-check{background:#d75b2c;border-color:#d75b2c;color:white}"
+    }
+  ],
+  "narrative": {
+    "northStar": "清晰、温暖的现场问卷",
+    "overview": "从当前页面提取的局部视觉记录：暖白底、深色文字与橙色操作，让观众专注填写。适用边界是本次问卷与抽奖页面，不作为基础模板的全局品牌。",
+    "keyCharacteristics": [
+      "暖白底与橙色操作。",
+      "单列长问卷与吸顶进度。",
+      "细边框选项与明确选中状态。"
+    ],
+    "rules": [],
+    "dos": [
+      "Do 保持单列阅读、清晰题号与可辨认的选中状态。",
+      "Do 沿用现有 750 设计稿与 rem 适配。"
+    ],
+    "donts": [
+      "Don't 为此问卷增加入口首页、无关营销文案或演示标识。",
+      "Don't 将本页活动名称、题目和奖品视为已确认的全局品牌规范。"
+    ]
+  }
+}
