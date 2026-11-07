@@ -1,3 +1,4 @@
+import { devModel } from '@/config/env'
 import { services } from '@/config/services'
 import { normalizePostRequest, type FormDataOrJson, type PostRequestConfig } from '@/utils/request-payload'
 import axios, { type AxiosRequestConfig } from 'axios'
@@ -6,7 +7,7 @@ export type IFormDataOrJSON = FormDataOrJson
 type Dict = Record<string, unknown>
 
 const instance = axios.create({
-  baseURL: services.api.baseURL,
+  baseURL: services.api.baseURL.replace('c26.event1.cn', devModel ? 'c26-test.event1.cn' : 'c26.event1.cn'),
 })
 
 instance.interceptors.request.use((config) => {
