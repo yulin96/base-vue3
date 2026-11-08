@@ -90,6 +90,7 @@ html {
   - hooks 优先放或查 `src/hooks`，并按用途分类；
   - 工具函数优先放或查 `src/utils`。
 - 页面路由跳转默认使用从 `@/router` 导出的 `replaceTo`；只有明确需要新增浏览器历史记录时才使用 `router.push`。返回上一页使用 `goBack`，与项目维护的返回记录保持一致。
+- 消息提示统一使用从 `vue-sonner` 导入的 `toast`，复用 `App.vue` 中的 `Toaster`；按场景使用 `toast.success`、`toast.warning`、`toast.error` 或 `toast.info`。
 - 自动组件名称包含目录名称，例如 `src/components/form/keyboard.vue` 对应 `FormKeyboard`。
 - 不使用 `export *`，统一明确写出导出内容。
 - 保持实现直接、清晰，不为了“通用性”提前创建复杂抽象。
