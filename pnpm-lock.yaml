@@ -191,8 +191,8 @@ importers:
         specifier: ^2.1.3
         version: 2.1.3(vue@3.5.45(typescript@6.0.3))
       '@zumer/snapdom':
-        specifier: ^3.7.4
-        version: 3.7.4
+        specifier: ^3.7.5
+        version: 3.7.5
       ali-oss:
         specifier: ^6.23.0
         version: 6.23.0
@@ -224,8 +224,8 @@ importers:
         specifier: ^18.0.10
         version: 18.0.10
       driver.js:
-        specifier: ^1.12.1
-        version: 1.12.1
+        specifier: ^1.14.0
+        version: 1.14.0
       es-toolkit:
         specifier: ^1.53.2
         version: 1.53.2
@@ -2229,8 +2229,8 @@ packages:
       '@vue/composition-api':
         optional: true
 
-  '@zumer/snapdom@3.7.4':
-    resolution: {integrity: sha512-HAFoNlMltC/JirFGy0w5VJuqCDT6rQXuQuzcGcBVR8Hi3RXgaQpHmptpv06WMB1aUUs8SAX9crjeQPF3TSKttg==}
+  '@zumer/snapdom@3.7.5':
+    resolution: {integrity: sha512-KXf6tQc286F8ece8ENKwQgZA6mHx0os2iW5GyktXCx6Eu+xf7WJuwJspItuGoOFKydh/ojP92LapmCIiGumHbg==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -2654,8 +2654,8 @@ packages:
     engines: {node: '>=12'}
     hasBin: true
 
-  driver.js@1.12.1:
-    resolution: {integrity: sha512-upBRqQW+bz+yfH7ee1gjWBaq0ue7i2343f2U3WzIUc3bhs5hwb2jz86cuB8gArRh3nfNp77CLNgkUtArTYTKFA==}
+  driver.js@1.14.0:
+    resolution: {integrity: sha512-BnCFuNU8QO2rrYiDra43Ortx6D6chqMvEMF1q3fWQfsC3xNyCX4T1P1vZDTXTxGdtcXh2v5r11hxSpNLF3DJVw==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -6448,7 +6448,7 @@ snapshots:
       vue: 3.5.45(typescript@6.0.3)
       vue-demi: 0.14.10(vue@3.5.45(typescript@6.0.3))
 
-  '@zumer/snapdom@3.7.4': {}
+  '@zumer/snapdom@3.7.5': {}
 
   acorn-jsx@5.3.2(acorn@8.19.0):
     dependencies:
@@ -6839,7 +6839,7 @@ snapshots:
 
   dotenv@18.0.10: {}
 
-  driver.js@1.12.1: {}
+  driver.js@1.14.0: {}
 
   dunder-proto@1.0.1:
     dependencies:
