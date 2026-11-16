@@ -35,7 +35,7 @@
 npx create-base-vue
 ```
 
-根据提示选择移动端 H5 或 PC 固定比例项目。创建成功后，按终端显示的 `cd` 命令进入项目目录，再执行 `pnpm install`、`pnpm dev`。
+根据提示选择移动端 H5 或 PC 固定比例项目。在交互式终端中创建成功后，会自动在新项目目录启动子 Shell，可直接执行 `pnpm install`、`pnpm dev`，输入 `exit` 返回原目录；非交互运行时按显示的 `cd` 命令进入项目目录。
 
 ## 脚手架同步维护
 
@@ -54,7 +54,7 @@ npx create-base-vue
 | `src/assets/styles/tailwind.css`、`size.css` | `updateTailwindCss`                 | PC 模式禁用 `./size.css`，并将整数尺寸的 `1px` 换算改为 `0.25rem`                                                                                      |
 | `src/assets/styles/theme.css`                | `updateThemeCss`                    | `--spacing: 1px`、画布宽高变量和根字号计算块                                                                                                           |
 | `AGENTS.md`、`AGENTS-PC.md`                  | `replaceAgents`、`customizeProject` | PC 规范替换根规范；两种模式生成后都移除 `AGENTS-PC.md`                                                                                                 |
-| `renovate.json`、`.github/workflows`         | `cleanupTemplateFiles`              | 模板专用配置和工作流的清理范围                                                                                                                         |
+| `HANDOFF.MD`、`renovate.json`、`.github/workflows` | `cleanupTemplateFiles`          | 模板维护记录、专用配置和工作流的清理范围                                                                                                               |
 
 维护要求：
 
