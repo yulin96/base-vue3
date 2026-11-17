@@ -1,5 +1,10 @@
 # 项目维护经验
 
+## 折叠屏适配资料
+
+- `折叠屏适配参考.md` 的硬件规格已按厂商资料及 MIX Fold 4 自有设备评测核对；表内 DPR 是模拟选值，物理分辨率除以 DPR 不能当成浏览器实测。iPhone Duo 内屏的面板像素与截图渲染像素不同，浏览器采样另列环境。Mate XT / XTs / XT 2、Magic V Flip / Flip2、Fold8 / Fold8 Ultra 需区分参数；本文未做真机验证。
+- 当前 `src/plugins/setup/setRem.ts` 以 `innerWidth > 700` 进入 `pc` 居中预览分支，部分折叠内屏也会命中。调试时同时检查视口与 `#app` 实际宽度，不能把预览容器当成全宽内屏；本文档整理未修改此逻辑。
+
 ## 请求加密
 
 - RSA PKCS#1 v1.5 单段上限为 `ceil(公钥模数位数 / 8) - 11`。`createEncryptIns` 提供 `maxEncryptBytes`，请求签名模块据此对 URI 编码后的 ASCII 载荷统一分段，以 `|` 拼接密文；加密失败直接抛错，不发送无效密文。替换公钥时无需手动维护固定分段长度。
