@@ -15,12 +15,11 @@ export function convertObjectName<T = Record<string, unknown>>(
   }
 
   const result: Record<string, unknown> = {}
-  const keys = Object.keys(nameKey)
 
   for (const [key, value] of Object.entries(obj)) {
     if (value === undefined || value === null) continue
 
-    const newKey = keys.includes(key) ? nameKey[key] : key
+    const newKey = Object.hasOwn(nameKey, key) ? nameKey[key] : key
     if (newKey === undefined || newKey === null) continue
 
     result[newKey] =

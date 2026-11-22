@@ -26,7 +26,8 @@ router.beforeEach((to, from) => {
   // if (!openid && to.path !== '/') return { path: '/' }
 })
 
-router.afterEach((to, from) => {
+router.afterEach((to, from, failure) => {
+  if (failure) return
   if (typeof window._hmt !== 'undefined') {
     window._hmt.push(['_trackPageview', `${location.pathname}#${to.fullPath}`])
   }

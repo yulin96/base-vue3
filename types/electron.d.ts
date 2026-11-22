@@ -1,7 +1,3 @@
-type ClientUpdateStatus =
-  | { status: 'available'; version: string }
-  | { status: 'unsupported' | 'offline' | 'current' | 'error' | 'updating' }
-
 type PrintPagePreset =
   | 'A0'
   | 'A1'
@@ -112,24 +108,24 @@ type ExitButtonConfig = {
   size: number
 }
 
-type WindowConfig = {
-  width: number
-  height: number
+type FixedAppConfig = Readonly<{
   backgroundColor: string
   autoHideMenuBar: boolean
-  fullscreen: boolean
   frame: boolean
-}
-
-type AppConfig = WindowConfig & {
-  projectId: string
   test: boolean
+  printCountdown: number
+  autoUpdate: boolean
+}>
+
+type AppConfig = FixedAppConfig & {
+  width: number
+  height: number
+  fullscreen: boolean
+  projectId: string
   hideCursor: boolean
   disableZoom: boolean
   disableSelect: boolean
   hardwareAcceleration: HardwareAccelerationMode
-  printCountdown: number
-  autoUpdate: boolean
   autoLaunch: boolean
   alwaysOnTop: boolean
   exitButton: ExitButtonConfig
@@ -233,34 +229,17 @@ type NetworkCheckResult = {
   error: string | null
 }
 
-type AppDiagnostics = {
-  version: string
-  electron: string
-  chromium: string
-  gpu: Record<string, string>
-  processes: { pid: number; type: string; memoryMB: number }[]
-  displays: {
-    id: number
-    primary: boolean
-    width: number
-    height: number
-    scaleFactor: number
-    refreshRate: number
-  }[]
-}
-
 type InteractionStatRequest = { title?: string; event: string }
 type InteractionStatResult = { saved: boolean; error: string | null }
 
+type SaveImageRequest = { src: string }
+type SaveImageResult = { path: string }
+
 type AppAPI = PrintAPI & {
+  saveImage: (request: SaveImageRequest) => Promise<SaveImageResult>
   serial: import('./serial').SerialAPI
-  /** 按实际内容归属记录；旧内容或归属未知时仅存本机。 */
   recordInteractionStat: (request: InteractionStatRequest) => Promise<InteractionStatResult>
-  checkClientUpdate: () => Promise<ClientUpdateStatus>
-  installClientUpdate: () => Promise<boolean>
-  getDiagnostics: () => Promise<AppDiagnostics>
   config: AppConfig
-  /** 已知内容保存到自身项目，未知归属仅本次运行有效。 */
   defineProjectFields: (fields: ProjectFieldDefinitions) => Promise<ProjectFieldsResult>
   defineDisplayNames: (names: ConfigDisplayNames) => Promise<ConfigDisplayNames>
   hideConfig: (names: ConfigHideTarget) => Promise<ConfigEditorOptions>

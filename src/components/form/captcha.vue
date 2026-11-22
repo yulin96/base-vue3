@@ -13,7 +13,7 @@ const captchaRef = useTemplateRef('captchaRef')
 const captchaString = ref('')
 
 const checkCaptcha = (input: string) => {
-  return input.toLowerCase() === captchaString.value.toLowerCase()
+  return Boolean(captchaString.value) && input.toLowerCase() === captchaString.value.toLowerCase()
 }
 
 const refreshCaptcha = () => {
@@ -23,8 +23,7 @@ const refreshCaptcha = () => {
     padding,
     fontSize,
   })
-  if (!captcha) return console.error('captchaRef is not a valid element')
-  captchaString.value = captcha
+  captchaString.value = captcha ?? ''
 }
 
 onMounted(() => {

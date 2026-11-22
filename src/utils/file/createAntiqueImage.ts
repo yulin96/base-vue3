@@ -119,7 +119,7 @@ export async function createAntiqueImage(
   return new Promise<File>((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (blob) {
-        const fileName = file.name.replace(/\.[^/.]+$/, '') + '_old' + getFileExtension(outputType)
+        const fileName = file.name.replace(/\.[^/.]+$/, '') + '_old' + getFileExtension(blob.type || outputType)
         const newFile = new File([blob], fileName, { type: blob.type || outputType })
         resolve(newFile)
       } else {

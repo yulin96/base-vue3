@@ -23,11 +23,16 @@ const statusMap = { success, info, fail }
 export function myToast(option: (ToastOptions & { status?: 'success' | 'info' | 'fail' }) | string) {
   if (typeof option === 'string') return _showToast({ message: option, type: 'text' })
 
-  const _message = option?.status
-    ? `<img style="height: 26px;margin-right:6px;" src="${statusMap[option.status]}" /><p>${option?.message || ''}</p>`
-    : option?.message || ''
+  if (!option.status) return _showToast({ ...option, type: option.type ?? 'text' })
 
-  return _showToast({ ...option, message: _message, type: 'html' })
+  const rawMessage = String(option.message ?? '')
+  const message =
+    option.type === 'html' ? rawMessage : rawMessage.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  return _showToast({
+    ...option,
+    type: 'html',
+    message: `<img style="height: 26px;margin-right:6px;" src="${statusMap[option.status]}" /><p>${message}</p>`,
+  })
 }
 
 export function successToast(option: string | ToastOptions) {

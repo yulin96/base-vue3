@@ -82,7 +82,7 @@ export default defineConfig(({ command, mode }) => {
         directoryAsNamespace: true,
       }),
       legacy({
-        targets: ['chrome >= 87', 'safari >= 13'],
+        modernTargets: ['chrome >= 87', 'safari >= 13', 'ios >= 13'],
         renderLegacyChunks: false,
         modernPolyfills: true,
         additionalModernPolyfills: ['core-js/es/object/has-own'],

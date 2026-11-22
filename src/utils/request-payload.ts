@@ -1,5 +1,5 @@
+import { isPostEncryptEnabled } from '@/config/env'
 import { formDataToObj } from '@/utils/convert/form'
-import { createApiSignature, isPostEncryptEnabled } from '@/utils/request-signature'
 import { isFormData } from '@/utils/validate'
 import { AxiosHeaders, toFormData, type InternalAxiosRequestConfig } from 'axios'
 
@@ -16,7 +16,8 @@ export function normalizePostRequest(config: PostRequestConfig) {
   return isPostEncryptEnabled && config.postEncrypt !== false ? encryptPostRequest(config) : buildPlainPostRequest(config)
 }
 
-function encryptPostRequest(config: PostRequestConfig) {
+async function encryptPostRequest(config: PostRequestConfig) {
+  const { createApiSignature } = await import('@/utils/request-signature')
   const dataType = config.postDataType ?? 'JSON'
   const requestData = isFormData(config.data) ? formDataToObj(config.data) : config.data
   const { query, headers } = createApiSignature(

@@ -97,7 +97,7 @@ function checkScratchCompletion(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
   const totalPixels = canvas.width * canvas.height
   const scratchPercent = (scratchedPixels / totalPixels) * 100
 
-  return scratchPercent > percentage
+  return scratchPercent >= percentage && scratchedPixels > 0
 }
 
 const reset = () => {

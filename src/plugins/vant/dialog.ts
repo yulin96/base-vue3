@@ -4,7 +4,7 @@ import 'vant/es/dialog/style'
 setDialogDefaultOptions({
   title: '温馨提示',
   theme: 'round-button',
-  allowHtml: true,
+  allowHtml: false,
   teleport: '#app',
   transition: 'popup',
 })

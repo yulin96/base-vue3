@@ -16,50 +16,13 @@ const props = withDefaults(
 const lineRef = useTemplateRef('lineRef')
 const lineWidth = ref<number[]>([])
 
-const lines = ref<string[]>([])
+const lines = ref<string[][]>([])
 const currentIndex = ref(0)
 let disposed = false
 let mounted = false
 let writingSessionId = 0
 
-// 使用 canvas measureText 优化文本宽度计算
-const measureTextWidth = (text: string): number => {
-  if (!lineRef.value) return 0
-
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return 0
-
-  const computedStyle = getComputedStyle(lineRef.value)
-  ctx.font = computedStyle.font || '16px sans-serif'
-
-  return ctx.measureText(text).width
-}
-
-const writeText = async (sessionId: number) => {
-  if (disposed || sessionId !== writingSessionId) return
-
-  const idx = currentIndex.value
-  if (idx >= props.texts.length) return
-
-  if (!lines.value[idx]) lines.value[idx] = ''
-
-  const characters = Array.from(props.texts[idx] ?? '')
-  const shown = Array.from(lines.value[idx]).length
-  if (shown < characters.length) {
-    lines.value[idx] += characters[shown]
-  } else if (idx < props.texts.length - 1) {
-    currentIndex.value++
-  } else if (idx == props.texts.length - 1) {
-    return
-  }
-
-  const time = Array.isArray(props.speed) ? randomInt(props.speed[0], props.speed[1]) : props.speed
-
-  await sleep(time)
-  if (disposed || sessionId !== writingSessionId) return
-  void writeText(sessionId)
-}
+const characterDelay = () => (Array.isArray(props.speed) ? randomInt(...props.speed) : props.speed)
 
 const restart = async () => {
   const sessionId = ++writingSessionId
@@ -70,9 +33,25 @@ const restart = async () => {
   await nextTick()
   if (disposed || sessionId !== writingSessionId) return
 
-  // 使用 canvas 测量文本宽度,避免创建临时 DOM 元素
-  lineWidth.value = props.texts.map(measureTextWidth)
-  void writeText(sessionId)
+  const ctx = document.createElement('canvas').getContext('2d')
+  if (ctx && lineRef.value) {
+    ctx.font = getComputedStyle(lineRef.value).font || '16px sans-serif'
+    lineWidth.value = props.texts.map((text) => ctx.measureText(text).width)
+  }
+
+  for (const [index, text] of props.texts.entries()) {
+    currentIndex.value = index
+    lines.value[index] = []
+    for (const character of text) {
+      lines.value[index].push(character)
+      await sleep(characterDelay())
+      if (disposed || sessionId !== writingSessionId) return
+    }
+    if (index < props.texts.length - 1) {
+      await sleep(characterDelay())
+      if (disposed || sessionId !== writingSessionId) return
+    }
+  }
 }
 
 onMounted(() => {

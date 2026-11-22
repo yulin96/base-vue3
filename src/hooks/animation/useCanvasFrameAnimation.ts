@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { nextTick, onMounted, onUnmounted, reactive, readonly, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, reactive, readonly, useTemplateRef } from 'vue'
 
 export interface FrameAnimationOptions {
   /** 图片序列，可以是URL数组或图片对象数组 */
@@ -76,10 +76,14 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   }
 
   const maxFrameIndex = frames.length - 1
-  const validCoverFrame = Math.max(0, Math.min(coverFrame, maxFrameIndex))
-  const validStartFrame = Math.max(0, Math.min(startFrame, maxFrameIndex))
-  const boundedLoopStart = Math.max(0, Math.min(loopStart, maxFrameIndex))
-  const boundedLoopEnd = Math.max(0, Math.min(loopEnd, maxFrameIndex))
+  const clampFrame = (frame: number) => {
+    if (!Number.isFinite(frame)) throw new RangeError('帧索引必须是有限数值')
+    return Math.max(0, Math.min(Math.trunc(frame), maxFrameIndex))
+  }
+  const validCoverFrame = clampFrame(coverFrame)
+  const validStartFrame = clampFrame(startFrame)
+  const boundedLoopStart = clampFrame(loopStart)
+  const boundedLoopEnd = clampFrame(loopEnd)
   const validLoopStart = Math.min(boundedLoopStart, boundedLoopEnd)
   const validLoopEnd = Math.max(boundedLoopStart, boundedLoopEnd)
 
@@ -127,14 +131,13 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   let loadingSessionId = 0
   let lifecycleId = 0
   let destroyed = false
-  const activeImageLoads = new Map<HTMLImageElement, () => void>()
+  const activeImageLoads = new Set<() => void>()
 
   // 🔴 优化1：缓存帧间隔，避免在 rAF 热路径中重复读取 reactive 属性并计算
   let frameInterval = 1000 / fps
 
   // 🟠 优化2：布局参数缓存，key 为 "imgW×imgH@canvasW×canvasH"
   const drawParamsCache = new Map<string, DrawParams>()
-  const failedFrames = new Set<number>()
 
   const settleCompletion = (runCallback = false) => {
     const callback = onCompleteCallback
@@ -272,112 +275,55 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     items: Array<{ frame: string | HTMLImageElement; index: number }>,
     sessionId: number,
   ): Promise<Array<HTMLImageElement | null>> => {
-    const markFrameProcessed = () => {
-      if (destroyed || sessionId !== loadingSessionId) return
-      loadedCount++
-      state.loadProgress = loadedCount / frames.length
-    }
-
-    const loadImageWithRetry = (frame: string, index: number, retryCount = 2): Promise<HTMLImageElement | null> => {
-      return new Promise((resolve) => {
-        const attemptLoad = (attempt: number) => {
-          if (destroyed || sessionId !== loadingSessionId) {
-            resolve(null)
-            return
-          }
-
-          const img = new Image()
-          let settled = false
-
-          const settle = (value: HTMLImageElement | null) => {
-            if (settled) return
-            settled = true
-            activeImageLoads.delete(img)
-            img.onload = null
-            img.onerror = null
-            resolve(value)
-          }
-
-          activeImageLoads.set(img, () => {
-            img.src = ''
-            settle(null)
-          })
-
-          img.onload = () => {
-            if (destroyed || sessionId !== loadingSessionId) {
-              settle(null)
-              return
-            }
-
-            failedFrames.delete(index)
-            markFrameProcessed()
-
-            if (index === validCoverFrame) {
-              images[index] = img
-              nextTick(() => drawFrame(validCoverFrame))
-            }
-
-            settle(img)
-          }
-
-          img.onerror = () => {
-            activeImageLoads.delete(img)
-            img.onload = null
-            img.onerror = null
-
-            if (destroyed || sessionId !== loadingSessionId) {
-              settle(null)
-              return
-            }
-
-            if (attempt < retryCount) {
-              settled = true
-              attemptLoad(attempt + 1)
-              return
-            }
-
-            failedFrames.add(index)
-            markFrameProcessed()
-
-            const fallback = images[index - 1] ?? images[validCoverFrame] ?? null
-            console.warn(`Failed to load frame ${index}: ${frame}`)
-
-            if (index === validCoverFrame) {
-              images[index] = fallback
-              nextTick(() => drawFrame(validCoverFrame))
-            }
-
-            settle(fallback)
-          }
-
-          img.src = attempt === 0 ? frame : `${frame}${frame.includes('?') ? '&' : '?'}retry=${attempt}`
+    const waitForImage = (img: HTMLImageElement, src?: string) =>
+      new Promise<HTMLImageElement | null>((resolve) => {
+        const finish = (value: HTMLImageElement | null) => {
+          img.removeEventListener('load', onLoad)
+          img.removeEventListener('error', onError)
+          activeImageLoads.delete(cancel)
+          resolve(value)
+        }
+        const onLoad = () => finish(img.naturalWidth > 0 ? img : null)
+        const onError = () => finish(null)
+        const cancel = () => {
+          finish(null)
+          if (src !== undefined) img.removeAttribute('src')
         }
 
-        attemptLoad(0)
+        if (src === undefined && img.complete) {
+          onLoad()
+          return
+        }
+        activeImageLoads.add(cancel)
+        img.addEventListener('load', onLoad)
+        img.addEventListener('error', onError)
+        if (src !== undefined) img.src = src
       })
-    }
 
     return Promise.all(
-      items.map(({ frame, index }) => {
-        return new Promise<HTMLImageElement | null>((resolve) => {
-          if (destroyed || sessionId !== loadingSessionId) {
-            resolve(null)
-            return
-          }
-
-          if (frame instanceof HTMLImageElement) {
-            failedFrames.delete(index)
-            markFrameProcessed()
-            if (index === validCoverFrame) {
-              images[index] = frame
-              nextTick(() => drawFrame(validCoverFrame))
+      items.map(async ({ frame, index }) => {
+        let img: HTMLImageElement | null
+        if (typeof frame === 'string') {
+          img = await waitForImage(new Image(), frame)
+          for (let attempt = 1; !img && attempt <= 2 && !destroyed && sessionId === loadingSessionId; attempt++) {
+            let retryUrl: URL
+            try {
+              retryUrl = new URL(frame, document.baseURI)
+            } catch {
+              break
             }
-            resolve(frame)
-            return
+            if (!['http:', 'https:'].includes(retryUrl.protocol)) break
+            retryUrl.searchParams.set('retry', String(attempt))
+            img = await waitForImage(new Image(), retryUrl.href)
           }
-
-          void loadImageWithRetry(frame as string, index).then(resolve)
-        })
+        } else {
+          img = await waitForImage(frame)
+        }
+        if (destroyed || sessionId !== loadingSessionId) return null
+        state.loadProgress = ++loadedCount / frames.length
+        images[index] = img
+        if (img && index === validCoverFrame) drawFrame(validCoverFrame)
+        return img
       }),
     )
   }
@@ -511,7 +457,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       } else {
         if (nextFrame > validLoopEnd) {
           if (loop) {
-            if (loopCount > 0 && state.completedLoops >= loopCount) {
+            if (loopCount >= 0 && state.completedLoops >= loopCount) {
               state.currentFrame = validCoverFrame
               state.completedLoops = 0
               drawFrame(state.currentFrame)
@@ -531,7 +477,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       }
 
       drawFrame(nextFrame)
-      lastFrameTime = currentTime
+      lastFrameTime = currentTime - ((currentTime - lastFrameTime) % frameInterval)
 
       if (targetFrame !== null && state.currentFrame >= targetFrame) {
         finishPlayback(true)
@@ -557,7 +503,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     if (destroyed || currentLifecycleId !== lifecycleId || currentPlaybackRequestId !== playbackRequestId) return
 
     if (typeof fromFrame === 'number') {
-      state.currentFrame = Math.max(0, Math.min(fromFrame, frames.length - 1))
+      state.currentFrame = clampFrame(fromFrame)
       drawFrame(state.currentFrame)
     }
 
@@ -595,7 +541,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
   }
 
   const goToFrame = (frameIndex: number) => {
-    const targetFrameIndex = Math.max(0, Math.min(frameIndex, frames.length - 1))
+    const targetFrameIndex = clampFrame(frameIndex)
     drawFrame(targetFrameIndex)
   }
 
@@ -622,22 +568,13 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
 
     if (destroyed || currentLifecycleId !== lifecycleId || currentPlaybackRequestId !== playbackRequestId) return
 
-    const validEndFrame = Math.max(0, Math.min(endFrame, frames.length - 1))
+    const validEndFrame = clampFrame(endFrame)
 
-    if (validEndFrame === state.currentFrame) {
-      onComplete?.()
-      return Promise.resolve()
-    }
-
-    if (validEndFrame < state.currentFrame) {
+    if (validEndFrame <= state.currentFrame) {
+      finishPlayback()
       goToFrame(validEndFrame)
       onComplete?.()
-      return Promise.resolve()
-    }
-
-    if (targetFrame !== null) {
-      targetFrame = null
-      settleCompletion(false)
+      return
     }
 
     targetFrame = validEndFrame
@@ -709,17 +646,9 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
         throw new Error('Failed to get 2D context')
       }
 
-      images = new Array(frames.length).fill(null)
-
       // 开始预加载（异步进行，封面帧会优先加载完成后立即显示）
-      preloadImages().catch(console.error)
-
-      // 如果封面帧已经是 HTMLImageElement，立即绘制
-      if (frames[validCoverFrame] instanceof HTMLImageElement) {
-        images[validCoverFrame] = frames[validCoverFrame] as HTMLImageElement
-        await nextTick()
-        drawFrame(validCoverFrame)
-      }
+      if (state.isLoaded) drawFrame(state.currentFrame)
+      else preloadImages().catch(console.error)
 
       if (state.isLoaded && autoplay && currentPlaybackRequestId === playbackRequestId) {
         play(validStartFrame)
@@ -745,7 +674,6 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
     state.loadProgress = 0
     state.completedLoops = 0
     loadingPromise = null
-    failedFrames.clear()
     drawParamsCache.clear()
   }
 

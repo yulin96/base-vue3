@@ -69,10 +69,9 @@ const setScale = (nextScale: number): number => {
 }
 
 const resetTransform = () => {
-  userScale.value = 1
   translate.x = 0
   translate.y = 0
-  clampTranslate()
+  setScale(1)
 }
 
 const imgStyle = computed(() => ({
@@ -309,6 +308,8 @@ onBeforeUnmount(() => {
 watch(
   () => props.src,
   () => {
+    imageSize.width = 0
+    imageSize.height = 0
     resetTransform()
   },
 )

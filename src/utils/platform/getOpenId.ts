@@ -2,7 +2,6 @@ import type { ResData } from '@/api/types'
 import { services } from '@/config/services'
 import { useLockRequest } from '@/hooks/network/useLockRequest'
 import { useStore } from '@/stores/user'
-import { useUrlSearchParams } from '@vueuse/core'
 
 const { post: postGetCode } = useLockRequest(false)
 type OpenIdData = {
@@ -18,8 +17,7 @@ export async function getOpenId(): Promise<boolean> {
   const { user } = useStore()
   if (user.wxInfo?.openid) return true
 
-  const params = useUrlSearchParams()
-  const proid = params.proid
+  const proid = new URLSearchParams(location.search).get('proid')
   if (!proid) return false
 
   try {

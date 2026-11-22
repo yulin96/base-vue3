@@ -16,6 +16,10 @@ export function focusDom(name: string, { color = true }: { color?: boolean } = {
       dom.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
 
+    const selector = 'input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled])'
+    const control = dom.matches(selector) ? dom : dom.querySelector(selector)
+    if (control instanceof HTMLElement) control.focus({ preventScroll: true })
+
     const oldTimeline = focusMap.get(dom)
     if (oldTimeline) {
       oldTimeline.revert()

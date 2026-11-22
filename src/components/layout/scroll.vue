@@ -52,7 +52,7 @@ const emit = defineEmits<{
 const scrollRef = useTemplateRef<HTMLElement>('scrollRef')
 const contentRef = useTemplateRef<HTMLElement>('contentRef')
 
-const { y: scrollTop, arrivedState } = useScroll(scrollRef)
+const { y: scrollTop, arrivedState, isScrolling } = useScroll(scrollRef)
 
 // 动态创建节流的事件触发器
 let triggerEmit = (state: ScrollState) => {
@@ -61,11 +61,13 @@ let triggerEmit = (state: ScrollState) => {
 
 watch(
   () => props.throttleDelay,
-  (delay) => {
+  (delay, _, onCleanup) => {
     if (delay && delay > 0) {
-      triggerEmit = throttle((state: ScrollState) => {
+      const throttled = throttle((state: ScrollState) => {
         emit('scroll', state)
       }, delay)
+      triggerEmit = throttled
+      onCleanup(() => throttled.cancel())
     } else {
       triggerEmit = (state: ScrollState) => {
         emit('scroll', state)
@@ -147,14 +149,14 @@ watch(
 const thumbHeight = computed(() => {
   if (scrollHeight.value <= containerHeight.value) return 0
 
-  if (props.barHeight && props.barHeight !== 'auto') {
+  if (props.barHeight !== 'auto') {
     const h = Number.parseFloat(String(props.barHeight))
-    if (!Number.isNaN(h)) return h
+    if (Number.isFinite(h)) return Math.max(0, Math.min(h, containerHeight.value))
   }
 
   // 比例 = 可视高度 / 总高度
   const height = (containerHeight.value / scrollHeight.value) * containerHeight.value
-  return Math.max(height, 20) // 最小高度 20px
+  return Math.min(containerHeight.value, Math.max(height, 20)) // 最小高度 20px
 })
 
 // 计算滑块位置 Top
@@ -182,7 +184,6 @@ const barStyle = computed(() => ({
   width: typeof props.barWidth === 'number' ? `${props.barWidth}px` : props.barWidth,
   backgroundColor: props.trackColor,
   right: props.overlay ? '2px' : '0px',
-  display: props.showBar && thumbHeight.value > 0 ? 'block' : 'none',
 }))
 
 const thumbStyle = computed(() => ({
@@ -218,7 +219,7 @@ defineExpose({
     ></div>
 
     <div
-      v-show="props.showBar && containerHeight < scrollHeight"
+      v-show="props.showBar && thumbHeight > 0 && (props.alwaysShow || isScrolling)"
       class="absolute top-0 h-full w-2.5 rounded-full bg-transparent transition-all duration-300 group-hover:bg-gray-200"
       :style="barStyle"
     >

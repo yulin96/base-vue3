@@ -1,7 +1,10 @@
 import gsap from 'gsap'
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, toValue, type MaybeRefOrGetter } from 'vue'
 
-export function useGsapContext(scope: string, setup: (context: gsap.Context) => void | (() => void)) {
+export function useGsapContext(
+  scope: MaybeRefOrGetter<string | Element | null>,
+  setup: (context: gsap.Context) => void | (() => void),
+) {
   let ctx: gsap.Context | null = null
 
   const clear = () => {
@@ -14,7 +17,8 @@ export function useGsapContext(scope: string, setup: (context: gsap.Context) => 
 
   const init = () => {
     if (ctx) return
-    ctx = gsap.context(setup, scope)
+    const target = toValue(scope)
+    if (target) ctx = gsap.context(setup, target)
   }
 
   onMounted(init)

@@ -42,18 +42,10 @@ const normalizeExtension = (value: string): string | null => {
 
 const toSingleQuotedJsString = (value: string): string => `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
 
-const encodePathSegment = (segment: string): string => {
-  try {
-    return encodeURIComponent(decodeURIComponent(segment)).replace(/%40/gi, '@')
-  } catch {
-    return encodeURIComponent(segment).replace(/%40/gi, '@')
-  }
-}
-
 const encodePathSegments = (value: string): string =>
   value
     .split('/')
-    .map((segment) => (segment ? encodePathSegment(segment) : segment))
+    .map((segment) => (encodeURIComponent(segment).replace(/%40/gi, '@')))
     .join('/')
 
 const createExtensionRules = (config: ResourceConfig): ExtensionRule[] => {

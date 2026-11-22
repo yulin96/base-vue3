@@ -53,15 +53,11 @@ async function applyWechatSdkConfig(data: WechatSdkConfig, debug = false): Promi
       openTagList: ['wx-open-launch-app', 'wx-open-launch-weapp'],
     })
 
-    wx.ready(() => {
-      resolve()
-      wxConfigIsReady = true
-      wxConfigPromise = null
-    })
-
     wx.error((res) => {
+      wxConfigIsReady = false
       reject(new Error(res?.errMsg || '微信 JSSDK 配置失败'))
     })
+    wx.ready(resolve)
   })
 }
 
@@ -87,9 +83,9 @@ export async function ensureWechatSdkReady() {
       }
 
       await applyWechatSdkConfig({ ...data.data, timestamp: Number(data.data.timestamp) })
-    } catch (error) {
+      wxConfigIsReady = true
+    } finally {
       wxConfigPromise = null
-      throw error
     }
   })()
 

@@ -7,7 +7,9 @@ export type IFormDataOrJSON = FormDataOrJson
 type Dict = Record<string, unknown>
 
 const instance = axios.create({
-  baseURL: services.api.baseURL.replace('c26.event1.cn', devModel ? 'c26-test.event1.cn' : 'c26.event1.cn'),
+  baseURL: devModel
+    ? services.api.baseURL.replace(/^(https?:\/\/|\/\/)c26\.event1\.cn(?=[:/?#]|$)/i, '$1c26-test.event1.cn')
+    : services.api.baseURL,
 })
 
 instance.interceptors.request.use((config) => {

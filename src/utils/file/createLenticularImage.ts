@@ -36,7 +36,7 @@ export async function createLenticularImage(
     throw new Error('图像尺寸无效')
   }
 
-  const { stripWidth = 8, type = 'image/png', quality = 0.92, fileName = 'lenticular.png', backgroundColor } = options
+  const { stripWidth = 8, type = 'image/png', quality = 0.92, fileName, backgroundColor } = options
   if (!Number.isFinite(stripWidth) || stripWidth < 1) {
     throw new RangeError('stripWidth 必须是大于或等于 1 的有限数值')
   }
@@ -62,26 +62,9 @@ export async function createLenticularImage(
 
   const strip = Math.round(stripWidth)
 
-  ctx.drawImage(images[0], 0, 0, width, height)
-
-  for (let stripIndex = 1; ; stripIndex++) {
-    const stripX = Math.round(stripIndex * strip)
-    const nextStripX = Math.round((stripIndex + 1) * strip)
-    const currentStripWidth = Math.min(nextStripX, width) - stripX
-
-    if (stripX >= width) {
-      break
-    }
-
-    if (currentStripWidth <= 0) {
-      continue
-    }
-
-    if (stripIndex % images.length === 0) {
-      continue
-    }
-
-    const img = images[stripIndex % images.length]
+  for (let stripX = 0; stripX < width; stripX += strip) {
+    const currentStripWidth = Math.min(strip, width - stripX)
+    const img = images[(stripX / strip) % images.length]
 
     const scaleX = img.naturalWidth / width
     const sx = stripX * scaleX
@@ -92,7 +75,8 @@ export async function createLenticularImage(
   }
 
   const blob = await canvasToBlob(canvas, type, quality)
-  return new File([blob], fileName, { type })
+  const extension = blob.type === 'image/jpeg' ? 'jpg' : blob.type.split('/')[1]
+  return new File([blob], fileName ?? `lenticular.${extension}`, { type: blob.type })
 }
 
 async function sourceToImage(source: LenticularImageSource): Promise<HTMLImageElement> {

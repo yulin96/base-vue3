@@ -9,10 +9,15 @@ export function useRouteTransition(transitionName: RouteTransitionNames = 'slide
     (to, from) => {
       if (to.transitionName) return (name.value = to.transitionName)
 
-      const toMetaIndex = to.index || 0
-      const fromMetaIndex = from.index || 0
+      const toMetaIndex = to.index
+      const fromMetaIndex = from.index
 
-      if (!toMetaIndex || !fromMetaIndex || toMetaIndex === fromMetaIndex) {
+      if (
+        transitionName === 'none' ||
+        toMetaIndex === undefined ||
+        fromMetaIndex === undefined ||
+        toMetaIndex === fromMetaIndex
+      ) {
         name.value = 'none'
       } else {
         name.value = transitionName + (toMetaIndex > fromMetaIndex ? '-right' : '-left')

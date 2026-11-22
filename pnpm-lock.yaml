@@ -181,9 +181,6 @@ importers:
       '@number-flow/vue':
         specifier: ^0.5.2
         version: 0.5.2(vue@3.5.46(typescript@6.0.3))
-      '@tsparticles/engine':
-        specifier: ^4.6.0
-        version: 4.6.0
       '@vant/area-data':
         specifier: ^2.2.0
         version: 2.2.0
@@ -217,9 +214,6 @@ importers:
       compressorjs:
         specifier: ^1.4.0
         version: 1.4.0
-      copy-to-clipboard:
-        specifier: ^4.0.2
-        version: 4.0.2
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
@@ -229,12 +223,6 @@ importers:
       dingtalk-jsapi:
         specifier: ^3.2.9
         version: 3.2.9
-      dotenv:
-        specifier: ^18.0.10
-        version: 18.0.10
-      driver.js:
-        specifier: ^1.14.0
-        version: 1.14.0
       es-toolkit:
         specifier: ^1.53.2
         version: 1.53.2
@@ -293,9 +281,6 @@ importers:
         specifier: ^1.6.5
         version: 1.6.5
     devDependencies:
-      '@clack/prompts':
-        specifier: ^1.9.0
-        version: 1.9.0
       '@eslint/compat':
         specifier: ^2.1.1
         version: 2.1.1(eslint@10.15.0(jiti@2.7.0))
@@ -942,14 +927,6 @@ packages:
 
   '@cacheable/utils@2.5.0':
     resolution: {integrity: sha512-buipgOVDkkPXNR5+xBpDw7Zk2n1EvU7qBJCNUcL7rhQ//kfpOXPAvQ511Os0vpLYJ1pZnvudNytkQt2hst3wqA==}
-
-  '@clack/core@1.6.0':
-    resolution: {integrity: sha512-4GZynIB2IIe431odxesswvWTCP6orvqd6e2b07b3VFWBQRqUqIHc/EPIZwFoKS692QBp+ooPuXKaJV8g4kXuYA==}
-    engines: {node: '>= 20.12.0'}
-
-  '@clack/prompts@1.9.0':
-    resolution: {integrity: sha512-tEj8X2No2A1c9NDnZECxiiJ8TP3vmFlN9tLlLeSaMqVW4tUmVG2R4qpv/eP4zymWxnymYLkLcIYVV0VcWj3RCQ==}
-    engines: {node: '>= 20.12.0'}
 
   '@csstools/cascade-layer-name-parser@3.0.3':
     resolution: {integrity: sha512-9HiTRVY6yOywrAlBBlQ8KToKfwBlDmLNqTvh52BIe323BepJtFyWc+WQ4NnKWlTrvf3doP+EBOyAbnmFH/ay9Q==}
@@ -2009,9 +1986,6 @@ packages:
   '@tsconfig/node24@24.0.6':
     resolution: {integrity: sha512-/SK4JuydRQLGSCq7+hbiQ8fdAVR4Suv5EcBvkIAG3zo3GbXQvGoSclz4olL12Ar4OpH8gwGYJ67P4wwQqBRxKw==}
 
-  '@tsparticles/engine@4.6.0':
-    resolution: {integrity: sha512-/c1R4s9BqQLeYXMYh2q0fzk2jZxkv2SlqA713FDr40BmgJhy3/ECaKUJNi22GiMmFSXiAGPzGWwB93k5BibmKw==}
-
   '@tybys/wasm-util@0.10.4':
     resolution: {integrity: sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A==}
 
@@ -2576,9 +2550,6 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  copy-to-clipboard@4.0.2:
-    resolution: {integrity: sha512-gklSft7IuhriZKHKpuoA1fpJSLPNgvUMWMo5BlnzAJm0zNKnznoSv23IjtNqclx8eKi6ZcdvFFzYEER/+U1LoQ==}
-
   copy-to@2.0.1:
     resolution: {integrity: sha512-3DdaFaU/Zf1AnpLiFDeNCD4TOWe3Zl2RZaTzUvWiIk5ERzcCodOE20Vqq4fzCbNoHURFHT4/us/Lfq+S2zyY4w==}
 
@@ -2705,14 +2676,6 @@ packages:
 
   dingtalk-jsapi@3.2.9:
     resolution: {integrity: sha512-VLt8co92z29bdguxUvJLnhpQn7WFjb5rJTODDczieS7I0yyWj5+KwF04sWfMvyIKX0MQPVL++Fyo6z2JucFpgQ==}
-
-  dotenv@18.0.10:
-    resolution: {integrity: sha512-89FAA1xchzK2mxVWdr5F/0rldwiueXs6zJM86rO66EzekR1iBdiXRthyG+m5GvkJaFH3C2LESzamTkgndmLT2A==}
-    engines: {node: '>=12'}
-    hasBin: true
-
-  driver.js@1.14.0:
-    resolution: {integrity: sha512-BnCFuNU8QO2rrYiDra43Ortx6D6chqMvEMF1q3fWQfsC3xNyCX4T1P1vZDTXTxGdtcXh2v5r11hxSpNLF3DJVw==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -4008,10 +3971,6 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
-  sisteransi@2.0.0:
-    resolution: {integrity: sha512-2WCqLdt12eN6ehLI50S2/ZxoowXU3DD1KVPRyVP0WEsFahrGZZmCdq1K59qjJljMRIDTwx1D9YaRK+hDneBUMg==}
-    engines: {node: '>=20'}
-
   slice-ansi@8.0.0:
     resolution: {integrity: sha512-stxByr12oeeOyY2BlviTNQlYV5xOj47GirPr4yA1hE9JCtxfQN0+tVbkxwCtYDQWhEKWFHsEK48ORg5jrouCAg==}
     engines: {node: '>=20'}
@@ -5289,19 +5248,6 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@clack/core@1.6.0':
-    dependencies:
-      fast-string-width: 3.0.2
-      fast-wrap-ansi: 0.2.2
-      sisteransi: 2.0.0
-
-  '@clack/prompts@1.9.0':
-    dependencies:
-      '@clack/core': 1.6.0
-      fast-string-width: 3.0.2
-      fast-wrap-ansi: 0.2.2
-      sisteransi: 2.0.0
-
   '@csstools/cascade-layer-name-parser@3.0.3(@csstools/css-parser-algorithms@4.0.3(@csstools/css-tokenizer@4.0.3))(@csstools/css-tokenizer@4.0.3)':
     dependencies:
       '@csstools/css-parser-algorithms': 4.0.3(@csstools/css-tokenizer@4.0.3)
@@ -6224,8 +6170,6 @@ snapshots:
 
   '@tsconfig/node24@24.0.6': {}
 
-  '@tsparticles/engine@4.6.0': {}
-
   '@tybys/wasm-util@0.10.4':
     dependencies:
       tslib: 2.8.1
@@ -6888,8 +6832,6 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  copy-to-clipboard@4.0.2: {}
-
   copy-to@2.0.1: {}
 
   core-js-compat@3.50.0:
@@ -6983,10 +6925,6 @@ snapshots:
   dingtalk-jsapi@3.2.9:
     dependencies:
       promise-polyfill: 7.1.2
-
-  dotenv@18.0.10: {}
-
-  driver.js@1.14.0: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -8222,8 +8160,6 @@ snapshots:
       side-channel-weakmap: 1.0.2
 
   signal-exit@4.1.0: {}
-
-  sisteransi@2.0.0: {}
 
   slice-ansi@8.0.0:
     dependencies:

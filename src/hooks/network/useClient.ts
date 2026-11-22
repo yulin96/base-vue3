@@ -124,14 +124,14 @@ export const useClient = <T = unknown>(
     autoReconnectOnVisibility = true,
   } = options
 
-  const normalizedSubScribes = Array.isArray(subScribes) ? subScribes.map((topic) => topic.trim()) : subScribes
-  const subIsString = typeof normalizedSubScribes === 'string'
+  const topics = (Array.isArray(subScribes) ? subScribes : [subScribes]).map((topic) => topic.trim())
   const data = shallowRef<T>()
   const connectionStatus = ref<ConnectionStatus>('disconnected')
   const retryCount = ref(0)
   const removeEventCallbacks: Array<() => void> = []
   let handlersRegistered = false
   let destroyed = false
+  let connectionAttempt = 0
 
   // 定时器引用，用于清理
   let retryTimer: number | undefined
@@ -153,12 +153,16 @@ export const useClient = <T = unknown>(
     event: string,
     callback: ROPEventCallback<TArgs>,
   ) => {
+    let listening = true
     const handler: ROPEventCallback<TArgs> = (...args) => {
-      if (destroyed) return
+      if (!listening || destroyed) return
       callback(...args)
     }
     ROP.On(event, handler)
-    removeEventCallbacks.push(() => ROP.Off?.(event, handler))
+    removeEventCallbacks.push(() => {
+      listening = false
+      ROP.Off?.(event, handler)
+    })
   }
 
   const removeEventHandlers = () => {
@@ -218,11 +222,7 @@ export const useClient = <T = unknown>(
       retryCount.value = 0
       clearRetryTimer()
 
-      if (subIsString) {
-        ROP.Subscribe(normalizedSubScribes as string)
-      } else {
-        ;(normalizedSubScribes as string[]).forEach((topic) => ROP.Subscribe(topic))
-      }
+      topics.forEach((topic) => ROP.Subscribe(topic))
     })
 
     addEventHandler(ROP, 'reconnect', () => {
@@ -244,7 +244,7 @@ export const useClient = <T = unknown>(
 
     addEventHandler(ROP, 'publish_data', (message: unknown, topic: string) => {
       // 只处理订阅的主题消息
-      if ((subIsString ? topic === normalizedSubScribes : normalizedSubScribes.includes(topic)) && message) {
+      if (topics.includes(topic)) {
         try {
           // 尝试解析JSON，如果失败则直接使用原始消息
           let parsedMessage: unknown
@@ -293,15 +293,16 @@ export const useClient = <T = unknown>(
   const connect = () => {
     if (destroyed) return
 
+    const attempt = ++connectionAttempt
     void ensureRopScript(scriptUrl)
       .then(() => {
-        if (destroyed) return
+        if (attempt !== connectionAttempt) return
         setupEventHandlers()
         setupVisibilityWatcher()
         linkROP()
       })
       .catch((error) => {
-        if (destroyed) return
+        if (attempt !== connectionAttempt) return
         console.error('ROP客户端脚本加载失败', error)
         scheduleRetry()
       })
@@ -317,6 +318,8 @@ export const useClient = <T = unknown>(
 
   // 清理资源
   const cleanup = () => {
+    connectionAttempt++
+    connectionStatus.value = 'disconnected'
     clearRetryTimer()
     if (visibilityWatcher) {
       visibilityWatcher.stop()

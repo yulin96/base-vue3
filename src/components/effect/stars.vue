@@ -25,6 +25,7 @@ const starsBoxRef = ref<HTMLDivElement>()
 const visibility = useDocumentVisibility()
 let timeoutId: number | null = null
 let isRunning = false
+let active = true
 const animations = new Set<gsap.core.Tween>()
 
 const getInterval = (currentStarCount: number) => {
@@ -53,7 +54,7 @@ const loopCreate = () => {
 }
 
 const start = () => {
-  if (isRunning) return
+  if (isRunning || !active || visibility.value !== 'visible') return
   isRunning = true
   loopCreate()
 }
@@ -78,6 +79,7 @@ const destroy = () => {
 function createStar(starsBox: HTMLDivElement) {
   if (starsBox.children.length >= Math.max(0, Math.floor(props.maxStars))) return
 
+  if (!starsBox.clientWidth || !starsBox.clientHeight) return
   const star = document.createElement('div')
 
   const size = Math.floor(randomInt(props.minSize, props.maxSize))
@@ -144,12 +146,14 @@ onMounted(() => {
 })
 
 onActivated(() => {
+  active = true
   if (props.autoStart) {
     start()
   }
 })
 
 onDeactivated(() => {
+  active = false
   stop()
 })
 

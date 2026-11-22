@@ -9,7 +9,7 @@
 - 统一复用 `src/api/types.ts` 的 `ResData<T>`：`code`、可选的 `msg` / `message`、`data`。`T` 表示 `data`，不是整个响应；额外顶层字段可以使用第二个泛型参数。
 - 调用链为：页面 → `apiXxx` → `useLockRequest` → `axiosGet` / `axiosPost`。普通业务页面不直接使用 Axios、fetch 或另建请求实例。
 - 请求地址、方法、字段和成功码以真实接口协议为准，不凭接口名称猜测。通常使用相对路径，由请求层提供基础地址；明确的外部接口才使用绝对地址。
-- 业务基础地址读取 `VITE_APP_API_URL`，服务地址和平台参数集中在 `src/config/services.ts`。请求地址统一在 `.env` 中配置，开发环境差异由 `.env.development` 覆盖，请求层不按域名自动切换服务。
+- 业务基础地址读取 `VITE_APP_API_URL`，服务地址和平台参数集中在 `src/config/services.ts`。请求地址统一在 `.env` 中配置，开发环境差异由 `.env.development` 覆盖，开发模式将业务基础地址的主机名 `c26.event1.cn` 切换为 `c26-test.event1.cn`，其余地址按配置使用。
 
 ## 接口模板
 

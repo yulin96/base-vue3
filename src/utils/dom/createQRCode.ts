@@ -1,6 +1,7 @@
 import { loadQRCodeLib } from '@/utils/qrcode'
 
 let qrCodeTaskId = 0
+let cachedCode: { url: string; image: Promise<string> } | undefined
 
 const removeCurrentQRCode = () => {
   const currentNode = document.querySelector('.code-tips.pc')
@@ -16,8 +17,16 @@ export async function createQRCode(app: HTMLDivElement) {
   const clearedUrl = location.href.split('#')[0] || location.href
 
   try {
-    const QRCode = await loadQRCodeLib()
-    const res = await QRCode.toDataURL(clearedUrl, { margin: 2, errorCorrectionLevel: 'H', width: 900 })
+    if (cachedCode?.url !== clearedUrl) {
+      const image = loadQRCodeLib().then((lib) =>
+        lib.toDataURL(clearedUrl, { margin: 2, errorCorrectionLevel: 'H', width: 900 }),
+      )
+      cachedCode = { url: clearedUrl, image }
+      void image.catch(() => {
+        if (cachedCode?.image === image) cachedCode = undefined
+      })
+    }
+    const res = await cachedCode.image
     if (taskId !== qrCodeTaskId) return
 
     const div = document.createElement('div')

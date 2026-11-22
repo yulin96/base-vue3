@@ -10,7 +10,7 @@ export async function registerWechatShare() {
 
   const { wechatShare } = await import('@/utils/platform/wechat')
 
-  wechatShare({ title, desc, link: getShareLinkWithTimestamp(link), imgUrl })
+  return wechatShare({ title, desc, link: getShareLinkWithTimestamp(link), imgUrl })
 }
 
 function getShareLinkWithTimestamp(link?: string): string {

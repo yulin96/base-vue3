@@ -7,7 +7,7 @@ export async function hideDingTalkShare() {
 
   try {
     const { biz } = await import('dingtalk-jsapi')
-    void biz.navigation.setRight({ show: false }).catch(console.log)
+    await biz.navigation.setRight({ show: false })
   } catch (error) {
     console.error('隐藏钉钉分享按钮失败:', error)
   }

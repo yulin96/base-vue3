@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onDeactivated, onUnmounted, readonly, shallo
 export function useLoading(imgList: string[], next?: () => void, delay: number = 300) {
   let timer: number | undefined
   const progressValue = shallowRef(0)
-  const images: HTMLImageElement[] = []
+  const images = new Set<HTMLImageElement>()
 
   // 简化计算逻辑，避免重复计算
   const count = computed(() => {
@@ -23,7 +23,7 @@ export function useLoading(imgList: string[], next?: () => void, delay: number =
       img.onload = null
       img.onerror = null
     })
-    images.length = 0
+    images.clear()
   }
 
   const start = () => {
@@ -40,9 +40,12 @@ export function useLoading(imgList: string[], next?: () => void, delay: number =
 
     for (const imgSrc of imgList) {
       const image = new Image()
-      images.push(image)
+      images.add(image)
 
       const handleLoad = () => {
+        image.onload = null
+        image.onerror = null
+        images.delete(image)
         loadedCount++
         progressValue.value = loadedCount
 

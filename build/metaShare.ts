@@ -16,11 +16,8 @@ const createMetaTag = (type: 'name' | 'property', key: string, content?: string)
   return `<meta ${type}="${key}" content="${escapeHtmlAttribute(content)}">`
 }
 
-const createLinkTag = (rel: string, href?: string, type?: string): string | null => {
-  if (!href) return null
-  const typeAttribute = type ? ` type="${type}"` : ''
-  return `<link rel="${rel}"${typeAttribute} href="${escapeHtmlAttribute(href)}" />`
-}
+const createLinkTag = (rel: string, href?: string): string | null =>
+  href ? `<link rel="${rel}" href="${escapeHtmlAttribute(href)}" />` : null
 
 const createMetaShareTags = (option: VitePluginMetaShareOption): string[] =>
   [
@@ -34,7 +31,6 @@ const createMetaShareTags = (option: VitePluginMetaShareOption): string[] =>
     createMetaTag('name', 'twitter:url', option.link),
     createMetaTag('name', 'twitter:image', option.image),
     createMetaTag('name', 'description', option.description),
-    createLinkTag('shortcut icon', option.image, 'text/css'),
     createLinkTag('apple-touch-icon', option.image),
   ].filter((tag): tag is string => Boolean(tag))
 

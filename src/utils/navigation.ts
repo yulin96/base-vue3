@@ -1,6 +1,7 @@
 import { apiMenus } from '@/api'
-import { replaceTo, type RouterNameOrPath } from '@/router'
+import router, { replaceTo, type RouterNameOrPath } from '@/router'
 import { isUrl } from '@/utils/validate'
+import type { RouteNamedMap } from 'vue-router/auto-routes'
 import { toast } from 'vue-sonner'
 
 /**
@@ -32,8 +33,11 @@ export async function replaceToWithMenus(name: string, path?: (() => void) | Rou
   if (!url) return toast.info('敬请期待!')
 
   if (typeof url === 'function') return url()
-  if (isUrl(url)) return toUrl(url)
-  replaceTo(url)
+  if (isUrl(url)) {
+    if (['javascript:', 'data:', 'vbscript:'].includes(new URL(url).protocol)) return toast.warning('菜单地址无效')
+    return toUrl(url)
+  }
+  return replaceTo(router.hasRoute(url) ? { name: url as keyof RouteNamedMap } : url)
 }
 
 /**

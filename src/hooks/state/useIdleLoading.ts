@@ -18,7 +18,7 @@ export function useIdleLoading(imgList: string[], next?: () => void, delay: numb
   let scheduledWithIdleCallback = false
   let loadingSessionId = 0
   const progressValue = shallowRef(0)
-  const images: HTMLImageElement[] = []
+  const images = new Set<HTMLImageElement>()
 
   // 加载进度百分比
   const count = computed(() => {
@@ -45,7 +45,7 @@ export function useIdleLoading(imgList: string[], next?: () => void, delay: numb
       img.onload = null
       img.onerror = null
     })
-    images.length = 0
+    images.clear()
   }
 
   const start = () => {
@@ -86,11 +86,14 @@ export function useIdleLoading(imgList: string[], next?: () => void, delay: numb
 
       for (; index < limit; index++) {
         const image = new Image()
-        images.push(image)
+        images.add(image)
 
         const handleLoad = () => {
           if (currentSessionId !== loadingSessionId) return
 
+          image.onload = null
+          image.onerror = null
+          images.delete(image)
           loadedCount++
           progressValue.value = loadedCount
 

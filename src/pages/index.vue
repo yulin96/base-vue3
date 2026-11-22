@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { useGsapContext } from '@/hooks/animation/useGsapContext'
+import { useTemplateRef } from 'vue'
 
 defineOptions({ name: 'Index' })
 definePage({ meta: { index: 10 } })
 
-useGsapContext('.index', () => {
-  gsap.timeline({ delay: 0.5 })
-})
+const page = useTemplateRef('page')
+useGsapContext(page, () => {})
 </script>
 
 <template>
   <div class="size-full">
-    <section class="scroll-box index">
+    <section ref="page" class="scroll-box index">
       <main class="content"></main>
     </section>
   </div>

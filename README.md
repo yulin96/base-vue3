@@ -23,7 +23,7 @@
   - 常用 hooks（加载、计时、滑动、请求锁、二维码等）
   - 常用工具（动画、加密、DOM、文件处理、平台能力）
 - **构建增强**：
-  - Legacy 兼容构建（Chrome >= 87 / Safari >= 13）
+  - JavaScript 构建目标为 Chrome 87+、Safari / iOS 13+，实际页面兼容性需按目标设备验证
   - 图片压缩、资源整理、自动注入分享 Meta、Rollup 可视化分析
   - 支持发布后自动上传 OSS / FTP（可选）
 
@@ -84,8 +84,8 @@ npx skills add yulin96/mobile-gsap-motion --global --agent codex --skill mobile-
 
 ### 1) 环境准备
 
-- Node.js LTS（建议 20+）
-- pnpm（建议 9+）
+- Node.js 24 LTS（24.15.0 或更高的 24.x 版本）
+- pnpm 版本按 `package.json` 的 `packageManager` 安装
 
 ### 2) 安装依赖
 
@@ -114,7 +114,7 @@ pnpm dev
 | `pnpm build:only`        | 仅打包（Vite build）                  |
 | `pnpm deploy:prod`       | 使用 `deploy` 模式打包                |
 | `pnpm deploy:test`       | 使用 `deploy-test` 模式打包           |
-| `pnpm build`             | 检查通过后再打包                      |
+| `pnpm build`             | 类型检查通过后再打包                      |
 | `pnpm build:deploy`      | 检查通过后再以 `deploy` 模式打包      |
 | `pnpm build:deploy:test` | 检查通过后再以 `deploy-test` 模式打包 |
 | `pnpm preview`           | 预览构建产物                          |
@@ -128,6 +128,7 @@ pnpm dev
 | `VITE_APP_API_URL`           | 业务接口基础地址；空值表示同源请求，按环境显式配置 |
 | `VITE_APP_MQTT_API_URL`      | MQTT 发送接口的完整地址                            |
 | `VITE_APP_LOCALSTORAGE_NAME` | 本地缓存前缀                                       |
+| `VITE_APP_APPID`、`VITE_APP_APPSECRET` | 两者都填写时启用 POST 签名与加密，前端配置对使用者可见 |
 | `VITE_APP_MAIN_COLOR`        | 页面主背景色（CSS 变量 `--main-color`）            |
 | `VITE_APP_TITLE`             | 页面标题                                           |
 | `VITE_APP_ARMS`              | 是否启用 ARMS（`1` 开启）                          |
@@ -148,7 +149,7 @@ pnpm dev
 
 服务地址和平台参数统一维护在 `src/config/services.ts`：菜单接口、微信签名及授权接口、微信平台名称、上传 STS 地址、OSS 接入域名、资源访问域名，以及 MQTT 客户端脚本和默认 pub/sub。
 
-业务请求读取 `VITE_APP_API_URL`，MQTT 发送读取 `VITE_APP_MQTT_API_URL`；请求模块直接使用配置地址，不自动替换域名。
+业务请求读取 `VITE_APP_API_URL`，MQTT 发送读取 `VITE_APP_MQTT_API_URL`；开发模式将业务基础地址的主机名 `c26.event1.cn` 切换为 `c26-test.event1.cn`，其余主机名和相对路径按配置使用。
 
 | 使用场景           | 环境文件                    | 默认请求地址                                     |
 | ------------------ | --------------------------- | ------------------------------------------------ |
@@ -204,7 +205,7 @@ base-vue3/
 
 ### 请求与状态
 
-- 请求工具：`src/utils/request.ts`（Axios 实例 + 响应附加请求元数据）。
+- 请求工具：`src/utils/request.ts`（Axios 实例，返回服务端响应体）。
 - 防重复请求：`src/hooks/network/useLockRequest.ts`。
 - 用户状态：`src/stores/user.ts` 中的 `useStore`（已启用持久化）。
 
@@ -225,7 +226,7 @@ base-vue3/
 ### 调试建议
 
 - URL 带 `?dev` 时会动态加载 vConsole，方便真机调试。
-- 可访问 `/clear.html` 快速清理本地缓存。
+- 访问部署目录下的 `clear.html` 会立即清空当前源的全部 localStorage，同域名同端口下其他项目的缓存也会被清除。
 
 ## Electron 客户端接口
 
@@ -246,13 +247,13 @@ await electronApi?.defineDisplayNames?.({
 
 ### 配置面板定制
 
-`defineDisplayNames(names)` 用于覆盖配置面板中的字段名称，最常见的用途是赋予 `list1` 到 `list10` 明确的业务含义。它只修改面板文案，不会修改对应配置值。
+`defineDisplayNames(names)` 用于覆盖配置面板中的字段名称，最常见的用途是赋予 `list1` 到 `list20` 明确的业务含义。它只修改面板文案，不会修改对应配置值。
 
 ```ts
 await electronApi?.defineDisplayNames?.({
   list1: '门店编号',
   list2: '活动编号',
-  printCountdown: '打印倒计时',
+  hideCursor: '隐藏鼠标指针',
 })
 
 await electronApi?.hideConfig?.(['performance', 'exitButton.mark', 'list10'])
@@ -275,6 +276,7 @@ await electronApi?.hideConfig?.(['performance', 'exitButton.mark', 'list10'])
 | `enterFullscreen()` / `exitFullscreen()` | 立即切换当前业务窗口全屏状态           | 返回值表示是否找到并处理了当前窗口              |
 | `previewPrint(request)`                  | 按打印参数打开预览                     | 不能验证打印机驱动默认纸型和实际装纸            |
 | `print(request)`                         | 执行打印并返回 `PrintResult`           | 上线前需使用目标打印机和实际纸张验证            |
+| `saveImage({ src })`                     | 将图片保存到客户端并返回文件路径       | 仅业务窗口提供，需处理读取或保存失败             |
 | `getScreenIndex()`                       | 获取当前业务窗口从 1 开始的编号        | 无法识别当前窗口时返回 `null`                   |
 | `sendToScreen(target, command, data?)`   | 向指定业务窗口发送消息                 | `true` 只表示已投递，不表示业务处理成功         |
 | `onScreenMessage(listener)`              | 监听其他窗口发来的消息                 | 返回取消函数，组件卸载时必须调用                |

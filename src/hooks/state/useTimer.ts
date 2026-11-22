@@ -20,8 +20,11 @@ export function useTimer(options: UseTimerOptions | number = {}) {
   const { initialTime = 60, idleText = '获取验证码', countdownTextTemplate = '{time}秒', interval = 1000 } = config
 
   // 参数验证
-  if (initialTime <= 0) {
-    throw new Error('initialTime must be greater than 0')
+  if (!Number.isFinite(initialTime) || initialTime <= 0) {
+    throw new RangeError('initialTime must be a finite number greater than 0')
+  }
+  if (!Number.isFinite(interval) || interval <= 0) {
+    throw new RangeError('interval must be a finite number greater than 0')
   }
 
   const currentTime = ref(initialTime)

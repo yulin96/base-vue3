@@ -14,7 +14,7 @@ interface LongPressElement extends HTMLElement {
 const LONG_PRESS_MOVE_THRESHOLD = 10
 
 export function registerDirective(app: App<Element>) {
-  app.directive('focus', (el: HTMLElement) => el.focus())
+  app.directive('focus', { mounted: (el: HTMLElement) => el.focus() })
 
   app.directive('long-press', {
     mounted(el: LongPressElement, binding: DirectiveBinding) {

@@ -1,18 +1,18 @@
-import { useLock } from '@/hooks/state/useLock'
 import { axiosGet, axiosPost, type IFormDataOrJSON } from '@/utils/request'
 import { isAxiosError, type AxiosRequestConfig } from 'axios'
-import { readonly } from 'vue'
+import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 
 export function useLockRequest(disableLock = false, delay = 500, options: { silent?: boolean } = {}) {
-  const [status, lock, unLock] = useLock()
+  const pending = ref(0)
+  const status = computed(() => pending.value > 0)
 
   const makeRequest = async <T>(requestFn: () => Promise<T>): Promise<T> => {
     if (status.value && !disableLock) {
       throw { code: -9996, error: '请求正在进行中，请稍后再试' }
     }
 
-    lock()
+    pending.value++
 
     try {
       return await requestFn()
@@ -26,7 +26,9 @@ export function useLockRequest(disableLock = false, delay = 500, options: { sile
       }
       throw error
     } finally {
-      const unlock = () => unLock()
+      const unlock = () => {
+        pending.value--
+      }
       delay ? setTimeout(unlock, delay) : unlock()
     }
   }
@@ -49,5 +51,5 @@ export function useLockRequest(disableLock = false, delay = 500, options: { sile
     return makeRequest(() => axiosGet(url, params, config, data))
   }
 
-  return { post, get, lock: readonly(status) }
+  return { post, get, lock: status }
 }

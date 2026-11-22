@@ -2,15 +2,16 @@ import './browserScan.css'
 
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode'
 
-const READER_ID = 'browser-scan-reader'
+let scanNumber = 0
 export const SCAN_CANCELLED = '取消扫码'
 
 export async function browserScan(): Promise<string> {
+  if (document.querySelector('.browser-scan')) throw new Error('扫码功能正在运行中')
   const root = document.createElement('div')
   root.className = 'browser-scan'
 
   const reader = document.createElement('div')
-  reader.id = READER_ID
+  reader.id = `browser-scan-reader-${++scanNumber}`
   reader.className = 'browser-scan__reader'
 
   const overlay = document.createElement('div')
@@ -36,17 +37,26 @@ export async function browserScan(): Promise<string> {
   const close = document.createElement('div')
   close.className = 'browser-scan__close'
   close.textContent = '×'
+  close.setAttribute('role', 'button')
+  close.setAttribute('aria-label', '关闭扫码')
+  close.setAttribute('btn', '')
+  close.setAttribute('tap', '')
 
   root.append(reader, overlay, loading, close)
   document.body.appendChild(root)
 
   const originalOverflow = document.body.style.overflow
+  let scanner: Html5Qrcode
+  try {
+    scanner = new Html5Qrcode(reader.id, {
+      formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+      verbose: false,
+    })
+  } catch (error) {
+    root.remove()
+    throw error
+  }
   document.body.style.overflow = 'hidden'
-
-  const scanner = new Html5Qrcode(READER_ID, {
-    formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
-    verbose: false,
-  })
 
   return await new Promise<string>((resolve, reject) => {
     let finished = false

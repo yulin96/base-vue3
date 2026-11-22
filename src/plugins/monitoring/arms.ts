@@ -1,3 +1,4 @@
+import { services } from '@/config/services'
 import { isCanceledRequest } from '@/utils/validate'
 
 type ArmsPropertyValue = string | number
@@ -21,11 +22,11 @@ type ApiEvaluationOptions = {
   params?: unknown
   data?: unknown
   url?: string
-  headers?: unknown
 }
 type ApiEvaluationResponse = HttpResponseLike & {
   url?: string
   responseText?: string
+  headers?: { get(name: string): string | null }
   clone?: () => { text: () => Promise<string> }
 }
 
@@ -46,9 +47,9 @@ const getErrorParts = (error: unknown) => {
 
   const err = error as { name?: string; code?: string; message?: string; type?: string }
   return {
-    code: (err.code || '').toLowerCase(),
-    message: (err.message || '').toLowerCase(),
-    name: (err.name || '').toLowerCase(),
+    code: String(err.code ?? '').toLowerCase(),
+    message: String(err.message ?? '').toLowerCase(),
+    name: String(err.name ?? '').toLowerCase(),
     type: err.type || '',
   }
 }
@@ -288,6 +289,16 @@ export function reportArmsException(payload: ArmsExceptionPayload) {
 export function registerARMS() {
   try {
     ;(function () {
+      const stsUrl = new URL(services.upload.stsUrl, location.href)
+      const canCapturePayload = (rawUrl: string | undefined) => {
+        if (!rawUrl) return false
+        try {
+          const url = new URL(rawUrl, location.href)
+          return url.origin !== stsUrl.origin || url.pathname !== stsUrl.pathname
+        } catch {
+          return false
+        }
+      }
       const config = {
         endpoint: __ARMSEndpoint,
         env: 'prod',
@@ -356,13 +367,17 @@ export function registerARMS() {
               if (currentValue === undefined) result[key] = value
               else result[key] = Array.isArray(currentValue) ? [...currentValue, value] : [currentValue, value]
               return result
-            }, {})
+            }, Object.create(null))
           }
 
+          const requestUrl = options.url || responseObject?.url || ''
+          const capturePayload =
+            canCapturePayload(requestUrl) && (!responseObject?.url || canCapturePayload(responseObject.url))
           const method = String(options.method || '').toLowerCase()
-          const body =
-            method === 'get'
-              ? (options.params ?? parseUrlParams(options.url || responseObject?.url) ?? options.data)
+          const body = !capturePayload
+            ? undefined
+            : method === 'get'
+              ? (options.params ?? parseUrlParams(requestUrl) ?? options.data)
               : options.data
 
           try {
@@ -380,10 +395,15 @@ export function registerARMS() {
 
             requestData = normalizeJsonText(requestData)
 
-            if (typeof response === 'string') {
+            if (!capturePayload) {
+              responseText = ''
+            } else if (typeof response === 'string') {
               responseText = response
             } else if (responseObject?.clone) {
-              responseText = await responseObject.clone().text()
+              const contentType = responseObject.headers?.get('content-type')
+              if (!contentType || /^(?:text\/|[^;]*(?:json|xml))/i.test(contentType)) {
+                responseText = await responseObject.clone().text()
+              }
             } else if (typeof responseObject?.responseText === 'string') {
               responseText = responseObject.responseText
             }
@@ -394,7 +414,8 @@ export function registerARMS() {
           }
 
           const apiErrorCategory = diagnoseNetworkError(responseObject, error)
-          const apiErrorMessage = getApiErrorMessage(responseText, responseObject, error)
+          const apiErrorMessage =
+            apiErrorCategory === 'success' ? '' : getApiErrorMessage(responseText, responseObject, error)
           const apiStatus = typeof responseObject?.status === 'number' ? responseObject.status : -1
           const apiStatusText = responseObject?.statusText == null ? '' : String(responseObject.statusText)
           const apiErrorName = getErrorLikeValue(error, 'name')
@@ -402,10 +423,7 @@ export function registerARMS() {
           const networkInfo = apiErrorCategory !== 'success' ? getNetworkQualityInfo() : {}
 
           return {
-            success: error || (responseObject?.status !== undefined && responseObject.status >= 400) ? 0 : 1,
-            snapshots: JSON.stringify({
-              reqHeaders: JSON.stringify(options.headers),
-            }),
+            success: apiErrorCategory === 'success' ? 1 : 0,
             properties: {
               api_type: body instanceof FormData ? 'form-data' : 'json',
               api_status: apiStatus,
@@ -413,7 +431,7 @@ export function registerARMS() {
               api_error_category: apiErrorCategory,
               api_error_name: apiErrorName,
               api_error_code: apiErrorCode,
-              api_error_message: apiErrorMessage,
+              api_error_message: truncateText(apiErrorMessage),
               request_data: requestData.substring(0, 2000),
               response: responseText.substring(0, 2000),
               ...networkInfo,

@@ -1,13 +1,12 @@
-import { devModel } from '@/config/env'
 import { createEncryptIns } from '@/utils/crypto/jsencrypt'
 import { enc, HmacSHA256 } from 'crypto-js'
+
+export { isPostEncryptEnabled } from '@/config/env'
 
 type Dict = Record<string, unknown>
 
 const APPID = import.meta.env.VITE_APP_APPID
 const APPSECRET = import.meta.env.VITE_APP_APPSECRET
-
-export const isPostEncryptEnabled = Boolean(APPID && APPSECRET)
 
 const rsaPublicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuRr8rGHkpOmQ2OVhkDXb
@@ -33,10 +32,6 @@ export function createApiSignature(data: Dict, action: string) {
     if (!encrypted) throw new Error('请求参数加密失败')
     return encrypted
   }).join('|')
-
-  devModel && console.log(payload)
-  devModel && console.log(payloadEncoded)
-  devModel && console.log(query)
 
   return {
     query,

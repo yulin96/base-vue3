@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { isRef, onBeforeUnmount, onMounted, useTemplateRef, type TemplateRef } from 'vue'
+import { isRef, useTemplateRef, watch, type TemplateRef } from 'vue'
 
 export function useSwipe(onSwipe?: (dir: 'left' | 'right') => void, originKey?: string | TemplateRef<HTMLElement>) {
   const key = typeof originKey === 'string' ? originKey : `dom-${nanoid()}`
@@ -9,7 +9,6 @@ export function useSwipe(onSwipe?: (dir: 'left' | 'right') => void, originKey?: 
   let startX = 0
   let startY = 0
   let tracking = false
-  let boundElement: HTMLElement | null = null
 
   const handleTouchStart = (e: TouchEvent) => {
     const touch = e.touches[0]
@@ -34,20 +33,22 @@ export function useSwipe(onSwipe?: (dir: 'left' | 'right') => void, originKey?: 
     tracking = false
   }
 
-  onMounted(() => {
-    if (!dom.value) return
-    boundElement = dom.value
-    boundElement.addEventListener('touchstart', handleTouchStart)
-    boundElement.addEventListener('touchend', handleTouchEnd)
-    boundElement.addEventListener('touchcancel', handleTouchCancel)
-  })
-
-  onBeforeUnmount(() => {
-    boundElement?.removeEventListener('touchstart', handleTouchStart)
-    boundElement?.removeEventListener('touchend', handleTouchEnd)
-    boundElement?.removeEventListener('touchcancel', handleTouchCancel)
-    boundElement = null
-  })
+  watch(
+    dom,
+    (element, _, onCleanup) => {
+      if (!element) return
+      element.addEventListener('touchstart', handleTouchStart)
+      element.addEventListener('touchend', handleTouchEnd)
+      element.addEventListener('touchcancel', handleTouchCancel)
+      onCleanup(() => {
+        tracking = false
+        element.removeEventListener('touchstart', handleTouchStart)
+        element.removeEventListener('touchend', handleTouchEnd)
+        element.removeEventListener('touchcancel', handleTouchCancel)
+      })
+    },
+    { immediate: true, flush: 'post' },
+  )
 
   return { key }
 }

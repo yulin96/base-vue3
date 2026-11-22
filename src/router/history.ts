@@ -1,13 +1,14 @@
 import { appStorageName } from '@/config/env'
 import router from '@/router'
-import type { RouteLocationRaw } from 'vue-router'
+import { isNavigationFailure, NavigationFailureType, type RouteLocationRaw } from 'vue-router'
 
 const HISTORY_KEY = `${appStorageName}ROUTER_HISTORY_STACK`.toUpperCase()
 const MAX_HISTORY = 50
 
 const getHistoryStack = (): string[] => {
   try {
-    return JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]')
+    const value: unknown = JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]')
+    return Array.isArray(value) && value.every((entry) => typeof entry === 'string') ? value : []
   } catch {
     return []
   }
@@ -53,7 +54,6 @@ export const goBack = async (target?: RouteLocationRaw) => {
   while (stack.length > 0 && stack[stack.length - 1] === currentPath) {
     stack.pop()
   }
-  if (stack.length !== originalLength) setHistoryStack(stack)
 
   if (stack.length > 0) {
     const prevPath = stack[stack.length - 1]
@@ -65,5 +65,9 @@ export const goBack = async (target?: RouteLocationRaw) => {
     return
   }
 
-  return router.replace({ name: '/' })
+  const failure = await router.replace({ name: '/' })
+  if (originalLength > 0 && (!failure || isNavigationFailure(failure, NavigationFailureType.duplicated))) {
+    setHistoryStack([])
+  }
+  return failure
 }
