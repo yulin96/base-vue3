@@ -198,7 +198,7 @@ html {
 - 普通构建优先使用 `pnpm build`，正式上传优先使用 `pnpm build:deploy`，测试上传优先使用 `pnpm build:deploy:test`。
 - 只有明确需要跳过检查时，才使用 `pnpm build:only`、`pnpm deploy:prod` 或 `pnpm deploy:test`。
 - 执行任何 build 或 deploy 前，先检查当前 `package.json` 脚本和 `vite.config.ts`，确认是否会上传、部署或并行执行。
-- 当前脚本使用 `run-s` 保证顺序执行；如果后续改用 `run-p`，不能再把它当成“先检查通过再构建或上传”的顺序保障。
+- 当前 `build`、`build:deploy` 和 `build:deploy:test` 均使用 `run-p` 并行执行检查与打包/上传，不构成“先检查通过再构建或上传”的顺序保障。
 - Lint 与格式化配置可能变化，复用旧命令前以当前 `package.json`、`.oxlintrc.json`、`eslint.config.ts` 和 `.oxfmtrc.json` 为准，不使用已经不兼容的旧参数。
 
 ## 多语言

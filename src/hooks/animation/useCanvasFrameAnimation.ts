@@ -339,7 +339,7 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       // 封面帧排在最前，加载完成后会立即绘制
       const coverItem = frameList[validCoverFrame]
       const otherItems = frameList.filter((_, i) => i !== validCoverFrame)
-      const results: Array<HTMLImageElement | null> = new Array(frames.length).fill(null)
+      const results: Array<HTMLImageElement | null> = Array.from({ length: frames.length }, () => null)
       const loadItems = [coverItem, ...otherItems]
       const loadedImages = await loadImages(loadItems, sessionId)
 

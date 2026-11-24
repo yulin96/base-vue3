@@ -336,7 +336,7 @@ importers:
         specifier: ^10.1.8
         version: 10.1.8(eslint@10.15.0(jiti@2.7.0))
       eslint-plugin-oxlint:
-        specifier: ^1.94.0
+        specifier: ~1.94.0
         version: 1.94.0(oxlint@1.94.0)
       eslint-plugin-vue:
         specifier: ^10.12.1
@@ -348,7 +348,7 @@ importers:
         specifier: ^0.79.0
         version: 0.79.0
       oxlint:
-        specifier: ^1.94.0
+        specifier: ~1.94.0
         version: 1.94.0
       postcss-preset-env:
         specifier: ^11.6.3
@@ -371,6 +371,9 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
       unplugin-vue-components:
         specifier: ^32.1.0
         version: 32.1.0(rolldown@1.2.19)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)(terser@5.51.4))(vue@3.5.46(typescript@6.0.3))

@@ -114,9 +114,9 @@ pnpm dev
 | `pnpm build:only`        | 仅打包（Vite build）                     |
 | `pnpm deploy:prod`       | 使用 `deploy` 模式打包                   |
 | `pnpm deploy:test`       | 使用 `deploy-test` 模式打包              |
-| `pnpm build`             | 类型检查通过后再打包                     |
-| `pnpm build:deploy`      | 检查通过后再以 `deploy` 模式打包         |
-| `pnpm build:deploy:test` | 检查通过后再以 `deploy-test` 模式打包    |
+| `pnpm build`             | 并行执行类型检查与打包                   |
+| `pnpm build:deploy`      | 并行执行检查与 `deploy` 模式打包         |
+| `pnpm build:deploy:test` | 并行执行检查与 `deploy-test` 模式打包    |
 | `pnpm preview`           | 预览构建产物                             |
 
 ## 环境变量
