@@ -1,6 +1,7 @@
-import { appStorageName } from '@/config/env'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+
+import { appStorageName } from '@/config/env'
 
 type IWxInfo = {
   openid: string

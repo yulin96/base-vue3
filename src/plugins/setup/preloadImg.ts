@@ -1,5 +1,6 @@
-import { useIdleLoading } from '@/hooks/state/useIdleLoading'
 import { onBeforeUnmount, onMounted } from 'vue'
+
+import { useIdleLoading } from '@/hooks/state/useIdleLoading'
 
 export function setupPreloadImg() {
   const { start } = useIdleLoading(window.IMG_RESOURCES ?? [])

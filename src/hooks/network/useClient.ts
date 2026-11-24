@@ -1,7 +1,8 @@
 import { useDocumentVisibility } from '@vueuse/core'
-import { services } from '@/config/services'
 import { nanoid } from 'nanoid'
 import { effectScope, onBeforeUnmount, readonly, ref, shallowRef, watch, type EffectScope } from 'vue'
+
+import { services } from '@/config/services'
 
 type ROPEventCallback<TArgs extends unknown[] = unknown[]> = (...args: TArgs) => void
 

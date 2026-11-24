@@ -1,6 +1,7 @@
-import { createDeferred } from '@/utils/promise'
 import { shallowRef } from 'vue'
 import { toast } from 'vue-sonner'
+
+import { createDeferred } from '@/utils/promise'
 
 export const usePromiseToast = () => {
   const inert = shallowRef(false)

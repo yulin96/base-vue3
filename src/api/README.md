@@ -18,9 +18,10 @@
 下面是写法模板，路径和字段仅用于示例，实际开发必须替换成已确认的协议。
 
 ```ts
+import type { AxiosRequestConfig } from 'axios'
+
 import type { ResData } from '@/api/types'
 import { useLockRequest } from '@/hooks/network/useLockRequest'
-import type { AxiosRequestConfig } from 'axios'
 
 const { post: postExample } = useLockRequest()
 
@@ -51,8 +52,9 @@ export const apiExample = (data?: Record<string, any>, config?: AxiosRequestConf
 ## 页面调用模板
 
 ```ts
-import { apiExample } from '@/api'
 import { toast } from 'vue-sonner'
+
+import { apiExample } from '@/api'
 
 const [err, res] = await apiExample({ id: 1 })
 if (err) return

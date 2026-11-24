@@ -1,22 +1,12 @@
 import path from 'node:path'
-import { defineConfig, loadEnv } from 'vite'
-import { buildCheck } from './build/buildCheck.ts'
-
-import legacy from '@vitejs/plugin-legacy'
-import vue from '@vitejs/plugin-vue'
-import { visualizer } from 'rollup-plugin-visualizer'
-import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
-import { vitePluginDeployFtp, vitePluginDeployOss } from 'vite-plugin-upload'
-import { vitePluginMetaShare } from './build/metaShare.ts'
-import { vitePluginOrganizeResource } from './build/organizeResource.ts'
-
-import tailwindcss from '@tailwindcss/vite'
-import { VantResolver } from '@vant/auto-import-resolver'
-import Components from 'unplugin-vue-components/vite'
-import VueRouter from 'vue-router/vite'
 
 import pxtorem from '@minko-fe/postcss-pxtorem'
-import postcssPresetEnv from 'postcss-preset-env'
+import tailwindcss from '@tailwindcss/vite'
+import { VantResolver } from '@vant/auto-import-resolver'
+import vue from '@vitejs/plugin-vue'
+import Components from 'unplugin-vue-components/vite'
+import { defineConfig, loadEnv, type PluginOption } from 'vite'
+import VueRouter from 'vue-router/vite'
 
 const splitDependencies: Record<string, string> = {
   gsap: 'gsap',
@@ -27,8 +17,9 @@ const splitDependencies: Record<string, string> = {
 
 const vantPackagePath = path.join('node_modules', 'vant')
 
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(async ({ command, mode }) => {
   const env = loadEnv(mode, process.cwd())
+  const isBuild = command === 'build'
   const isTestDeploy = mode === 'deploy-test'
   const isDeployMode = mode === 'deploy' || isTestDeploy
   const resolveDeployDir = (dir?: string) => {
@@ -39,11 +30,40 @@ export default defineConfig(({ command, mode }) => {
   const ossRootDir = resolveDeployDir(env.VITE_OSS_ROOT_DIR)
   const ftpDir = resolveDeployDir(env.VITE_FTP_DIRNAME)
 
-  return {
-    define: {
-      __ARMSEndpoint: JSON.stringify(process.env.ARMSEndpoint),
-    },
-    plugins: [
+  const preBuildPlugins: PluginOption[] = []
+  const postBuildPlugins: PluginOption[] = []
+  let postcssPresetEnvPlugin: ReturnType<(typeof import('postcss-preset-env'))['default']> | undefined
+
+  if (isBuild) {
+    const [
+      { buildCheck },
+      { vitePluginMetaShare },
+      { vitePluginOrganizeResource },
+      { default: legacy },
+      { default: postcssPresetEnv },
+      { visualizer },
+      { ViteImageOptimizer },
+      { vitePluginDeployFtp, vitePluginDeployOss },
+    ] = await Promise.all([
+      import('./build/buildCheck.ts'),
+      import('./build/metaShare.ts'),
+      import('./build/organizeResource.ts'),
+      import('@vitejs/plugin-legacy'),
+      import('postcss-preset-env'),
+      import('rollup-plugin-visualizer'),
+      import('vite-plugin-image-optimizer'),
+      import('vite-plugin-upload'),
+    ])
+
+    postcssPresetEnvPlugin = postcssPresetEnv({
+      browsers: ['ios >= 13', 'chrome >= 87', 'safari >= 13'],
+      autoprefixer: {},
+      features: {
+        'cascade-layers': false,
+      },
+    })
+
+    preBuildPlugins.push(
       buildCheck(env, mode),
       vitePluginMetaShare({
         enable: true,
@@ -67,20 +87,9 @@ export default defineConfig(({ command, mode }) => {
         cache: true,
         cacheLocation: 'node_modules/.cache-image/',
       }),
-      VueRouter({
-        dts: './types/route-map.d.ts',
-        importMode: command === 'build' ? 'sync' : 'async',
-      }),
-      vue(),
-      tailwindcss(),
-      Components({
-        dirs: ['src/components'],
-        extensions: ['vue'],
-        include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
-        resolvers: [VantResolver()],
-        dts: './types/components.d.ts',
-        directoryAsNamespace: true,
-      }),
+    )
+
+    postBuildPlugins.push(
       legacy({
         modernTargets: ['chrome >= 87', 'safari >= 13', 'ios >= 13'],
         renderLegacyChunks: false,
@@ -160,6 +169,30 @@ export default defineConfig(({ command, mode }) => {
         },
       },
       visualizer(),
+    )
+  }
+
+  return {
+    define: {
+      __ARMSEndpoint: JSON.stringify(process.env.ARMSEndpoint),
+    },
+    plugins: [
+      ...preBuildPlugins,
+      VueRouter({
+        dts: './types/route-map.d.ts',
+        importMode: isBuild ? 'sync' : 'async',
+      }),
+      vue(),
+      tailwindcss(),
+      Components({
+        dirs: ['src/components'],
+        extensions: ['vue'],
+        include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+        resolvers: [VantResolver()],
+        dts: './types/components.d.ts',
+        directoryAsNamespace: true,
+      }),
+      ...postBuildPlugins,
     ],
     resolve: {
       tsconfigPaths: true,
@@ -184,7 +217,7 @@ export default defineConfig(({ command, mode }) => {
               dropDebugger: env.VITE_DROP_CONSOLE == '1',
             },
           },
-          manualChunks(id) {
+          manualChunks(id: string) {
             if (id.includes('node_modules')) {
               for (const key in splitDependencies) {
                 if (id.includes(splitDependencies[key])) return `chunks/${key}`
@@ -206,13 +239,7 @@ export default defineConfig(({ command, mode }) => {
     css: {
       postcss: {
         plugins: [
-          postcssPresetEnv({
-            browsers: ['ios >= 13', 'chrome >= 87', 'safari >= 13'],
-            autoprefixer: {},
-            features: {
-              'cascade-layers': false,
-            },
-          }),
+          ...(postcssPresetEnvPlugin ? [postcssPresetEnvPlugin] : []),
           pxtorem({
             rootValue: (root) => (path.normalize(root?.file ?? '').includes(vantPackagePath) ? 5 : 10),
             propList: ['*'],

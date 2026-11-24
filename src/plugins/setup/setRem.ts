@@ -1,6 +1,7 @@
 import '@/assets/styles/pc.css'
-import { createQRCode, removeQRCode } from '@/utils/dom/createQRCode'
 import { debounce } from 'es-toolkit'
+
+import { createQRCode, removeQRCode } from '@/utils/dom/createQRCode'
 
 const desktopInput = window.matchMedia('(hover: hover) and (pointer: fine)')
 type ViewportSize = { width: number; height: number }

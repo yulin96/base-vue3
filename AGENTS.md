@@ -153,7 +153,7 @@
 - 普通构建优先使用 `pnpm build`，正式上传优先使用 `pnpm build:deploy`，测试上传优先使用 `pnpm build:deploy:test`。
 - 只有明确需要跳过检查时，才使用 `pnpm build:only`、`pnpm deploy:prod` 或 `pnpm deploy:test`。
 - 执行任何 build/deploy 前，先看 `package.json` 脚本和 `vite.config.ts`，确认是否会触发上传、部署或并行执行。
-- ESLint 版本和配置可能变化，复用旧命令前先以当前 `package.json` 和 `eslint.config.ts` 为准；不要继续使用已不兼容的旧参数。
+- Lint 与格式化配置可能变化，复用旧命令前先以当前 `package.json`、`.oxlintrc.json`、`eslint.config.ts` 和 `.oxfmtrc.json` 为准；不要继续使用已不兼容的旧参数。
 
 ## 多语言
 

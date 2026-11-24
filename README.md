@@ -6,7 +6,7 @@
 ## 项目分析（当前仓库）
 
 - 技术栈：Vue 3 + Vite 8 + TypeScript + Pinia + Vue Router（文件路由）+ Vant + Tailwind CSS v4。
-- 工程能力：ESLint + Prettier、GitHub Actions（type-check / lint / build:only）、自动生成路由与组件类型声明。
+- 工程能力：Oxlint + ESLint（Vue 模板）+ Oxfmt、GitHub Actions（type-check / lint / build:only）、自动生成路由与组件类型声明。
 - 运行特征：默认 Hash 路由、移动端 rem 适配、支持 PC 预览模式（可生成扫码二维码）。
 - 平台集成：内置微信分享/JSSDK、钉钉能力封装、可选 ARMS 前端监控。
 - 构建与发布：图片优化、分包、产物整理；可按环境变量开关上传 OSS/FTP。
@@ -50,18 +50,18 @@ npx create-base-vue
 
 修改以下位置时，核对脚手架对应逻辑，避免文件移动或写法变化后转换静默失效：
 
-| 基础库位置                                   | 脚手架对应函数                      | 需要同步核对的内容                                                                                                                                     |
-| -------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `package.json`                               | `updatePackageName`                 | 项目名称字段                                                                                                                                           |
-| `.env`、`.env.development`                   | `updateEnv`                         | `VITE_APP_TITLE`、`VITE_APP_LOCALSTORAGE_NAME` 的字段名和赋值格式；保留各环境文件，核对 `VITE_APP_API_URL`、`VITE_APP_MQTT_API_URL` 是否需要按项目填写 |
-| `src/config/services.ts`                     | 模板复制与项目初始化                | 保留集中服务配置；需要独立微信平台、上传服务或 MQTT 账号的项目在此填写默认参数                                                                         |
-| `src/main.ts`、`src/plugins/setup/setRem.ts` | `commentSetRemImport`               | PC 模式禁用移动端初始化；入口迁移或导入方式变化时同步调整                                                                                              |
-| `vite.config.ts`                             | `commentPxtorem`                    | PC 模式禁用 `pxtorem(...)`；调用名称及配置结构变化时核对匹配逻辑                                                                                       |
-| `src/assets/styles/main.css`、`rem.m.css`    | `updateMainCss`                     | PC 模式禁用 `./rem.m.css` 导入                                                                                                                         |
-| `src/assets/styles/tailwind.css`、`size.css` | `updateTailwindCss`                 | PC 模式禁用 `./size.css`，并将整数尺寸的 `1px` 换算改为 `0.25rem`                                                                                      |
-| `src/assets/styles/theme.css`                | `updateThemeCss`                    | `--spacing: 1px`、画布宽高变量和根字号计算块                                                                                                           |
-| `AGENTS.md`、`AGENTS-PC.md`                  | `replaceAgents`、`customizeProject` | PC 规范替换根规范；两种模式生成后都移除 `AGENTS-PC.md`                                                                                                 |
-| `HANDOFF.MD`、`renovate.json`、`.github/workflows` | `cleanupTemplateFiles`          | 模板维护记录、专用配置和工作流的清理范围                                                                                                               |
+| 基础库位置                                         | 脚手架对应函数                      | 需要同步核对的内容                                                                                                                                     |
+| -------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `package.json`                                     | `updatePackageName`                 | 项目名称字段                                                                                                                                           |
+| `.env`、`.env.development`                         | `updateEnv`                         | `VITE_APP_TITLE`、`VITE_APP_LOCALSTORAGE_NAME` 的字段名和赋值格式；保留各环境文件，核对 `VITE_APP_API_URL`、`VITE_APP_MQTT_API_URL` 是否需要按项目填写 |
+| `src/config/services.ts`                           | 模板复制与项目初始化                | 保留集中服务配置；需要独立微信平台、上传服务或 MQTT 账号的项目在此填写默认参数                                                                         |
+| `src/main.ts`、`src/plugins/setup/setRem.ts`       | `commentSetRemImport`               | PC 模式禁用移动端初始化；入口迁移或导入方式变化时同步调整                                                                                              |
+| `vite.config.ts`                                   | `commentPxtorem`                    | PC 模式禁用 `pxtorem(...)`；调用名称及配置结构变化时核对匹配逻辑                                                                                       |
+| `src/assets/styles/main.css`、`rem.m.css`          | `updateMainCss`                     | PC 模式禁用 `./rem.m.css` 导入                                                                                                                         |
+| `src/assets/styles/tailwind.css`、`size.css`       | `updateTailwindCss`                 | PC 模式禁用 `./size.css`，并将整数尺寸的 `1px` 换算改为 `0.25rem`                                                                                      |
+| `src/assets/styles/theme.css`                      | `updateThemeCss`                    | `--spacing: 1px`、画布宽高变量和根字号计算块                                                                                                           |
+| `AGENTS.md`、`AGENTS-PC.md`                        | `replaceAgents`、`customizeProject` | PC 规范替换根规范；两种模式生成后都移除 `AGENTS-PC.md`                                                                                                 |
+| `HANDOFF.MD`、`renovate.json`、`.github/workflows` | `cleanupTemplateFiles`              | 模板维护记录、专用配置和工作流的清理范围                                                                                                               |
 
 维护要求：
 
@@ -103,45 +103,45 @@ pnpm dev
 
 ## 常用命令
 
-| 命令                     | 说明                                  |
-| ------------------------ | ------------------------------------- |
-| `pnpm dev`               | 启动开发服务器                        |
-| `pnpm check`             | 依次执行类型检查和代码检查            |
-| `pnpm type-check`        | 运行 `vue-tsc --build`                |
-| `pnpm lint`              | ESLint 纯检查                         |
-| `pnpm lint:fix`          | ESLint 检查并自动修复                 |
-| `pnpm format`            | 格式化整个工程                        |
-| `pnpm build:only`        | 仅打包（Vite build）                  |
-| `pnpm deploy:prod`       | 使用 `deploy` 模式打包                |
-| `pnpm deploy:test`       | 使用 `deploy-test` 模式打包           |
-| `pnpm build`             | 类型检查通过后再打包                      |
-| `pnpm build:deploy`      | 检查通过后再以 `deploy` 模式打包      |
-| `pnpm build:deploy:test` | 检查通过后再以 `deploy-test` 模式打包 |
-| `pnpm preview`           | 预览构建产物                          |
+| 命令                     | 说明                                     |
+| ------------------------ | ---------------------------------------- |
+| `pnpm dev`               | 启动开发服务器                           |
+| `pnpm check`             | 并行执行类型检查和代码检查               |
+| `pnpm type-check`        | 运行 `vue-tsc --build`                   |
+| `pnpm lint`              | Oxlint 与 Vue 模板 ESLint 纯检查         |
+| `pnpm lint:fix`          | Oxlint 与 Vue 模板 ESLint 检查并自动修复 |
+| `pnpm format`            | 使用 Oxfmt 格式化整个工程                |
+| `pnpm build:only`        | 仅打包（Vite build）                     |
+| `pnpm deploy:prod`       | 使用 `deploy` 模式打包                   |
+| `pnpm deploy:test`       | 使用 `deploy-test` 模式打包              |
+| `pnpm build`             | 类型检查通过后再打包                     |
+| `pnpm build:deploy`      | 检查通过后再以 `deploy` 模式打包         |
+| `pnpm build:deploy:test` | 检查通过后再以 `deploy-test` 模式打包    |
+| `pnpm preview`           | 预览构建产物                             |
 
 ## 环境变量
 
 项目基于 `VITE_*` 变量运行，默认示例见根目录 `.env`。
 
-| 变量名                       | 说明                                               |
-| ---------------------------- | -------------------------------------------------- |
-| `VITE_APP_API_URL`           | 业务接口基础地址；空值表示同源请求，按环境显式配置 |
-| `VITE_APP_MQTT_API_URL`      | MQTT 发送接口的完整地址                            |
-| `VITE_APP_LOCALSTORAGE_NAME` | 本地缓存前缀                                       |
+| 变量名                                 | 说明                                                   |
+| -------------------------------------- | ------------------------------------------------------ |
+| `VITE_APP_API_URL`                     | 业务接口基础地址；空值表示同源请求，按环境显式配置     |
+| `VITE_APP_MQTT_API_URL`                | MQTT 发送接口的完整地址                                |
+| `VITE_APP_LOCALSTORAGE_NAME`           | 本地缓存前缀                                           |
 | `VITE_APP_APPID`、`VITE_APP_APPSECRET` | 两者都填写时启用 POST 签名与加密，前端配置对使用者可见 |
-| `VITE_APP_MAIN_COLOR`        | 页面主背景色（CSS 变量 `--main-color`）            |
-| `VITE_APP_TITLE`             | 页面标题                                           |
-| `VITE_APP_ARMS`              | 是否启用 ARMS（`1` 开启）                          |
-| `VITE_DROP_CONSOLE`          | 构建时是否移除 `console/debugger`（`1` 移除）      |
-| `VITE_APP_HM_BAIDU`          | 百度统计 ID                                        |
-| `VITE_APP_SHARE_TITLE`       | 微信分享标题                                       |
-| `VITE_APP_SHARE_DESC`        | 微信分享描述                                       |
-| `VITE_APP_SHARE_LINK`        | 微信分享链接                                       |
-| `VITE_APP_SHARE_IMGURL`      | 微信分享图片                                       |
-| `VITE_APP_AUTHOR`            | 注入到 `index.html` 的作者信息                     |
-| `VITE_APP_CONTACT`           | 注入到 `index.html` 的联系信息                     |
-| `VITE_OSS_ROOT_DIR`          | OSS 上传目录（用于发布插件开关）                   |
-| `VITE_FTP_DIRNAME`           | FTP 上传目录（用于发布插件开关）                   |
+| `VITE_APP_MAIN_COLOR`                  | 页面主背景色（CSS 变量 `--main-color`）                |
+| `VITE_APP_TITLE`                       | 页面标题                                               |
+| `VITE_APP_ARMS`                        | 是否启用 ARMS（`1` 开启）                              |
+| `VITE_DROP_CONSOLE`                    | 构建时是否移除 `console/debugger`（`1` 移除）          |
+| `VITE_APP_HM_BAIDU`                    | 百度统计 ID                                            |
+| `VITE_APP_SHARE_TITLE`                 | 微信分享标题                                           |
+| `VITE_APP_SHARE_DESC`                  | 微信分享描述                                           |
+| `VITE_APP_SHARE_LINK`                  | 微信分享链接                                           |
+| `VITE_APP_SHARE_IMGURL`                | 微信分享图片                                           |
+| `VITE_APP_AUTHOR`                      | 注入到 `index.html` 的作者信息                         |
+| `VITE_APP_CONTACT`                     | 注入到 `index.html` 的联系信息                         |
+| `VITE_OSS_ROOT_DIR`                    | OSS 上传目录（用于发布插件开关）                       |
+| `VITE_FTP_DIRNAME`                     | FTP 上传目录（用于发布插件开关）                       |
 
 > 注意：OSS/FTP 的密钥与账号由 `process.env` 读取（如 `zAccessKeyId`、`zH5FtpHost` 等），请通过 CI 或本地安全环境注入，不要写入仓库。
 
@@ -276,7 +276,7 @@ await electronApi?.hideConfig?.(['performance', 'exitButton.mark', 'list10'])
 | `enterFullscreen()` / `exitFullscreen()` | 立即切换当前业务窗口全屏状态           | 返回值表示是否找到并处理了当前窗口              |
 | `previewPrint(request)`                  | 按打印参数打开预览                     | 不能验证打印机驱动默认纸型和实际装纸            |
 | `print(request)`                         | 执行打印并返回 `PrintResult`           | 上线前需使用目标打印机和实际纸张验证            |
-| `saveImage({ src })`                     | 将图片保存到客户端并返回文件路径       | 仅业务窗口提供，需处理读取或保存失败             |
+| `saveImage({ src })`                     | 将图片保存到客户端并返回文件路径       | 仅业务窗口提供，需处理读取或保存失败            |
 | `getScreenIndex()`                       | 获取当前业务窗口从 1 开始的编号        | 无法识别当前窗口时返回 `null`                   |
 | `sendToScreen(target, command, data?)`   | 向指定业务窗口发送消息                 | `true` 只表示已投递，不表示业务处理成功         |
 | `onScreenMessage(listener)`              | 监听其他窗口发来的消息                 | 返回取消函数，组件卸载时必须调用                |

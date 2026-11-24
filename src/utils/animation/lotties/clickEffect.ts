@@ -1,4 +1,5 @@
 import Lottie from 'lottie-web'
+
 import bubble from './effect1.json'
 
 export const createClickEffect = (x: number, y: number) => {

@@ -1,4 +1,5 @@
 import { electronApi } from '@/config/env'
+
 import type { SerialAPI } from '../../../types/serial'
 
 export type { SerialAPI, SerialPayload, SerialReceived } from '../../../types/serial'

@@ -1,6 +1,7 @@
+import axios, { toFormData } from 'axios'
+
 import { services } from '@/config/services'
 import { isWeChat } from '@/utils/platform/ua'
-import axios, { toFormData } from 'axios'
 
 type WechatSdk = typeof import('weixin-js-sdk').default
 type WechatSdkConfig = {

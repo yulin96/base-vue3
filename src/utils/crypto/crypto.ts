@@ -1,5 +1,6 @@
-import { parseAesConfig } from '@/utils/crypto/aesConfig'
 import CryptoJS from 'crypto-js'
+
+import { parseAesConfig } from '@/utils/crypto/aesConfig'
 
 export function encrypt(text: string, keyStr: string, ivStr: string) {
   const { key, iv } = parseAesConfig(keyStr, ivStr)

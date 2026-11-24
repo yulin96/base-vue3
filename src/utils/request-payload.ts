@@ -1,7 +1,8 @@
+import { AxiosHeaders, toFormData, type InternalAxiosRequestConfig } from 'axios'
+
 import { isPostEncryptEnabled } from '@/config/env'
 import { formDataToObj } from '@/utils/convert/form'
 import { isFormData } from '@/utils/validate'
-import { AxiosHeaders, toFormData, type InternalAxiosRequestConfig } from 'axios'
 
 export type FormDataOrJson = 'FormData' | 'JSON'
 type RequestData = Record<string, unknown>
@@ -13,7 +14,9 @@ export type PostRequestConfig = InternalAxiosRequestConfig & {
 }
 
 export function normalizePostRequest(config: PostRequestConfig) {
-  return isPostEncryptEnabled && config.postEncrypt !== false ? encryptPostRequest(config) : buildPlainPostRequest(config)
+  return isPostEncryptEnabled && config.postEncrypt !== false
+    ? encryptPostRequest(config)
+    : buildPlainPostRequest(config)
 }
 
 async function encryptPostRequest(config: PostRequestConfig) {

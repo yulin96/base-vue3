@@ -1,6 +1,7 @@
-import chalk from 'chalk'
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { extname, relative, resolve } from 'node:path'
+
+import chalk from 'chalk'
 import { normalizePath, type Plugin } from 'vite'
 
 const DEFAULT_RESOURCE_CONFIG = {
@@ -45,7 +46,7 @@ const toSingleQuotedJsString = (value: string): string => `'${value.replace(/\\/
 const encodePathSegments = (value: string): string =>
   value
     .split('/')
-    .map((segment) => (encodeURIComponent(segment).replace(/%40/gi, '@')))
+    .map((segment) => encodeURIComponent(segment).replace(/%40/gi, '@'))
     .join('/')
 
 const createExtensionRules = (config: ResourceConfig): ExtensionRule[] => {

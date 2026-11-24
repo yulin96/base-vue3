@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { sleep } from '@/utils/common'
 import { randomInt } from 'es-toolkit'
 import {
   createVNode,
@@ -11,8 +10,11 @@ import {
   type ComponentPublicInstance,
   type CSSProperties,
 } from 'vue'
-import type { TBarrage } from './barrage.types'
+
+import { sleep } from '@/utils/common'
+
 import BarrageCard from './barrage-card.vue'
+import type { TBarrage } from './barrage.types'
 
 const {
   row = 6,
@@ -182,6 +184,6 @@ defineExpose({ deleteCard, addCard, start, stop })
     :key="item"
     :ref="(el) => setCardBox(item, el)"
     :style="{ height: `${100 / row}%` }"
-    :class="`center relative w-full`"
+    :class="`relative center w-full`"
   ></div>
 </template>

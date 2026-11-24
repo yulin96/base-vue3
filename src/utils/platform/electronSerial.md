@@ -4,6 +4,7 @@ F12「串口设备」中搜索设备，为固定编号 1～20 设置绑定和通
 
 ```ts
 import { onBeforeUnmount } from 'vue'
+
 import { electronSerial } from '@/utils/platform/electronSerial'
 
 // 先监听，再发送，避免漏掉快速回包。

@@ -1,6 +1,7 @@
 import type { ToastOptions } from 'vant'
 import { showLoadingToast as _showLoadingToast, showToast as _showToast, setToastDefaultOptions } from 'vant'
 import 'vant/es/toast/style'
+
 import fail from './icon/op_close.svg'
 import success from './icon/op_success.svg'
 import info from './icon/promot_info.svg'

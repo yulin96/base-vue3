@@ -1,5 +1,6 @@
-import { toFixedNumber } from '@/utils/convert/number'
 import { computed, onDeactivated, onUnmounted, ref } from 'vue'
+
+import { toFixedNumber } from '@/utils/convert/number'
 
 export interface UseTimerOptions {
   /** 初始倒计时时间（秒） */

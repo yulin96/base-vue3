@@ -3,7 +3,7 @@ defineProps<{ highlight: string }>()
 </script>
 
 <template>
-  <div class="center relative z-0 size-full">
+  <div class="relative z-0 center size-full">
     <div v-bind="$attrs" class="conic pointer-events-none absolute inset-0 -z-10 size-full"></div>
     <slot />
   </div>

@@ -1,7 +1,8 @@
+import axios, { type AxiosRequestConfig } from 'axios'
+
 import { devModel } from '@/config/env'
 import { services } from '@/config/services'
 import { normalizePostRequest, type FormDataOrJson, type PostRequestConfig } from '@/utils/request-payload'
-import axios, { type AxiosRequestConfig } from 'axios'
 
 export type IFormDataOrJSON = FormDataOrJson
 type Dict = Record<string, unknown>

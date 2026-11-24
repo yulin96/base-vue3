@@ -1,7 +1,8 @@
+import type { AxiosRequestConfig } from 'axios'
+
 import type { ResData } from '@/api/types'
 import { services } from '@/config/services'
 import { useLockRequest } from '@/hooks/network/useLockRequest'
-import type { AxiosRequestConfig } from 'axios'
 
 export type MqttPayload = Record<string, unknown>
 

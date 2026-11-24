@@ -1,5 +1,4 @@
 import './browserScan.css'
-
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode'
 
 let scanNumber = 0

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useGsapContext } from '@/hooks/animation/useGsapContext'
 import { useTemplateRef } from 'vue'
+
+import { useGsapContext } from '@/hooks/animation/useGsapContext'
 
 defineOptions({ name: 'Index' })
 definePage({ meta: { index: 10 } })

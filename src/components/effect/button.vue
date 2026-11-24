@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { useActive } from '@/hooks/state/useActive'
 import { random, randomInt, sample } from 'es-toolkit'
 import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue'
+
+import { useActive } from '@/hooks/state/useActive'
 
 interface Props {
   count?: number
@@ -136,7 +137,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="button center absolute inset-0 z-0 size-full overflow-hidden">
+  <div class="button absolute inset-0 z-0 center size-full overflow-hidden">
     <div
       ref="buttonRef"
       class="pointer-events-none absolute top-0 left-0 -z-10 flex h-full w-full items-center justify-evenly"

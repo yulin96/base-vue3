@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { randomNum } from '@/utils/random'
 import { onActivated, onDeactivated, onMounted, onUnmounted, useTemplateRef } from 'vue'
+
+import { randomNum } from '@/utils/random'
 
 const { img = 'https://oss.eventnet.cn/H5/zz/public/icon/snow.png' } = defineProps<{
   img?: string

@@ -1,9 +1,10 @@
-import { toUrl } from '@/utils/navigation'
-import { useLock } from '@/hooks/state/useLock'
-import { failToast, loadingToast } from '@/plugins/vant/toast'
-import { isWeChat } from '@/utils/platform/ua'
 import { isIOS } from '@vueuse/core'
 import { closeToast } from 'vant'
+
+import { useLock } from '@/hooks/state/useLock'
+import { failToast, loadingToast } from '@/plugins/vant/toast'
+import { toUrl } from '@/utils/navigation'
+import { isWeChat } from '@/utils/platform/ua'
 
 const [status, lock, unLock] = useLock()
 

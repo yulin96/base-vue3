@@ -1,7 +1,9 @@
-import { appStorageName } from '@/config/env'
 import { useLocalStorage } from '@vueuse/core'
 import { watch } from 'vue'
 import { createI18n } from 'vue-i18n'
+
+import { appStorageName } from '@/config/env'
+
 import en from './en.json'
 import zhCN from './zh-CN.json'
 

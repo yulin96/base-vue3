@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+
 import { services } from '@/config/services'
 import { toUrl } from '@/utils/navigation'
 import { getOpenId } from '@/utils/platform/getOpenId'
-import { onMounted, ref } from 'vue'
 
 const { url, auto = false } = defineProps<{ url: string; auto?: boolean }>()
 
@@ -39,10 +40,10 @@ onMounted(async () => {
     :overlay-class="'bg-black/30 backdrop-blur-md'"
     class="center bg-transparent"
   >
-    <div class="rounded-10 flex w-600 flex-col items-center justify-center bg-white py-60">
-      <p class="text-32 mb-40">您还没有登录</p>
-      <p class="text-32 mb-40">点击微信一键登录参与活动</p>
-      <div class="rounded-12 flex h-80 w-500 items-center justify-center bg-[#12c164] text-white" @click="openLink">
+    <div class="flex w-600 flex-col items-center justify-center rounded-10 bg-white py-60">
+      <p class="mb-40 text-32">您还没有登录</p>
+      <p class="mb-40 text-32">点击微信一键登录参与活动</p>
+      <div class="flex h-80 w-500 items-center justify-center rounded-12 bg-[#12c164] text-white" @click="openLink">
         <svg
           class="icon mr-10 w-60"
           viewBox="0 0 1024 1024"

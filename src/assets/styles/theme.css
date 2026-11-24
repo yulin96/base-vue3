@@ -3,7 +3,11 @@
 
   --spacing: 1px;
 
+  --radius-*: initial;
   --radius-full: 9999px;
+  --text-*: initial;
+  --tracking-*: initial;
+  --container-*: initial;
 }
 
 /* html {

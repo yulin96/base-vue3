@@ -1,14 +1,14 @@
 import '@/plugins/setup/setRem'
-
 import '@/assets/styles/main.css'
 import '@/plugins/appInit'
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import { createApp } from 'vue'
 
 import { prodModel } from '@/config/env'
 import { registerARMS } from '@/plugins/monitoring/arms'
 import { registerDirective } from '@/plugins/setup/directives'
-import { createPinia } from 'pinia'
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import { createApp } from 'vue'
+
 import App from './App.vue'
 import router from './router'
 

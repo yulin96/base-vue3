@@ -1,6 +1,0 @@
-src/utils/animation/lotties/*.json
-src/**/*.svg
-types/**/*.d.ts
-pnpm-lock.yaml
-node_modules
-dist

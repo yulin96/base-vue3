@@ -1,6 +1,7 @@
-import { loadQRCodeLib } from '@/utils/qrcode'
 import type QRCode from 'qrcode'
 import { shallowRef, toRef, watch, type MaybeRefOrGetter } from 'vue'
+
+import { loadQRCodeLib } from '@/utils/qrcode'
 
 export function useQRCode(text: MaybeRefOrGetter<string>, options?: QRCode.QRCodeToDataURLOptions) {
   const renderOptions: QRCode.QRCodeToDataURLOptions = {

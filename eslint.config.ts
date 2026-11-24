@@ -1,35 +1,26 @@
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
+import eslintConfigPrettier from 'eslint-config-prettier/flat'
+import pluginOxlint from 'eslint-plugin-oxlint'
 import pluginVue from 'eslint-plugin-vue'
 import { globalIgnores } from 'eslint/config'
 
 export default defineConfigWithVueTs(
   {
-    name: 'app/files-to-lint',
-    files: ['**/*.{vue,ts,mts,tsx}'],
+    name: 'app/vue-files-to-lint',
+    files: ['**/*.vue'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**']),
+  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/output/**', '**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}']),
 
   ...pluginVue.configs['flat/recommended'],
-  vueTsConfigs.recommended,
+  vueTsConfigs.base,
 
-  skipFormatting,
+  eslintConfigPrettier,
+  ...pluginOxlint.buildFromOxlintConfigFile('./.oxlintrc.json'),
 
   {
     rules: {
-      'no-debugger': 0,
-      'no-empty': 1,
-      'no-prototype-builtins': 0,
-      'no-undef': 0,
-      'no-unused-vars': 0,
-      '@typescript-eslint/no-empty-function': 0,
-      '@typescript-eslint/no-empty-object-type': 0,
-      '@typescript-eslint/no-explicit-any': 0,
-      '@typescript-eslint/no-unused-expressions': 0,
-      '@typescript-eslint/no-unused-vars': 0,
-      'prefer-rest-params': 0,
-      'vue/multi-word-component-names': 0,
+      'vue/multi-word-component-names': 'off',
     },
   },
 )

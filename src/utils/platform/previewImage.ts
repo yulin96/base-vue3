@@ -1,7 +1,7 @@
+import { showImagePreview } from 'vant'
+
 import { isWeChat } from '@/utils/platform/ua'
 import { isHttps } from '@/utils/validate'
-
-import { showImagePreview } from 'vant'
 import 'vant/es/image-preview/style'
 
 export async function previewImage(url: string[] | string, index: number = 0) {

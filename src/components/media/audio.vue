@@ -143,7 +143,7 @@ function unregisterMediaSession() {
       ></audio>
       <img
         ref="playIconRef"
-        class="animate-spin-slow size-40 cursor-pointer"
+        class="size-40 animate-spin-slow cursor-pointer"
         :class="{
           'animation-running': isPlay,
           'animation-paused': !isPlay,

@@ -1,6 +1,7 @@
+import { isNavigationFailure, NavigationFailureType, type RouteLocationRaw } from 'vue-router'
+
 import { appStorageName } from '@/config/env'
 import router from '@/router'
-import { isNavigationFailure, NavigationFailureType, type RouteLocationRaw } from 'vue-router'
 
 const HISTORY_KEY = `${appStorageName}ROUTER_HISTORY_STACK`.toUpperCase()
 const MAX_HISTORY = 50

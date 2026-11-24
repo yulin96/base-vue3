@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { Toaster } from 'vue-sonner'
+
 import { useRouteTransition } from '@/hooks/interaction/useRouterTransition'
 import { setupPreloadImg } from '@/plugins/setup/preloadImg'
 import { registerWechatShare } from '@/utils/platform/wechatShare'
-import { Toaster } from 'vue-sonner'
+
 import 'vue-sonner/style.css'
 
 const { name } = useRouteTransition()

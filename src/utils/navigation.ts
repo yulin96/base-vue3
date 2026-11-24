@@ -1,8 +1,9 @@
+import type { RouteNamedMap } from 'vue-router/auto-routes'
+import { toast } from 'vue-sonner'
+
 import { apiMenus } from '@/api'
 import router, { replaceTo, type RouterNameOrPath } from '@/router'
 import { isUrl } from '@/utils/validate'
-import type { RouteNamedMap } from 'vue-router/auto-routes'
-import { toast } from 'vue-sonner'
 
 /**
  * 跳转到指定页面

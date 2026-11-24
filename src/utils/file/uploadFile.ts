@@ -1,8 +1,9 @@
-import { services } from '@/config/services'
 import OSS from 'ali-oss'
 import axios, { toFormData } from 'axios'
 import { nanoid } from 'nanoid'
 import { toast } from 'vue-sonner'
+
+import { services } from '@/config/services'
 
 type IUploadOption = {
   id: string

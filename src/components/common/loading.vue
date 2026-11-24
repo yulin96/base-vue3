@@ -1,5 +1,5 @@
 <template>
-  <div v-bind="$attrs" class="center fixed top-0 left-0 z-20 h-screen w-screen text-[#999]">
+  <div v-bind="$attrs" class="fixed top-0 left-0 z-20 center h-screen w-screen text-[#999]">
     <div class="lds-spinner open">
       <div v-for="i in 12" :key="i"></div>
     </div>

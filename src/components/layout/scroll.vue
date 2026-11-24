@@ -2,6 +2,7 @@
 import { useScroll, useResizeObserver } from '@vueuse/core'
 import { throttle } from 'es-toolkit'
 import { computed, onMounted, ref, useTemplateRef, watch } from 'vue'
+
 import { isIOS } from '@/utils/platform/ua'
 
 const props = withDefaults(
@@ -220,7 +221,7 @@ defineExpose({
 
     <div
       v-show="props.showBar && thumbHeight > 0 && (props.alwaysShow || isScrolling)"
-      class="absolute top-0 h-full w-2.5 rounded-full bg-transparent transition-all duration-300 group-hover:bg-gray-200"
+      class="group-hover:bg-gray-200 absolute top-0 h-full w-2.5 rounded-full bg-transparent transition-all duration-300"
       :style="barStyle"
     >
       <div

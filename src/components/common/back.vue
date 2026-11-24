@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { useStorage, useWindowSize } from '@vueuse/core'
+import { ref, watch } from 'vue'
+import type { RouteNamedMap } from 'vue-router/auto-routes'
+
 import { appStorageName } from '@/config/env'
 import { goBack } from '@/router'
 import { useStore } from '@/stores/user'
 import { isPcMode } from '@/utils/platform/ua'
-import { useStorage, useWindowSize } from '@vueuse/core'
-import { ref, watch } from 'vue'
-import type { RouteNamedMap } from 'vue-router/auto-routes'
 
 const { back = undefined, size = 46 } = defineProps<{ back?: keyof RouteNamedMap; size?: number }>()
 
@@ -44,7 +45,7 @@ const clickBack = () => {
   <div
     v-else
     btn
-    class="center fixed right-20 bottom-300"
+    class="fixed right-20 bottom-300 center"
     :style="{ width: `${size * (height / 720)}px`, height: `${size * (height / 720)}px` }"
     @click="clickBack"
   >

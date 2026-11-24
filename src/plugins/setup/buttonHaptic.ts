@@ -1,5 +1,4 @@
 import './buttonHaptic.css'
-
 import { getIOSVersion, isIOS } from '@/utils/platform/ua'
 
 const HAPTIC_SELECTOR = '[tap]'

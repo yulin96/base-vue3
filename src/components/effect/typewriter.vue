@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { sleep } from '@/utils/common'
 import { randomInt } from 'es-toolkit'
 import { nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+
+import { sleep } from '@/utils/common'
 
 const props = withDefaults(
   defineProps<{

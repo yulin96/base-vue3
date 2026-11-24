@@ -1,6 +1,7 @@
-import { sleep } from '@/utils/common'
 import { annotate } from 'rough-notation'
 import type { RoughAnnotationConfig } from 'rough-notation/lib/model'
+
+import { sleep } from '@/utils/common'
 
 export const notate = (name: string, config: RoughAnnotationConfig) => {
   const ele = document.querySelector<HTMLElement>(name)

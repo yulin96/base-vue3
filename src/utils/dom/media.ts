@@ -1,7 +1,8 @@
-import { blobToFile } from '@/utils/convert/file'
-import { compressPhoto } from '@/utils/file/compressImage'
 import { nanoid } from 'nanoid'
 import { toast } from 'vue-sonner'
+
+import { blobToFile } from '@/utils/convert/file'
+import { compressPhoto } from '@/utils/file/compressImage'
 
 /**
  * 获取用户图片
