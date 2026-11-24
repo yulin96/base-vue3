@@ -229,7 +229,7 @@ type NetworkCheckResult = {
   error: string | null
 }
 
-type InteractionStatRequest = { title?: string; event: string }
+type InteractionStatRequest = { title?: string; event: string; remark?: string }
 type InteractionStatResult = { saved: boolean; error: string | null }
 
 type SaveImageRequest = { src: string }

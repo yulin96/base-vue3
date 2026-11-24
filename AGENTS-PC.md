@@ -115,9 +115,9 @@ html {
 
 ## 大屏互动统计
 
-- Electron 客户端负责统计保存和上报，基础库只发送事件。
-- 业务调用 `recordInteractionStat(event, title?)`（`src/utils/interactionStats.ts`），直接透传事件和可选分组，项目归属由客户端按实际运行内容决定；内容地址与设置一致时使用配置 ID，旧内容地址不同或归属未知时仅记录匿名本机统计，不向目标项目上报。返回 `Promise<{ saved: boolean; error: string | null }>`，只表示本地保存结果，不等待网络。失败静默结束，不提示、不输出警告日志，不阻塞互动或自动重试。
-- 直接调用客户端时使用 `electronApi.recordInteractionStat({ event, title? })`。接口类型变动同步 `types/electron.d.ts`。
+- Electron 客户端负责统计保存和上报。
+- 业务调用 `recordInteractionStat(event, title?, remark?)`（`src/utils/interactionStats.ts`），直接透传事件和可选分组、备注，项目归属由客户端按实际运行内容决定；内容地址与设置一致时使用配置 ID，旧内容地址不同或归属未知时仅记录匿名本机统计，不向目标项目上报。文本备注随正式项目的事件原样上报到云端明细。返回 `Promise<{ saved: boolean; error: string | null }>`，只表示本地保存结果，不等待网络。失败静默结束，不提示、不输出警告日志，不阻塞互动或自动重试。
+- 直接调用客户端时使用 `electronApi.recordInteractionStat({ event, title?, remark? })`。接口类型变动同步 `types/electron.d.ts`。
 - 项目 ID 由 Electron F12 配置，选择项目自动填入；手动修改地址会清空旧 ID。有效 8 位 ID 按 ID 隔离并联网即时上报，同 ID 可跨资源地址累计。
 - 无 ID、格式错误、内容地址不同或归属未知时，仅在 Electron 本地保存匿名统计；按实际内容完整资源地址隔离，只去除首尾空白，保留查询参数和片段。无地址或归属未知时使用实际开发入口或该组窗口首个本地入口，多屏共享同一项目。匿名与正式历史分开，不自动合并或补传。
 - 格式正确但云端不存在的 ID 保留本地统计，上报失败，不转匿名。云端 `/stats/record` 仅接受已有 projectId，不按名称创建项目；项目管理及云端清空在后台操作。

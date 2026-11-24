@@ -1,7 +1,7 @@
 import { electronApi } from '@/config/env'
 
 /** 每次调用计数一次；业务负责同一轮事件防重。返回本地保存结果，不等待网络。 */
-export async function recordInteractionStat(event: string, title?: string): Promise<InteractionStatResult> {
+export async function recordInteractionStat(event: string, title?: string, remark?: string): Promise<InteractionStatResult> {
   if (typeof event !== 'string' || !event.trim() || Array.from(event.trim()).length > 64) {
     return { saved: false, error: '统计事件名称需为 1–64 个字符' }
   }
@@ -15,6 +15,7 @@ export async function recordInteractionStat(event: string, title?: string): Prom
     return await electronApi.recordInteractionStat({
       event: event.trim(),
       ...(title === undefined ? {} : { title: title.trim() }),
+      ...(remark === undefined ? {} : { remark }),
     })
   } catch (error) {
     return { saved: false, error: error instanceof Error ? error.message : '统计发送失败' }
