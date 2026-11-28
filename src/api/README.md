@@ -78,6 +78,33 @@ if (res.code != 200) return toast.warning(res?.message || res?.msg || '正在处
 - RSA 载荷经 URI 编码后按 `createEncryptIns().maxEncryptBytes` 分段加密，密文以 `|` 拼接；单段上限由当前公钥的模数位数计算，1024 位为 117 字节，2048 位为 245 字节。加密失败会中止请求。
 - 不顺手增加全局业务码拦截、重试、鉴权、错误上报或通用 API 工厂；需要新增底层能力时另按明确需求处理。
 
+## 项目开关与互动统计
+
+从 `@/api` 导入，地址由 `VITE_APP_MM_API_URL` 指定，默认使用 `https://mm.event1.cn`。成功业务码为 `200`。
+
+| 调用 | 用途 |
+| --- | --- |
+| `apiProjectSwitch({ projectId: 12, name: '活动入口' })` | 按名称读取一个开关，`data.enabled` 是布尔值，`data.url` 是配置的链接。普通开关按名称查询时省略 `projectId`。 |
+| `apiProjectSwitches({ projectId: 12 })` | 读取这个开关项目的全部开关，返回数组。无参数时列出普通开关。 |
+| `apiRecordStat({ projectId, event: '开始', title: '主屏', remark: '第一轮' })` | 记录一次事件。`title` 和 `remark` 可省略。 |
+| `apiProjectStats(projectId, { startDate, endDate })` | 按北京时间查询统计，日期格式为 `YYYY-MM-DD`。省略日期时从项目创建日查到今天。 |
+| `apiPublicProjects()` | 读取公开项目列表，`data.items` 含项目编号、名称和链接。 |
+| `apiIpInfo()` / `apiIpInfo({ ip })` | 查询访问者或指定 IP。内网地址和 IPv6 的 `data.location` 为 `null`。 |
+
+开关项目使用数字编号，互动统计使用后台已创建的 8 位统计项目编号。两个编号分别填写。
+
+```ts
+import { apiProjectSwitch, apiRecordStat } from '@/api'
+
+const [err, res] = await apiProjectSwitch({ projectId: 12, name: '活动入口' })
+if (!err && res.code === 200 && res.data.enabled) {
+  // 替换为实际统计项目编号。上报独立发送，页面可立即继续。
+  void apiRecordStat({ projectId: 'abcd2345', event: '进入活动' })
+}
+```
+
+浏览器 H5 可在业务事件发生时直接调用 `apiRecordStat`。Electron 项目已有 `recordInteractionStat` 负责本地记录和云端上报，同一事件只选一个入口，避免重复计数。
+
 ## 现有特殊用法
 
 统计分组 `title` 可选：普通项目使用 `recordInteractionStat('进入')`；仅多屏等必要场景或明确要求分组时使用 `recordInteractionStat('进入', '屏幕1')`。分组名称去除首尾空白后为 1–64 个 Unicode 字符，同名事件在不同分组独立统计；不要默认按页面或路由自动加分组。F8 展示分组、每日及每小时明细。

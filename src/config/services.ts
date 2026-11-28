@@ -2,6 +2,9 @@ export const services = {
   api: {
     baseURL: import.meta.env.VITE_APP_API_URL,
   },
+  mm: {
+    baseURL: import.meta.env.VITE_APP_MM_API_URL,
+  },
   menus: {
     url: 'https://cdeapi.event1.cn/api/cmenu',
   },

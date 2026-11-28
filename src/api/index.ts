@@ -2,6 +2,16 @@ import type { ResData } from '@/api/types'
 import { services } from '@/config/services'
 import { useLockRequest } from '@/hooks/network/useLockRequest'
 
+export {
+  apiIpInfo,
+  apiProjectStats,
+  apiProjectSwitch,
+  apiProjectSwitches,
+  apiPublicProjects,
+  apiRecordStat,
+} from './mm'
+export type { TIpInfo, TProjectStats, TProjectSwitch, TPublicProjects, TStatRecord, TStatRecordInput } from './mm'
+
 const { get: getMenus } = useLockRequest()
 type MenuData = {
   title: string

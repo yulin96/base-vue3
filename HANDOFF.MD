@@ -1,5 +1,7 @@
 # 项目维护经验
 
+- 公共统计接收原始 JSON；H5 上报用请求层的 `postEncrypt: false` 跳过业务签名，并使用静默、可并发的请求，避免相邻事件被锁拦截。Electron 已通过客户端上报的事件不要再直接上报。
+
 ## 折叠屏适配资料
 
 - `折叠屏适配参考.md` 的硬件规格已按厂商资料及 MIX Fold 4 自有设备评测核对；表内 DPR 是模拟选值，物理分辨率除以 DPR 不能当成浏览器实测。iPhone Duo 内屏的面板像素与截图渲染像素不同，浏览器采样另列环境。Mate XT / XTs / XT 2、Magic V Flip / Flip2、Fold8 / Fold8 Ultra 需区分参数；本文未做真机验证。

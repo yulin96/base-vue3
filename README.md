@@ -126,6 +126,7 @@ pnpm dev
 | 变量名                                 | 说明                                                   |
 | -------------------------------------- | ------------------------------------------------------ |
 | `VITE_APP_API_URL`                     | 业务接口基础地址；空值表示同源请求，按环境显式配置     |
+| `VITE_APP_MM_API_URL`                  | 项目开关、互动统计、项目列表和 IP 查询的公共服务地址   |
 | `VITE_APP_MQTT_API_URL`                | MQTT 发送接口的完整地址                                |
 | `VITE_APP_LOCALSTORAGE_NAME`           | 本地缓存前缀                                           |
 | `VITE_APP_APPID`、`VITE_APP_APPSECRET` | 两者都填写时启用 POST 签名与加密，前端配置对使用者可见 |
