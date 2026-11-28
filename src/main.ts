@@ -14,6 +14,12 @@ import router from './router'
 
 // import i18n from '@/locales'
 
+try {
+  document.querySelector(':where(html)')
+} catch {
+  document.documentElement.classList.add('no-css-where')
+}
+
 const app = createApp(App)
 
 registerDirective(app)

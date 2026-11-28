@@ -33,3 +33,5 @@
 - Electron 业务窗口类型以配套客户端 preload 的业务窗口分支为准。配置编辑窗口单独暴露更新和诊断接口；判断 H5 能力时要同时看共享类型和 preload 的分支。
 - 图片对象可能仍在加载，或已经加载失败。序列帧应等到图片可绘制再推进加载进度，替换播放目标时应结束旧等待并取消旧帧回调。已用本地模拟复核失败、销毁和重入，未进行真机播放测试。
 - ARMS 的自定义接口快照会接触上传 STS 响应。当前跳过 STS 和地址不明请求的正文，并省略原始请求头；普通业务正文仍需按项目核定采集范围。本地验证未连接监控服务。
+- `.content` 中含 `var()` 的 `100dvh` 需放入 `@supports (min-height: 100dvh)`，避免旧浏览器在计算值阶段把高度重置为 `auto`。`main.css` 先引入 `rem.m.css` 再引入 `tailwind.css`，避免 `.content` 覆盖业务页 `min-h-*`。`build/legacyCssCompat.ts` 在 PostCSS 阶段解包 Tailwind 的 `@layer properties`，并拆分其中的 `::backdrop`。
+- 独立变换属性的回退需要为每个元素初始化变量，并在 `*-none` 时显式恢复对应的默认值。Safari 14.0 能匹配 `:where()`，但还不能用 `@supports selector()` 查询，因此入口用 `querySelector` 决定是否启用 `space-*` / `divide-*` 回退。缺少 `ResizeObserver` 时，图片缩放组件每 200ms 检查一次容器尺寸，卸载时停止。已用当前 Chromium 和 macOS WebKit 模拟旧引擎分支，最低版本浏览器和 iOS 实机渲染仍需验证。

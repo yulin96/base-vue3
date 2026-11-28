@@ -283,24 +283,41 @@ const onTouchEnd = (event: TouchEvent) => {
 }
 
 let resizeObserver: ResizeObserver | null = null
+let resizePoll: number | undefined
+
+const updateContainerSize = () => {
+  if (!containerRef.value) return
+  const { clientWidth: width, clientHeight: height } = containerRef.value
+  if (width === containerSize.width && height === containerSize.height) return
+  containerSize.width = width
+  containerSize.height = height
+  updateBaseScale()
+  clampTranslate()
+}
 
 onMounted(() => {
   if (!containerRef.value) return
-  resizeObserver = new ResizeObserver((entries) => {
-    const entry = entries[0]
-    if (!entry) return
-    containerSize.width = entry.contentRect.width
-    containerSize.height = entry.contentRect.height
-    updateBaseScale()
-    clampTranslate()
-  })
-  resizeObserver.observe(containerRef.value)
+  updateContainerSize()
+  if (typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0]
+      if (!entry) return
+      containerSize.width = entry.contentRect.width
+      containerSize.height = entry.contentRect.height
+      updateBaseScale()
+      clampTranslate()
+    })
+    resizeObserver.observe(containerRef.value)
+  } else {
+    resizePoll = window.setInterval(updateContainerSize, 200)
+  }
 })
 
 onBeforeUnmount(() => {
   // 清理可能残留的 window 级事件监听器（拖动中组件销毁时）
   window.removeEventListener('mousemove', onMouseMove)
   window.removeEventListener('mouseup', onMouseUp)
+  window.clearInterval(resizePoll)
   resizeObserver?.disconnect()
   resizeObserver = null
 })

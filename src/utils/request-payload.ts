@@ -44,6 +44,11 @@ function buildPlainPostRequest(config: PostRequestConfig) {
   return config
 }
 
+function getLastPathSegment(value: string) {
+  const segments = value.split('/').filter(Boolean)
+  return segments[segments.length - 1] || ''
+}
+
 function getRequestAction(config: InternalAxiosRequestConfig) {
   const customAction = (config as PostRequestConfig).postEncryptAction
   if (customAction) return customAction
@@ -53,8 +58,8 @@ function getRequestAction(config: InternalAxiosRequestConfig) {
   try {
     const baseUrl = config.baseURL || location.origin
     const pathname = new URL(url, baseUrl).pathname
-    return pathname.split('/').filter(Boolean).at(-1) || ''
+    return getLastPathSegment(pathname)
   } catch {
-    return url.split('?')[0].split('/').filter(Boolean).at(-1) || ''
+    return getLastPathSegment(url.split('?')[0])
   }
 }

@@ -8,6 +8,8 @@ import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv, type PluginOption } from 'vite'
 import VueRouter from 'vue-router/vite'
 
+import { legacyCssCompat } from './build/legacyCssCompat.ts'
+
 const splitDependencies: Record<string, string> = {
   gsap: 'gsap',
   lottie: 'lottie-web',
@@ -239,6 +241,7 @@ export default defineConfig(async ({ command, mode }) => {
     css: {
       postcss: {
         plugins: [
+          legacyCssCompat(),
           ...(postcssPresetEnvPlugin ? [postcssPresetEnvPlugin] : []),
           pxtorem({
             rootValue: (root) => (path.normalize(root?.file ?? '').includes(vantPackagePath) ? 5 : 10),

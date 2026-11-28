@@ -47,6 +47,16 @@
   font-size: calc(26px * var(--browser-scan-scale));
 }
 
+@supports not (translate: 0) {
+  .browser-scan__loading {
+    gap: 0;
+  }
+
+  .browser-scan__loading > * + * {
+    margin-top: calc(24px * var(--browser-scan-scale));
+  }
+}
+
 .browser-scan__spinner {
   width: calc(64px * var(--browser-scan-scale));
   height: calc(64px * var(--browser-scan-scale));
@@ -72,9 +82,16 @@
 .browser-scan__frame {
   position: relative;
   width: min(calc(560px * var(--browser-scan-scale)), calc(100% - calc(96px * var(--browser-scan-scale))));
-  aspect-ratio: 1;
+  height: min(calc(560px * var(--browser-scan-scale)), calc(100vw - calc(96px * var(--browser-scan-scale))));
   border-radius: calc(24px * var(--browser-scan-scale));
   box-shadow: 0 0 0 9999px rgb(0 0 0 / 45%);
+}
+
+@supports (aspect-ratio: 1) {
+  .browser-scan__frame {
+    height: auto;
+    aspect-ratio: 1;
+  }
 }
 
 .browser-scan__corner {

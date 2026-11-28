@@ -119,13 +119,18 @@ onMounted(() => {
   disposed = false
   updateContainerSize()
 
-  resizeObserver = new ResizeObserver(updateContainerSize)
-  if (buttonRef.value) resizeObserver.observe(buttonRef.value)
+  if (typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver(updateContainerSize)
+    if (buttonRef.value) resizeObserver.observe(buttonRef.value)
+  } else {
+    window.addEventListener('resize', updateContainerSize)
+  }
 })
 
 onUnmounted(() => {
   disposed = true
   clearCreateTimer()
+  window.removeEventListener('resize', updateContainerSize)
   resizeObserver?.disconnect()
   resizeObserver = null
 

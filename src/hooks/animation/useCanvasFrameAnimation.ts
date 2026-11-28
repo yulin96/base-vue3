@@ -687,14 +687,19 @@ export function useCanvasFrameAnimation(options: FrameAnimationOptions) {
       init().catch(console.error)
 
       // 🟡 优化5：监听容器尺寸变化，自动重设分辨率并重绘
-      resizeObserver = new ResizeObserver(() => {
-        resizeCanvas()
-      })
-      resizeObserver.observe(canvas.value)
+      if (typeof ResizeObserver !== 'undefined') {
+        resizeObserver = new ResizeObserver(() => {
+          resizeCanvas()
+        })
+        resizeObserver.observe(canvas.value)
+      } else {
+        window.addEventListener('resize', resizeCanvas)
+      }
     }
   })
 
   onUnmounted(() => {
+    window.removeEventListener('resize', resizeCanvas)
     resizeObserver?.disconnect()
     resizeObserver = null
     destroy()
