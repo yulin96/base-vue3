@@ -297,9 +297,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.5
         version: 4.3.5(vite@8.4.0(@types/node@26.6.11)(jiti@2.7.0)(terser@5.51.4))
-      '@tsconfig/node24':
-        specifier: ^24.0.6
-        version: 24.0.6
+      '@tsconfig/node26':
+        specifier: ^26.0.0
+        version: 26.0.2
       '@types/ali-oss':
         specifier: ^6.23.5
         version: 6.23.5
@@ -2205,8 +2205,8 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tsconfig/node24@24.0.6':
-    resolution: {integrity: sha512-/SK4JuydRQLGSCq7+hbiQ8fdAVR4Suv5EcBvkIAG3zo3GbXQvGoSclz4olL12Ar4OpH8gwGYJ67P4wwQqBRxKw==}
+  '@tsconfig/node26@26.0.2':
+    resolution: {integrity: sha512-RIBSoNGQxUQ8r4hSrEzS6TrUneoKaCuX6BjL4zF3wqttGq2w06zCea4d8P1gRvM/HZyDT1FQJ8trZSyy/63oMg==}
 
   '@types/ali-oss@6.23.5':
     resolution: {integrity: sha512-91ZBFLUaqy2lBFKrhvggv40euT5T3/xx4x0/+NKjqPTDOqscnimSFQnZwdjSMa036ESO58TPQsrYAPbRGe3EaQ==}
@@ -6374,7 +6374,7 @@ snapshots:
       tailwindcss: 4.3.5
       vite: 8.4.0(@types/node@26.6.11)(jiti@2.7.0)(terser@5.51.4)
 
-  '@tsconfig/node24@24.0.6': {}
+  '@tsconfig/node26@26.0.2': {}
 
   '@types/ali-oss@6.23.5': {}
 
