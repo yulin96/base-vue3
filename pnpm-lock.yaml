@@ -186,8 +186,8 @@ importers:
   .:
     dependencies:
       '@lucide/vue':
-        specifier: ^1.81.0
-        version: 1.81.0(vue@3.5.46(typescript@6.0.3))
+        specifier: ^1.82.0
+        version: 1.82.0(vue@3.5.46(typescript@6.0.3))
       '@number-flow/vue':
         specifier: ^0.5.2
         version: 0.5.2(vue@3.5.46(typescript@6.0.3))
@@ -343,8 +343,8 @@ importers:
         specifier: ^10.15.0
         version: 10.15.0(jiti@2.7.0)
       eslint-config-prettier:
-        specifier: ^10.1.8
-        version: 10.1.8(eslint@10.15.0(jiti@2.7.0))
+        specifier: ^10.1.9
+        version: 10.1.9(eslint@10.15.0(jiti@2.7.0))
       eslint-plugin-oxlint:
         specifier: ~1.95.0
         version: 1.95.0(oxlint@1.95.0)
@@ -1731,8 +1731,8 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@lucide/vue@1.81.0':
-    resolution: {integrity: sha512-IVXQr5EgAJex9OQcEyTOH2KzLxWQ4mQ/3R6Y4fx58ApqwGHnQYFXmifYe9/rqLma6CWKMtq79SeBnQ8dE+s3YA==}
+  '@lucide/vue@1.82.0':
+    resolution: {integrity: sha512-Wd9UJqVTF1Q0RxEseQfD/46dBXLAgbRXdx1LI0XZTcoIWSAkjQRz7OC7b+fhl8t+tMwlH9U24WYLG6hX/zKO3Q==}
     peerDependencies:
       vue: '>=3.0.1'
 
@@ -2943,8 +2943,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-config-prettier@10.1.8:
-    resolution: {integrity: sha512-82GZUjRS0p/jganf6q1rEO25VSoHH0hKPCTrgillPjdI/3bgBhAE1QzHrHTizjpRvy6pGAvKjDJtk2pF9NDq8w==}
+  eslint-config-prettier@10.1.9:
+    resolution: {integrity: sha512-JnOR0K4u67CWOiSS3vaduGlLUWS32lGiyglMIV6AyvK9DBRpS+QhR2ESKaUe2eWGRsdVmrxy77yaOk2hzDa4Bg==}
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
@@ -6100,7 +6100,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lucide/vue@1.81.0(vue@3.5.46(typescript@6.0.3))':
+  '@lucide/vue@1.82.0(vue@3.5.46(typescript@6.0.3))':
     dependencies:
       vue: 3.5.46(typescript@6.0.3)
 
@@ -7140,7 +7140,7 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-prettier@10.1.8(eslint@10.15.0(jiti@2.7.0)):
+  eslint-config-prettier@10.1.9(eslint@10.15.0(jiti@2.7.0)):
     dependencies:
       eslint: 10.15.0(jiti@2.7.0)
 
